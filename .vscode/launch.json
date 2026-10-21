@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Chess",
+      "request": "launch",
+      "mainClass": "com.chess.Main",
+      "projectName": "chess",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
