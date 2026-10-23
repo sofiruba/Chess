@@ -16,12 +16,9 @@ import java.util.Optional;
 import com.chess.domain.GameRecord;
 import com.chess.domain.GameResult;
 import com.chess.domain.IGameRepository;
+import com.chess.domain.SavedGames;
 
-/**
- * SQLite adapter of the game history. Design decision: only the history of games is persisted, there are no users.
- * The database file and the table are created when the repository is built. A row that cannot be read (bad date or
- * result) is left out of {@link #findAll()} so one damaged row does not hide the others.
- */
+
 public final class SqliteGameRepository implements IGameRepository {
 
     private static final String MOVE_SEPARATOR = " ";
@@ -58,7 +55,7 @@ public final class SqliteGameRepository implements IGameRepository {
     }
 
     @Override
-    public List<GameRecord> findAll() {
+    public SavedGames findAll() {
         try (Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
                 ResultSet rows = statement.executeQuery(SELECT_ALL)) {
@@ -92,12 +89,18 @@ public final class SqliteGameRepository implements IGameRepository {
         }
     }
 
-    private List<GameRecord> readRows(ResultSet rows) throws SQLException {
+    private SavedGames readRows(ResultSet rows) throws SQLException {
         List<GameRecord> records = new ArrayList<>();
+        int unreadableRows = 0;
         while (rows.next()) {
-            toRecord(rows).ifPresent(records::add);
+            Optional<GameRecord> record = toRecord(rows);
+            if (record.isPresent()) {
+                records.add(record.get());
+            } else {
+                unreadableRows++;
+            }
         }
-        return List.copyOf(records);
+        return new SavedGames(records, unreadableRows);
     }
 
     private Optional<GameRecord> toRecord(ResultSet row) throws SQLException {

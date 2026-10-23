@@ -5,6 +5,7 @@ import com.chess.configuration.StandardGameFactory;
 import com.chess.persistence.SqliteGameRepository;
 import com.chess.ui.ChessApplication;
 import com.chess.ui.PieceSymbols;
+import com.chess.ui.PromotionDialog;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,7 +17,11 @@ public final class Main extends Application {
     public void start(Stage stage) {
         SqliteGameRepository repository = new SqliteGameRepository("chess.db");
         StandardGameFactory gameFactory = new StandardGameFactory(new DefaultMoveCommandFactory());
-        ChessApplication application = new ChessApplication(repository, gameFactory, PieceSymbols.standard());
+        ChessApplication application = new ChessApplication(
+                repository,
+                gameFactory,
+                PieceSymbols.standard(),
+                new PromotionDialog());
         stage.setTitle("Ajedrez");
         stage.setScene(new Scene(application.createView()));
         stage.show();

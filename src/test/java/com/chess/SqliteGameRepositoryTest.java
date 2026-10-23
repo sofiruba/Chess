@@ -22,12 +22,14 @@ import com.chess.domain.GameRecord;
 import com.chess.domain.GameResult;
 import com.chess.domain.IGameService;
 import com.chess.domain.PieceType;
+import com.chess.domain.SavedGames;
 import com.chess.persistence.SqliteGameRepository;
 
 final class SqliteGameRepositoryTest {
 
     private static final Instant FIRST_DATE = Instant.parse("2026-10-01T10:15:30Z");
     private static final Instant SECOND_DATE = Instant.parse("2026-10-02T18:00:00Z");
+    private static final String VALID_RAW_DATE = "2026-10-03T00:00:00Z";
 
     @TempDir
     Path directory;
@@ -48,7 +50,10 @@ final class SqliteGameRepositoryTest {
 
     @Test
     void aNewRepositoryHasNoGames() {
-        assertEquals(List.of(), repository.findAll());
+        SavedGames saved = repository.findAll();
+
+        assertEquals(List.of(), saved.records());
+        assertEquals(0, saved.unreadableRows());
     }
 
     @Test
@@ -68,7 +73,7 @@ final class SqliteGameRepositoryTest {
         GameRecord first = repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.IN_PROGRESS, List.of("e2e4")));
         GameRecord second = repository.save(GameRecord.unsaved(SECOND_DATE, GameResult.WHITE_WINS, List.of("d2d4")));
 
-        List<GameRecord> games = repository.findAll();
+        List<GameRecord> games = repository.findAll().records();
 
         assertEquals(List.of(second, first), games);
     }
@@ -77,7 +82,7 @@ final class SqliteGameRepositoryTest {
     void aGameWithoutMovesIsStoredAndRead() {
         repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.IN_PROGRESS, List.of()));
 
-        List<GameRecord> games = repository.findAll();
+        List<GameRecord> games = repository.findAll().records();
 
         assertEquals(1, games.size());
         assertEquals(List.of(), games.get(0).moveCodes());
@@ -89,7 +94,7 @@ final class SqliteGameRepositoryTest {
         TestGames.play(original, "e2e4", "e7e5", "g1f3");
         repository.save(GameRecord.unsaved(FIRST_DATE, original.result(), original.moveCodes()));
 
-        GameRecord loaded = repository.findAll().get(0);
+        GameRecord loaded = repository.findAll().records().get(0);
         IGameService replayed = TestGames.standard();
         loaded.moveCodes().forEach(replayed::playMoveCode);
 
@@ -102,7 +107,7 @@ final class SqliteGameRepositoryTest {
     void aReplayedGameCanBeUndoneAndRedone() {
         repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.IN_PROGRESS, List.of("e2e4", "e7e5")));
         IGameService replayed = TestGames.standard();
-        repository.findAll().get(0).moveCodes().forEach(replayed::playMoveCode);
+        repository.findAll().records().get(0).moveCodes().forEach(replayed::playMoveCode);
 
         replayed.undoLastMove();
         replayed.redoLastMove();
@@ -116,31 +121,60 @@ final class SqliteGameRepositoryTest {
 
         SqliteGameRepository reopened = new SqliteGameRepository(databaseFile.toString());
 
-        assertEquals(1, reopened.findAll().size());
+        assertEquals(1, reopened.findAll().records().size());
     }
 
     @Test
-    void aRowWithAnUnknownResultIsLeftOutOfTheList() throws SQLException {
+    void aRowWithAnUnknownResultIsLeftOutOfTheListAndCounted() throws SQLException {
         repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.DRAW, List.of("e2e4")));
-        insertRawRow("2026-10-03T00:00:00Z", "NOT_A_RESULT", "e2e4");
+        insertRawRow(VALID_RAW_DATE, "NOT_A_RESULT", "e2e4");
 
-        List<GameRecord> games = repository.findAll();
+        SavedGames saved = repository.findAll();
 
-        assertEquals(1, games.size());
-        assertEquals(FIRST_DATE, games.get(0).playedAt());
+        assertEquals(1, saved.records().size());
+        assertEquals(FIRST_DATE, saved.records().get(0).playedAt());
+        assertEquals(1, saved.unreadableRows());
     }
 
     @Test
-    void aRowWithAnInvalidDateIsLeftOutOfTheList() throws SQLException {
+    void aRowWithAnInvalidDateIsLeftOutOfTheListAndCounted() throws SQLException {
         insertRawRow("yesterday", "DRAW", "e2e4");
 
-        assertEquals(List.of(), repository.findAll());
+        SavedGames saved = repository.findAll();
+
+        assertEquals(List.of(), saved.records());
+        assertEquals(1, saved.unreadableRows());
+    }
+
+    @Test
+    void aRowWithAnInvalidDateAndAnotherWithAnInvalidResultAreBothCountedAndTheValidOnesAreStillReturned()
+            throws SQLException {
+        GameRecord first = repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.DRAW, List.of("e2e4")));
+        insertRawRow("yesterday", "DRAW", "e2e4");
+        GameRecord second = repository.save(GameRecord.unsaved(SECOND_DATE, GameResult.WHITE_WINS, List.of("d2d4")));
+        insertRawRow(VALID_RAW_DATE, "NOT_A_RESULT", "e2e4");
+
+        SavedGames saved = repository.findAll();
+
+        assertEquals(2, saved.unreadableRows());
+        assertEquals(List.of(second, first), saved.records());
+    }
+
+    @Test
+    void withoutDamagedRowsNoRowIsReportedAsUnreadable() {
+        repository.save(GameRecord.unsaved(FIRST_DATE, GameResult.DRAW, List.of("e2e4")));
+        repository.save(GameRecord.unsaved(SECOND_DATE, GameResult.IN_PROGRESS, List.of("d2d4")));
+
+        SavedGames saved = repository.findAll();
+
+        assertEquals(2, saved.records().size());
+        assertEquals(0, saved.unreadableRows());
     }
 
     @Test
     void aRowWithOldDisplayNotationIsListedButCannotBeReplayed() throws SQLException {
-        insertRawRow("2026-10-03T00:00:00Z", "DRAW", "e2e4 O-O");
-        GameRecord damaged = repository.findAll().get(0);
+        insertRawRow(VALID_RAW_DATE, "DRAW", "e2e4 O-O");
+        GameRecord damaged = repository.findAll().records().get(0);
         IGameService game = TestGames.standard();
 
         assertThrows(IllegalArgumentException.class, () -> damaged.moveCodes().forEach(game::playMoveCode));

@@ -12,6 +12,7 @@ import com.chess.domain.GameRecord;
 import com.chess.domain.GameResult;
 import com.chess.domain.IGameRepository;
 import com.chess.domain.IGameService;
+import com.chess.domain.SavedGames;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -28,9 +29,12 @@ public final class SidePanel {
     private final IGameRepository repository;
     private final IGameService game;
     private final PieceSymbols symbols;
+    private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
     private final Label status = new Label();
     private final Label captured = new Label();
+    private final Label unreadableNotice = new Label();
+    private final Button saveButton = new Button("Guardar partida");
     private final ListView<String> moves = new ListView<>();
     private final ListView<GameRecord> savedGames = new ListView<>();
 
@@ -38,17 +42,19 @@ public final class SidePanel {
             IGameRepository repository,
             IGameService game,
             PieceSymbols symbols,
+            SavedGameTracker savedGameTracker,
             Consumer<GameRecord> loadHandler) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.game = Objects.requireNonNull(game, "game must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
+        this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
+        saveButton.setOnAction(event -> save());
+        unreadableNotice.setStyle("-fx-text-fill: #b00020;");
         savedGames.setCellFactory(list -> new SavedGameCell());
     }
 
     public VBox createView() {
-        Button save = new Button("Guardar partida");
-        save.setOnAction(event -> save());
         Button load = new Button("Cargar");
         load.setOnAction(event -> loadSelected());
         VBox panel = new VBox(
@@ -59,9 +65,10 @@ public final class SidePanel {
                 moves,
                 new Label("Capturadas"),
                 captured,
-                save,
+                saveButton,
                 new Label("Partidas guardadas"),
                 savedGames,
+                unreadableNotice,
                 load);
         panel.setPadding(new Insets(12));
         refresh();
@@ -73,6 +80,7 @@ public final class SidePanel {
         status.setText(statusText());
         moves.getItems().setAll(game.moveNotation());
         captured.setText(game.capturedPieces().stream().map(symbols::symbolFor).reduce("", String::concat));
+        updateSaveButton();
     }
 
     public void showMessage(String message) {
@@ -94,14 +102,21 @@ public final class SidePanel {
     }
 
     private void save() {
+        List<String> moveCodes = game.moveCodes();
         try {
-            repository.save(GameRecord.unsaved(Instant.now(), game.result(), game.moveCodes()));
+            repository.save(GameRecord.unsaved(Instant.now(), game.result(), moveCodes));
         } catch (IllegalStateException exception) {
             status.setText("No se pudo guardar la partida.");
             return;
         }
+        savedGameTracker.markSaved(moveCodes);
+        updateSaveButton();
         refreshSavedGames();
         status.setText("Partida guardada");
+    }
+
+    private void updateSaveButton() {
+        saveButton.setDisable(savedGameTracker.isSaved(game.moveCodes()));
     }
 
     private void loadSelected() {
@@ -115,11 +130,28 @@ public final class SidePanel {
 
     private void refreshSavedGames() {
         try {
-            savedGames.getItems().setAll(repository.findAll());
+            SavedGames saved = repository.findAll();
+            savedGames.getItems().setAll(saved.records());
+            showUnreadableNotice(saved.unreadableRows());
         } catch (IllegalStateException exception) {
             savedGames.getItems().clear();
+            showUnreadableNotice(0);
             status.setText("No se pudieron leer las partidas guardadas.");
         }
+    }
+
+    private void showUnreadableNotice(int unreadableRows) {
+        boolean visible = unreadableRows > 0;
+        unreadableNotice.setText(unreadableNoticeText(unreadableRows));
+        unreadableNotice.setVisible(visible);
+        unreadableNotice.setManaged(visible);
+    }
+
+    private static String unreadableNoticeText(int unreadableRows) {
+        if (unreadableRows == 1) {
+            return "1 partida guardada no se pudo leer";
+        }
+        return unreadableRows + " partidas guardadas no se pudieron leer";
     }
 
     private static String describe(GameRecord record) {

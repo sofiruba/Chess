@@ -18,7 +18,8 @@ public final class ChessApplication {
     private final IGameRepository repository;
     private final IGameFactory gameFactory;
     private final PieceSymbols symbols;
-    private final PromotionDialog promotionDialog = new PromotionDialog();
+    private final IPromotionChooser promotionChooser;
+    private final SavedGameTracker savedGameTracker = new SavedGameTracker();
     private final BorderPane root = new BorderPane();
     private IGameService game;
     private BoardView boardView;
@@ -26,10 +27,15 @@ public final class ChessApplication {
     private Position selected;
     private List<Position> legalMoves = List.of();
 
-    public ChessApplication(IGameRepository repository, IGameFactory gameFactory, PieceSymbols symbols) {
+    public ChessApplication(
+            IGameRepository repository,
+            IGameFactory gameFactory,
+            PieceSymbols symbols,
+            IPromotionChooser promotionChooser) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.gameFactory = Objects.requireNonNull(gameFactory, "gameFactory must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
+        this.promotionChooser = Objects.requireNonNull(promotionChooser, "promotionChooser must not be null");
     }
 
     public Pane createView() {
@@ -60,7 +66,7 @@ public final class ChessApplication {
         selected = null;
         legalMoves = List.of();
         boardView = new BoardView(game, symbols, this::click);
-        sidePanel = new SidePanel(repository, game, symbols, this::loadGame);
+        sidePanel = new SidePanel(repository, game, symbols, savedGameTracker, this::loadGame);
     }
 
     private void showGame() {
@@ -77,6 +83,7 @@ public final class ChessApplication {
             return;
         }
         installGame(loaded);
+        savedGameTracker.markSaved(loaded.moveCodes());
         showGame();
         sidePanel.showMessage("Partida cargada");
     }
@@ -126,7 +133,7 @@ public final class ChessApplication {
 
     private void playSelectedMove(Position destination) {
         if (game.requiresPromotion(selected, destination)) {
-            game.playMove(selected, destination, promotionDialog.choosePiece());
+            game.playMove(selected, destination, promotionChooser.choosePiece());
         } else {
             game.playMove(selected, destination);
         }

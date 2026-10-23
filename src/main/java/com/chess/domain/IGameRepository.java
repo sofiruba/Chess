@@ -1,10 +1,7 @@
 package com.chess.domain;
 
-import java.util.List;
 
-/**
- * Output port for the game history. Decision: only the history of games is stored, there are no users.
- */
+
 public interface IGameRepository {
 
     /**
@@ -13,6 +10,6 @@ public interface IGameRepository {
      */
     GameRecord save(GameRecord record);
 
-    /** Readable games, newest first. */
-    List<GameRecord> findAll();
+    /** Readable games, newest first, and the number of stored rows that could not be read. */
+    SavedGames findAll();
 }

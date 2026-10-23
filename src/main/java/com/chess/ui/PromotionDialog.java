@@ -5,7 +5,9 @@ import com.chess.domain.PieceType;
 
 import java.util.List;
 
-public final class PromotionDialog {
+public final class PromotionDialog implements IPromotionChooser {
+
+    @Override
     public PieceType choosePiece() {
         ChoiceDialog<String> dialog = new ChoiceDialog<>("Reina", List.of("Reina", "Torre", "Alfil", "Caballo"));
         dialog.setTitle("Promoción");
@@ -17,4 +19,5 @@ public final class PromotionDialog {
             default -> PieceType.QUEEN;
         };
     }
+
 }
