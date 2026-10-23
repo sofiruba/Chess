@@ -18,6 +18,12 @@ public final class SavedGameTracker {
         return savedMoveCodes != null && savedMoveCodes.equals(moveCodes);
     }
 
+    /** A game can be saved when it has moves and those moves are not the ones already in the database. */
+    public boolean canSave(List<String> moveCodes) {
+        Objects.requireNonNull(moveCodes, "moveCodes must not be null");
+        return !moveCodes.isEmpty() && !isSaved(moveCodes);
+    }
+
     public void markSaved(List<String> moveCodes) {
         Objects.requireNonNull(moveCodes, "moveCodes must not be null");
         savedMoveCodes = List.copyOf(moveCodes);

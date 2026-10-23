@@ -97,6 +97,53 @@ final class SavedGameTrackerTest {
         assertFalse(previous);
         assertTrue(latest);
     }
+        @Test
+    void anEmptyGameCannotBeSavedWhenNothingWasSavedBefore() {
+        SavedGameTracker tracker = new SavedGameTracker();
+
+        boolean canSave = tracker.canSave(List.of());
+
+        assertFalse(canSave);
+    }
+
+    @Test
+    void anEmptyGameCannotBeSavedAfterAnotherGameWasSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4"));
+
+        boolean canSave = tracker.canSave(List.of());
+
+        assertFalse(canSave);
+    }
+
+    @Test
+    void aGameWithMovesThatWasNeverSavedCanBeSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+
+        boolean canSave = tracker.canSave(List.of("e2e4"));
+
+        assertTrue(canSave);
+    }
+
+    @Test
+    void aGameAlreadySavedCannotBeSavedAgain() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4"));
+
+        boolean canSave = tracker.canSave(List.of("e2e4"));
+
+        assertFalse(canSave);
+    }
+
+    @Test
+    void aGameWithDifferentMovesThanTheSavedOneCanBeSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4"));
+
+        boolean canSave = tracker.canSave(List.of("e2e4", "e7e5"));
+
+        assertTrue(canSave);
+    }
 
     @Test
     void changingTheListAfterMarkingItDoesNotChangeWhatWasSaved() {
