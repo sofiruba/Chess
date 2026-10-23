@@ -5,10 +5,5 @@ target/
 .project
 .settings/
 chess.db
-<<<<<<< HEAD
-.DS_Store
-=======
-
 .DS_Store
 .vscode/
->>>>>>> 1efe8a4 (Clean project folder)
