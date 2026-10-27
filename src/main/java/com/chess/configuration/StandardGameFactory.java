@@ -28,6 +28,7 @@ import com.chess.domain.InsufficientMaterialRule;
 import com.chess.domain.LShapeMoveStrategy;
 import com.chess.domain.LinearMoveStrategy;
 import com.chess.domain.MoveCodeParser;
+import com.chess.domain.MoveGenerator;
 import com.chess.domain.MoveHistory;
 import com.chess.domain.OneStepMoveStrategy;
 import com.chess.domain.PawnMoveStrategy;
@@ -110,11 +111,10 @@ public final class StandardGameFactory implements IGameFactory {
         return new Game(
                 board,
                 stateFactory.forColor(firstPlayer),
-                commandFactory,
                 checkDetector,
                 new MoveHistory(),
                 new DefaultGameEndEvaluator(checkDetector, stateFactory, drawRules()),
-                moveRules(),
+                new MoveGenerator(commandFactory, checkDetector, moveRules()),
                 new MoveCodeParser(PROMOTION_TYPES));
     }
 

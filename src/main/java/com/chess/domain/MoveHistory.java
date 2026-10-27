@@ -3,11 +3,12 @@ package com.chess.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MoveHistory {
+public final class MoveHistory implements IMoveHistory {
 
     private final List<Entry> executedMoves = new ArrayList<>();
     private final List<Entry> undoneMoves = new ArrayList<>();
 
+    @Override
     public void record(
             ICommand command,
             IGameState previousState,
@@ -17,6 +18,7 @@ public final class MoveHistory {
         undoneMoves.clear();
     }
 
+    @Override
     public Entry undoLast() {
         if (executedMoves.isEmpty()) {
             throw new IllegalStateException("There are no moves to undo");
@@ -27,6 +29,7 @@ public final class MoveHistory {
         return entry;
     }
 
+    @Override
     public Entry redoLast() {
         if (undoneMoves.isEmpty()) {
             throw new IllegalStateException("There are no moves to redo");
@@ -36,6 +39,7 @@ public final class MoveHistory {
         return entry;
     }
 
+    @Override
     public ICommand lastCommand() {
         if (executedMoves.isEmpty()) {
             return null;
@@ -43,14 +47,9 @@ public final class MoveHistory {
         return executedMoves.get(executedMoves.size() - 1).command();
     }
 
+    @Override
     public List<ICommand> commands() {
         return executedMoves.stream().map(Entry::command).toList();
     }
 
-    public record Entry(
-            ICommand command,
-            IGameState previousState,
-            CastlingRights previousCastlingRights,
-            DrawCounters previousDrawCounters) {
-    }
 }

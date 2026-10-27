@@ -1,6 +1,5 @@
 package com.chess.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,11 +7,10 @@ import java.util.Optional;
 public final class Game implements IGameService {
 
     private final Board board;
-    private final IMoveCommandFactory commandFactory;
     private final ICheckDetector checkDetector;
-    private final MoveHistory moveHistory;
+    private final IMoveHistory moveHistory;
     private final IGameEndEvaluator endEvaluator;
-    private final List<IMoveRule> moveRules;
+    private final IMoveGenerator moveGenerator;
     private final IMoveCodeParser codeParser;
     private IGameState currentState;
     private CastlingRights castlingRights;
@@ -21,19 +19,17 @@ public final class Game implements IGameService {
     public Game(
             Board board,
             IGameState initialState,
-            IMoveCommandFactory commandFactory,
             ICheckDetector checkDetector,
-            MoveHistory moveHistory,
+            IMoveHistory moveHistory,
             IGameEndEvaluator endEvaluator,
-            List<IMoveRule> moveRules,
+            IMoveGenerator moveGenerator,
             IMoveCodeParser codeParser) {
         this.board = Objects.requireNonNull(board, "board must not be null");
         this.currentState = Objects.requireNonNull(initialState, "initialState must not be null");
-        this.commandFactory = Objects.requireNonNull(commandFactory, "commandFactory must not be null");
         this.checkDetector = Objects.requireNonNull(checkDetector, "checkDetector must not be null");
         this.moveHistory = Objects.requireNonNull(moveHistory, "moveHistory must not be null");
         this.endEvaluator = Objects.requireNonNull(endEvaluator, "endEvaluator must not be null");
-        this.moveRules = List.copyOf(Objects.requireNonNull(moveRules, "moveRules must not be null"));
+        this.moveGenerator = Objects.requireNonNull(moveGenerator, "moveGenerator must not be null");
         this.codeParser = Objects.requireNonNull(codeParser, "codeParser must not be null");
         this.castlingRights = CastlingRights.initial(board.size());
         this.drawCounters = DrawCounters.initial(currentPositionKey(null));
@@ -59,13 +55,12 @@ public final class Game implements IGameService {
 
     @Override
     public boolean requiresPromotion(Position from, Position to) {
-        MoveRuleContext context = ruleContext();
-        return moveRules.stream().anyMatch(rule -> rule.requiresPromotion(context, from, to));
+        return moveGenerator.requiresPromotion(ruleContext(), from, to);
     }
 
     @Override
     public void undoLastMove() {
-        MoveHistory.Entry entry = moveHistory.undoLast();
+        IMoveHistory.Entry entry = moveHistory.undoLast();
         currentState = entry.previousState();
         castlingRights = entry.previousCastlingRights();
         drawCounters = entry.previousDrawCounters();
@@ -73,20 +68,17 @@ public final class Game implements IGameService {
 
     @Override
     public void redoLastMove() {
-        MoveHistory.Entry entry = moveHistory.redoLast();
+        IMoveHistory.Entry entry = moveHistory.redoLast();
         applyMove(entry.command());
         updateEndState();
     }
 
     @Override
     public List<Position> legalMoves(Position from) {
-        Piece piece = board.pieceAt(from);
-        if (piece == null || piece.color() != turn() || isFinished()) {
+        if (isFinished()) {
             return List.of();
         }
-        return candidateMoves(piece, from).stream()
-                .filter(to -> keepsKingSafe(new MoveRequest(from, to, null), piece.color()))
-                .toList();
+        return moveGenerator.legalMoves(ruleContext(), turn(), from);
     }
 
     @Override
@@ -144,7 +136,7 @@ public final class Game implements IGameService {
         if (!legalMoves(request.from()).contains(request.to())) {
             throw new IllegalArgumentException("Illegal movement from " + request.from() + " to " + request.to());
         }
-        ICommand command = createCommand(request);
+        ICommand command = moveGenerator.createCommand(ruleContext(), request);
         IGameState previousState = currentState;
         CastlingRights previousRights = castlingRights;
         DrawCounters previousCounters = drawCounters;
@@ -177,34 +169,6 @@ public final class Game implements IGameService {
         }
         if (piece.color() != turn()) {
             throw new IllegalArgumentException("It is " + turn().name().toLowerCase() + "'s turn");
-        }
-    }
-
-    private List<Position> candidateMoves(Piece piece, Position from) {
-        MoveRuleContext context = ruleContext();
-        List<Position> candidates = new ArrayList<>(piece.getValidMoves(board, from));
-        for (IMoveRule rule : moveRules) {
-            candidates.addAll(rule.extraMoves(context, from));
-        }
-        return candidates.stream().distinct().toList();
-    }
-
-    private ICommand createCommand(MoveRequest request) {
-        MoveRuleContext context = ruleContext();
-        return moveRules.stream()
-                .filter(rule -> rule.appliesTo(context, request))
-                .findFirst()
-                .map(rule -> rule.createCommand(context, request))
-                .orElseGet(() -> commandFactory.create(board, request.from(), request.to()));
-    }
-
-    private boolean keepsKingSafe(MoveRequest request, Color color) {
-        ICommand command = createCommand(request);
-        command.execute();
-        try {
-            return !checkDetector.isInCheck(board, color);
-        } finally {
-            command.undo();
         }
     }
 
