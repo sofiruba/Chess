@@ -11,7 +11,7 @@ import com.chess.domain.Color;
 import com.chess.domain.GameRecord;
 import com.chess.domain.GameResult;
 import com.chess.domain.IGameRepository;
-import com.chess.domain.IGameService;
+import com.chess.domain.IGameQueries;
 import com.chess.domain.SavedGames;
 
 import javafx.geometry.Insets;
@@ -27,7 +27,7 @@ public final class SidePanel {
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
     private final IGameRepository repository;
-    private final IGameService game;
+    private final IGameQueries game;
     private final PieceSymbols symbols;
     private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
@@ -40,7 +40,7 @@ public final class SidePanel {
 
     public SidePanel(
             IGameRepository repository,
-            IGameService game,
+            IGameQueries game,
             PieceSymbols symbols,
             SavedGameTracker savedGameTracker,
             Consumer<GameRecord> loadHandler) {

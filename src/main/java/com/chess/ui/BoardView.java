@@ -6,7 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import com.chess.domain.IGameService;
+import com.chess.domain.IGameQueries;
 import com.chess.domain.Piece;
 import com.chess.domain.Position;
 
@@ -15,14 +15,14 @@ import java.util.function.Consumer;
 
 public final class BoardView {
     private static final int SQUARE_SIZE = 64;
-    private final IGameService game;
+    private final IGameQueries game;
     private final PieceSymbols symbols;
     private final Consumer<Position> squareClickHandler;
     private final GridPane squares = new GridPane();
     private Position selected;
     private List<Position> legalMoves = List.of();
 
-    public BoardView(IGameService game, PieceSymbols symbols, Consumer<Position> squareClickHandler) {
+    public BoardView(IGameQueries game, PieceSymbols symbols, Consumer<Position> squareClickHandler) {
         this.game = game;
         this.symbols = symbols;
         this.squareClickHandler = squareClickHandler;
