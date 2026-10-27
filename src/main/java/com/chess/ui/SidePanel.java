@@ -116,7 +116,7 @@ public final class SidePanel {
     }
 
     private void updateSaveButton() {
-        saveButton.setDisable(savedGameTracker.isSaved(game.moveCodes()));
+        saveButton.setDisable(!savedGameTracker.canSave(game.moveCodes()));
     }
 
     private void loadSelected() {

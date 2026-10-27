@@ -13,91 +13,6 @@ import com.chess.ui.SavedGameTracker;
 final class SavedGameTrackerTest {
 
     @Test
-    void whenNothingWasSavedNoGameIsConsideredSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-
-        boolean withMoves = tracker.isSaved(List.of("e2e4"));
-        boolean withoutMoves = tracker.isSaved(List.of());
-
-        assertFalse(withMoves);
-        assertFalse(withoutMoves);
-    }
-
-    @Test
-    void aGameWithTheSameMovesAsTheSavedOneIsSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4", "e7e5"));
-
-        boolean saved = tracker.isSaved(List.of("e2e4", "e7e5"));
-
-        assertTrue(saved);
-    }
-
-    @Test
-    void aGameWithMoreMovesThanTheSavedOneIsNotSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4"));
-
-        boolean saved = tracker.isSaved(List.of("e2e4", "e7e5"));
-
-        assertFalse(saved);
-    }
-
-    @Test
-    void aGameWithFewerMovesThanTheSavedOneIsNotSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4", "e7e5"));
-
-        boolean saved = tracker.isSaved(List.of("e2e4"));
-
-        assertFalse(saved);
-    }
-
-    @Test
-    void aGameWithTheSameMovesInAnotherOrderIsNotSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4", "e7e5"));
-
-        boolean saved = tracker.isSaved(List.of("e7e5", "e2e4"));
-
-        assertFalse(saved);
-    }
-
-    @Test
-    void goingBackToTheSavedMovesAfterAnUndoIsSavedAgain() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4", "e7e5"));
-        boolean afterUndo = tracker.isSaved(List.of("e2e4"));
-
-        boolean afterRedo = tracker.isSaved(List.of("e2e4", "e7e5"));
-
-        assertFalse(afterUndo);
-        assertTrue(afterRedo);
-    }
-
-    @Test
-    void anEmptyGameThatWasSavedIsRecognizedAsSaved() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of());
-
-        boolean saved = tracker.isSaved(List.of());
-
-        assertTrue(saved);
-    }
-
-    @Test
-    void markingANewGameReplacesThePreviousOne() {
-        SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4"));
-        tracker.markSaved(List.of("d2d4"));
-
-        boolean previous = tracker.isSaved(List.of("e2e4"));
-        boolean latest = tracker.isSaved(List.of("d2d4"));
-
-        assertFalse(previous);
-        assertTrue(latest);
-    }
-        @Test
     void anEmptyGameCannotBeSavedWhenNothingWasSavedBefore() {
         SavedGameTracker tracker = new SavedGameTracker();
 
@@ -117,6 +32,16 @@ final class SavedGameTrackerTest {
     }
 
     @Test
+    void anEmptyGameCannotBeSavedEvenIfAnEmptyGameWasMarkedAsSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of());
+
+        boolean canSave = tracker.canSave(List.of());
+
+        assertFalse(canSave);
+    }
+
+    @Test
     void aGameWithMovesThatWasNeverSavedCanBeSaved() {
         SavedGameTracker tracker = new SavedGameTracker();
 
@@ -128,15 +53,15 @@ final class SavedGameTrackerTest {
     @Test
     void aGameAlreadySavedCannotBeSavedAgain() {
         SavedGameTracker tracker = new SavedGameTracker();
-        tracker.markSaved(List.of("e2e4"));
+        tracker.markSaved(List.of("e2e4", "e7e5"));
 
-        boolean canSave = tracker.canSave(List.of("e2e4"));
+        boolean canSave = tracker.canSave(List.of("e2e4", "e7e5"));
 
         assertFalse(canSave);
     }
 
     @Test
-    void aGameWithDifferentMovesThanTheSavedOneCanBeSaved() {
+    void aGameWithMoreMovesThanTheSavedOneCanBeSaved() {
         SavedGameTracker tracker = new SavedGameTracker();
         tracker.markSaved(List.of("e2e4"));
 
@@ -146,16 +71,61 @@ final class SavedGameTrackerTest {
     }
 
     @Test
+    void aGameWithFewerMovesThanTheSavedOneCanBeSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4", "e7e5"));
+
+        boolean canSave = tracker.canSave(List.of("e2e4"));
+
+        assertTrue(canSave);
+    }
+
+    @Test
+    void aGameWithTheSameMovesInAnotherOrderCanBeSaved() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4", "e7e5"));
+
+        boolean canSave = tracker.canSave(List.of("e7e5", "e2e4"));
+
+        assertTrue(canSave);
+    }
+
+    @Test
+    void goingBackToTheSavedMovesAfterAnUndoCannotBeSavedAgain() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4", "e7e5"));
+        boolean afterUndo = tracker.canSave(List.of("e2e4"));
+
+        boolean afterRedo = tracker.canSave(List.of("e2e4", "e7e5"));
+
+        assertTrue(afterUndo);
+        assertFalse(afterRedo);
+    }
+
+    @Test
+    void markingANewGameReplacesThePreviousOne() {
+        SavedGameTracker tracker = new SavedGameTracker();
+        tracker.markSaved(List.of("e2e4"));
+        tracker.markSaved(List.of("d2d4"));
+
+        boolean previous = tracker.canSave(List.of("e2e4"));
+        boolean latest = tracker.canSave(List.of("d2d4"));
+
+        assertTrue(previous);
+        assertFalse(latest);
+    }
+
+    @Test
     void changingTheListAfterMarkingItDoesNotChangeWhatWasSaved() {
         SavedGameTracker tracker = new SavedGameTracker();
         List<String> moves = new ArrayList<>(List.of("e2e4"));
         tracker.markSaved(moves);
         moves.add("e7e5");
 
-        boolean savedWithOriginalMoves = tracker.isSaved(List.of("e2e4"));
-        boolean savedWithChangedMoves = tracker.isSaved(moves);
+        boolean originalMoves = tracker.canSave(List.of("e2e4"));
+        boolean changedMoves = tracker.canSave(moves);
 
-        assertTrue(savedWithOriginalMoves);
-        assertFalse(savedWithChangedMoves);
+        assertFalse(originalMoves);
+        assertTrue(changedMoves);
     }
 }
