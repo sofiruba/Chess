@@ -45,6 +45,11 @@ public final class PromotionRule implements IMoveRule {
                 && to.y() == lastRank(context.board(), piece.color());
     }
 
+    @Override
+    public List<PieceType> promotionOptions() {
+        return promotionTypes;
+    }
+
     private PieceType chosenType(MoveRequest request) {
         PieceType requested = request.promotionType();
         if (requested == null) {

@@ -19,4 +19,9 @@ public interface IMoveRule {
     default boolean requiresPromotion(MoveRuleContext context, Position from, Position to) {
         return false;
     }
+
+    /** Pieces a pawn can become under this rule. Only the promotion rule offers any. */
+    default List<PieceType> promotionOptions() {
+        return List.of();
+    }
 }

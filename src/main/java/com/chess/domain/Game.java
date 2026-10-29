@@ -59,6 +59,11 @@ public final class Game implements IGameService {
     }
 
     @Override
+    public List<PieceType> promotionOptions() {
+        return moveGenerator.promotionOptions();
+    }
+
+    @Override
     public void undoLastMove() {
         IMoveHistory.Entry entry = moveHistory.undoLast();
         currentState = entry.previousState();

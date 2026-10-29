@@ -53,13 +53,17 @@ public final class PieceSymbols {
         if (piece == null) {
             return "";
         }
-        Map<PieceType, String> symbols = piece.color() == Color.WHITE ? whiteSymbols : blackSymbols;
-        String symbol = symbols.get(piece.type());
-        return symbol != null ? symbol : fallbackSymbol(piece);
+        return symbolFor(piece.type(), piece.color());
     }
 
-    private String fallbackSymbol(Piece piece) {
-        String code = piece.type().notationCode();
-        return piece.color() == Color.WHITE ? code.toUpperCase() : code.toLowerCase();
+    public String symbolFor(PieceType type, Color color) {
+        Map<PieceType, String> symbols = color == Color.WHITE ? whiteSymbols : blackSymbols;
+        String symbol = symbols.get(type);
+        return symbol != null ? symbol : fallbackSymbol(type, color);
+    }
+
+    private String fallbackSymbol(PieceType type, Color color) {
+        String code = type.notationCode();
+        return color == Color.WHITE ? code.toUpperCase() : code.toLowerCase();
     }
 }

@@ -13,6 +13,9 @@ public interface IGameQueries {
     Position kingInCheckPosition();
     List<Position> legalMoves(Position from);
     boolean requiresPromotion(Position from, Position to);
+
+    /** The pieces a pawn can become, in the order they should be offered. */
+    List<PieceType> promotionOptions();
     boolean isFinished();
     GameResult result();
     List<Piece> capturedPieces();

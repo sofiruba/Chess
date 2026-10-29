@@ -12,4 +12,7 @@ public interface IMoveGenerator {
     ICommand createCommand(MoveRuleContext context, MoveRequest request);
 
     boolean requiresPromotion(MoveRuleContext context, Position from, Position to);
+
+    /** The pieces a pawn can be promoted to, as declared by the registered rules. */
+    List<PieceType> promotionOptions();
 }

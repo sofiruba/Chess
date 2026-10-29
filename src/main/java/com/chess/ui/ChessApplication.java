@@ -1,22 +1,26 @@
 package com.chess.ui;
 
+import java.util.List;
+import java.util.Objects;
+
+import com.chess.domain.GameRecord;
+import com.chess.domain.IGameFactory;
+import com.chess.domain.IGameReplayer;
+import com.chess.domain.IGameRepository;
+import com.chess.domain.IGameService;
+import com.chess.domain.PieceType;
+import com.chess.domain.Position;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import com.chess.domain.GameRecord;
-import com.chess.domain.IGameFactory;
-import com.chess.domain.IGameRepository;
-import com.chess.domain.IGameService;
-import com.chess.domain.Position;
-
-import java.util.List;
-import java.util.Objects;
 
 public final class ChessApplication {
     private final IGameRepository repository;
     private final IGameFactory gameFactory;
+    private final IGameReplayer gameReplayer;
     private final PieceSymbols symbols;
     private final IPromotionChooser promotionChooser;
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
@@ -30,10 +34,12 @@ public final class ChessApplication {
     public ChessApplication(
             IGameRepository repository,
             IGameFactory gameFactory,
+            IGameReplayer gameReplayer,
             PieceSymbols symbols,
             IPromotionChooser promotionChooser) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.gameFactory = Objects.requireNonNull(gameFactory, "gameFactory must not be null");
+        this.gameReplayer = Objects.requireNonNull(gameReplayer, "gameReplayer must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.promotionChooser = Objects.requireNonNull(promotionChooser, "promotionChooser must not be null");
     }
@@ -77,8 +83,8 @@ public final class ChessApplication {
     private void loadGame(GameRecord record) {
         IGameService loaded;
         try {
-            loaded = replay(record);
-        } catch (IllegalArgumentException | IllegalStateException exception) {
+            loaded = gameReplayer.replay(record.moveCodes());
+        } catch (IllegalArgumentException exception) {
             sidePanel.showMessage("La partida guardada está dañada y no se puede cargar.");
             return;
         }
@@ -86,14 +92,6 @@ public final class ChessApplication {
         savedGameTracker.markSaved(loaded.moveCodes());
         showGame();
         sidePanel.showMessage("Partida cargada");
-    }
-
-    private IGameService replay(GameRecord record) {
-        IGameService replayed = gameFactory.create();
-        for (String moveCode : record.moveCodes()) {
-            replayed.playMoveCode(moveCode);
-        }
-        return replayed;
     }
 
     private void click(Position position) {
@@ -133,7 +131,8 @@ public final class ChessApplication {
 
     private void playSelectedMove(Position destination) {
         if (game.requiresPromotion(selected, destination)) {
-            game.playMove(selected, destination, promotionChooser.choosePiece());
+            PieceType chosen = promotionChooser.choosePiece(game.turn(), game.promotionOptions());
+            game.playMove(selected, destination, chosen);
         } else {
             game.playMove(selected, destination);
         }

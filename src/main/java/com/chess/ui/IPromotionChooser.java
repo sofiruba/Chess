@@ -1,5 +1,8 @@
 package com.chess.ui;
 
+import java.util.List;
+
+import com.chess.domain.Color;
 import com.chess.domain.PieceType;
 
 /**
@@ -8,5 +11,10 @@ import com.chess.domain.PieceType;
  */
 public interface IPromotionChooser {
 
-    PieceType choosePiece();
+    /**
+     * @param color the color of the promoting pawn, so the options can be drawn in that color
+     * @param options the pieces the game allows, in the order they should be shown; never empty
+     * @return one of the options
+     */
+    PieceType choosePiece(Color color, List<PieceType> options);
 }

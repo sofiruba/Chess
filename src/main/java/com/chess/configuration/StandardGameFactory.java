@@ -45,14 +45,13 @@ import com.chess.domain.TurnStateFactory;
  */
 public final class StandardGameFactory implements IGameFactory {
 
-    private static final List<PieceType> PROMOTION_TYPES =
-            List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT);
     private static final int FIFTY_MOVE_LIMIT = 50;
 
     private final IMoveCommandFactory commandFactory;
     private final List<IMoveRule> additionalRules;
     private final IPieceFactory pieceFactory;
     private final StandardBoardSetup boardSetup;
+    private final PromotionRule promotionRule;
     private final ITurnStateFactory stateFactory = new TurnStateFactory();
     private final ICheckDetector checkDetector = new CheckDetector();
 
@@ -64,19 +63,30 @@ public final class StandardGameFactory implements IGameFactory {
         this(commandFactory, standardPieceDefinitions(), standardBackRank(), additionalRules);
     }
 
-    /**
-     * @param pieceDefinitions registry of piece type to movement strategies
-     * @param backRank pieces of the back rank from column 0; its length is the board size
-     */
     public StandardGameFactory(
             IMoveCommandFactory commandFactory,
             Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
             List<PieceType> backRank,
             List<IMoveRule> additionalRules) {
+        this(commandFactory, pieceDefinitions, backRank, additionalRules, standardPromotionTypes());
+    }
+
+    /**
+     * @param pieceDefinitions registry of piece type to movement strategies
+     * @param backRank pieces of the back rank from column 0; its length is the board size
+     * @param promotionTypes pieces a pawn can become, in the order they are offered; the first is the default
+     */
+    public StandardGameFactory(
+            IMoveCommandFactory commandFactory,
+            Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
+            List<PieceType> backRank,
+            List<IMoveRule> additionalRules,
+            List<PieceType> promotionTypes) {
         this.commandFactory = Objects.requireNonNull(commandFactory, "commandFactory must not be null");
         this.additionalRules = List.copyOf(Objects.requireNonNull(additionalRules, "additionalRules must not be null"));
         this.pieceFactory = new PieceFactory(pieceDefinitions);
         this.boardSetup = new StandardBoardSetup(pieceFactory, backRank);
+        this.promotionRule = new PromotionRule(pieceFactory, promotionTypes);
     }
 
     public static Map<PieceType, List<IMoveStrategy>> standardPieceDefinitions() {
@@ -88,6 +98,10 @@ public final class StandardGameFactory implements IGameFactory {
         definitions.put(PieceType.KNIGHT, List.of(new LShapeMoveStrategy()));
         definitions.put(PieceType.PAWN, List.of(new PawnMoveStrategy()));
         return definitions;
+    }
+
+    public static List<PieceType> standardPromotionTypes() {
+        return List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT);
     }
 
     public static List<PieceType> standardBackRank() {
@@ -115,14 +129,14 @@ public final class StandardGameFactory implements IGameFactory {
                 new MoveHistory(),
                 new DefaultGameEndEvaluator(checkDetector, stateFactory, drawRules()),
                 new MoveGenerator(commandFactory, checkDetector, moveRules()),
-                new MoveCodeParser(PROMOTION_TYPES));
+                new MoveCodeParser(promotionRule.promotionOptions()));
     }
 
     private List<IMoveRule> moveRules() {
         List<IMoveRule> rules = new ArrayList<>();
         rules.add(new CastlingRule());
         rules.add(new EnPassantRule());
-        rules.add(new PromotionRule(pieceFactory, PROMOTION_TYPES));
+        rules.add(promotionRule);
         rules.addAll(additionalRules);
         return rules;
     }

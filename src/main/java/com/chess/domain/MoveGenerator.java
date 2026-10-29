@@ -44,6 +44,14 @@ public final class MoveGenerator implements IMoveGenerator {
         return moveRules.stream().anyMatch(rule -> rule.requiresPromotion(context, from, to));
     }
 
+    @Override
+    public List<PieceType> promotionOptions() {
+        return moveRules.stream()
+                .flatMap(rule -> rule.promotionOptions().stream())
+                .distinct()
+                .toList();
+    }
+
     private List<Position> candidateMoves(MoveRuleContext context, Piece piece, Position from) {
         List<Position> candidates = new ArrayList<>(piece.getValidMoves(context.board(), from));
         for (IMoveRule rule : moveRules) {
