@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.chess.domain.Color;
-import com.chess.domain.PieceType;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceType;
 
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;

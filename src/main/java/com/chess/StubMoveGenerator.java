@@ -2,13 +2,13 @@ package com.chess;
 
 import java.util.List;
 
-import com.chess.domain.Color;
-import com.chess.domain.ICommand;
-import com.chess.domain.IMoveGenerator;
-import com.chess.domain.MoveRequest;
-import com.chess.domain.MoveRuleContext;
-import com.chess.domain.PieceType;
-import com.chess.domain.Position;
+import com.chess.domain.model.Color;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.rule.IMoveGenerator;
+import com.chess.domain.rule.MoveRequest;
+import com.chess.domain.rule.MoveRuleContext;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Generator for state tests: it answers a fixed list of destinations and remembers who it was asked for.

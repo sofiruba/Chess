@@ -2,7 +2,7 @@ package com.chess;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
-import com.chess.domain.GameReplayer;
+import com.chess.domain.game.GameReplayer;
 import com.chess.persistence.SqliteGameRepository;
 import com.chess.ui.ChessApplication;
 import com.chess.ui.PieceSymbols;

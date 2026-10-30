@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.chess.domain.Color;
-import com.chess.domain.Piece;
-import com.chess.domain.PieceType;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
 
 /**
  * Unicode symbol of each piece, owned by the UI. A piece without a registered symbol is drawn with the letter of

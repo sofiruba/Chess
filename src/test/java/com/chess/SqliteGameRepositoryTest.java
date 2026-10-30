@@ -17,12 +17,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.chess.domain.Color;
-import com.chess.domain.GameRecord;
-import com.chess.domain.GameResult;
-import com.chess.domain.IGameService;
-import com.chess.domain.PieceType;
-import com.chess.domain.SavedGames;
+import com.chess.domain.model.Color;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.port.SavedGames;
 import com.chess.persistence.SqliteGameRepository;
 
 final class SqliteGameRepositoryTest {

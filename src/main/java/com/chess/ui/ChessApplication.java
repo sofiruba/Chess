@@ -3,13 +3,13 @@ package com.chess.ui;
 import java.util.List;
 import java.util.Objects;
 
-import com.chess.domain.GameRecord;
-import com.chess.domain.IGameFactory;
-import com.chess.domain.IGameReplayer;
-import com.chess.domain.IGameRepository;
-import com.chess.domain.IGameService;
-import com.chess.domain.PieceType;
-import com.chess.domain.Position;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.port.IGameFactory;
+import com.chess.domain.port.IGameReplayer;
+import com.chess.domain.port.IGameRepository;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

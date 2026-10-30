@@ -2,8 +2,8 @@ package com.chess.ui;
 
 import java.util.List;
 
-import com.chess.domain.Color;
-import com.chess.domain.PieceType;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceType;
 
 /**
  * Asks the player which piece a pawn becomes when it reaches the last rank. It exists so that ChessApplication

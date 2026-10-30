@@ -12,14 +12,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.Board;
-import com.chess.domain.Color;
-import com.chess.domain.GameSnapshot;
-import com.chess.domain.ICommand;
-import com.chess.domain.IGameState;
-import com.chess.domain.ITurnStateFactory;
-import com.chess.domain.MoveCommand;
-import com.chess.domain.TurnStateFactory;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.game.GameSnapshot;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.state.IGameState;
+import com.chess.domain.state.ITurnStateFactory;
+import com.chess.domain.command.MoveCommand;
+import com.chess.domain.state.TurnStateFactory;
 
 final class GameSnapshotTest {
 

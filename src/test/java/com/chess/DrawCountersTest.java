@@ -8,13 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.Board;
-import com.chess.domain.CastlingRights;
-import com.chess.domain.Color;
-import com.chess.domain.DrawCounters;
-import com.chess.domain.ICommand;
-import com.chess.domain.MoveCommand;
-import com.chess.domain.PositionKey;
+import com.chess.domain.model.Board;
+import com.chess.domain.rule.CastlingRights;
+import com.chess.domain.model.Color;
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.MoveCommand;
+import com.chess.domain.draw.PositionKey;
 
 final class DrawCountersTest {
 

@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
-import com.chess.domain.Color;
-import com.chess.domain.DiagonalMoveStrategy;
-import com.chess.domain.IGameService;
-import com.chess.domain.IMoveStrategy;
-import com.chess.domain.LShapeMoveStrategy;
-import com.chess.domain.PieceType;
+import com.chess.domain.model.Color;
+import com.chess.domain.movement.DiagonalMoveStrategy;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.model.IMoveStrategy;
+import com.chess.domain.movement.LShapeMoveStrategy;
+import com.chess.domain.model.PieceType;
 
 /**
  * The promotion options come from one place. A piece that only exists in this file is offered and can be chosen.

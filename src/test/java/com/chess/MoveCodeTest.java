@@ -11,13 +11,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.Color;
-import com.chess.domain.IGameService;
-import com.chess.domain.IMoveCodeParser;
-import com.chess.domain.MoveCodeParser;
-import com.chess.domain.MoveRequest;
-import com.chess.domain.Piece;
-import com.chess.domain.PieceType;
+import com.chess.domain.model.Color;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.rule.IMoveCodeParser;
+import com.chess.domain.rule.MoveCodeParser;
+import com.chess.domain.rule.MoveRequest;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
 
 final class MoveCodeTest {
 

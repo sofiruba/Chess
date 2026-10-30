@@ -6,9 +6,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import com.chess.domain.IGameQueries;
-import com.chess.domain.Piece;
-import com.chess.domain.Position;
+import com.chess.domain.port.IGameQueries;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.Position;
 
 import java.util.List;
 import java.util.function.Consumer;

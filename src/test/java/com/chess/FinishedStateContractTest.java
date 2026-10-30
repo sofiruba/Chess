@@ -9,11 +9,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.Color;
-import com.chess.domain.FinishedState;
-import com.chess.domain.GameResult;
-import com.chess.domain.IGameState;
-import com.chess.domain.TurnStateFactory;
+import com.chess.domain.model.Color;
+import com.chess.domain.state.FinishedState;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.state.IGameState;
+import com.chess.domain.state.TurnStateFactory;
 
 final class FinishedStateContractTest extends GameStateContractTest {
 

@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.GameRecord;
-import com.chess.domain.GameResult;
-import com.chess.domain.SavedGames;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.port.SavedGames;
 
 final class SavedGamesTest {
 

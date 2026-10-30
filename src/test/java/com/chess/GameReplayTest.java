@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
-import com.chess.domain.Color;
-import com.chess.domain.GameReplayer;
-import com.chess.domain.IGameReplayer;
-import com.chess.domain.IGameService;
+import com.chess.domain.model.Color;
+import com.chess.domain.game.GameReplayer;
+import com.chess.domain.port.IGameReplayer;
+import com.chess.domain.port.IGameService;
 
 final class GameReplayTest {
 

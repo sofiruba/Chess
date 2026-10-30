@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.IGameActions;
-import com.chess.domain.IGameQueries;
-import com.chess.domain.IGameService;
+import com.chess.domain.port.IGameActions;
+import com.chess.domain.port.IGameQueries;
+import com.chess.domain.port.IGameService;
 
 final class GameInterfacesTest {
 

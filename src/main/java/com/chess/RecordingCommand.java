@@ -2,12 +2,12 @@ package com.chess;
 
 import java.util.List;
 
-import com.chess.domain.Color;
-import com.chess.domain.ICommand;
-import com.chess.domain.OneStepMoveStrategy;
-import com.chess.domain.Piece;
-import com.chess.domain.PieceType;
-import com.chess.domain.Position;
+import com.chess.domain.model.Color;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.movement.OneStepMoveStrategy;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Command for state tests that only counts how many times it was executed.

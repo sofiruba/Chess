@@ -6,15 +6,15 @@ import java.util.regex.Pattern;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
-import com.chess.domain.Board;
-import com.chess.domain.Color;
-import com.chess.domain.IGameService;
-import com.chess.domain.IMoveRule;
-import com.chess.domain.IPieceFactory;
-import com.chess.domain.Piece;
-import com.chess.domain.PieceFactory;
-import com.chess.domain.PieceType;
-import com.chess.domain.Position;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.rule.IMoveRule;
+import com.chess.domain.model.IPieceFactory;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceFactory;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Test helpers to build positions from text diagrams and to play moves written as "e2e4" or "e7e8q".

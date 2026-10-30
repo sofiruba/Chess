@@ -18,26 +18,26 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.Board;
-import com.chess.domain.CastlingRights;
-import com.chess.domain.CastlingRule;
-import com.chess.domain.DrawCounters;
-import com.chess.domain.EnPassantRule;
-import com.chess.domain.GameSnapshot;
-import com.chess.domain.ICommand;
-import com.chess.domain.IGameQueries;
-import com.chess.domain.IMoveHistory;
-import com.chess.domain.IMoveInfo;
-import com.chess.domain.IMoveRule;
-import com.chess.domain.MoveCommand;
-import com.chess.domain.MoveHistory;
-import com.chess.domain.MoveRuleContext;
-import com.chess.domain.PositionKey;
-import com.chess.domain.PromotionRule;
+import com.chess.domain.model.Board;
+import com.chess.domain.rule.CastlingRights;
+import com.chess.domain.rule.CastlingRule;
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.rule.EnPassantRule;
+import com.chess.domain.game.GameSnapshot;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.port.IGameQueries;
+import com.chess.domain.game.IMoveHistory;
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.rule.IMoveRule;
+import com.chess.domain.command.MoveCommand;
+import com.chess.domain.game.MoveHistory;
+import com.chess.domain.rule.MoveRuleContext;
+import com.chess.domain.draw.PositionKey;
+import com.chess.domain.rule.PromotionRule;
 
 final class MoveInfoInterfacesTest {
 
-    private static final String COMMAND = "com.chess.domain.ICommand";
+    private static final String COMMAND = "com.chess.domain.command.ICommand";
 
     @Test
     void aMoveInfoCannotExecuteNorUndo() {
@@ -79,7 +79,7 @@ final class MoveInfoInterfacesTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertEquals("java.util.Optional<com.chess.domain.IMoveInfo>", lastMove.getGenericType().getTypeName());
+        assertEquals("java.util.Optional<com.chess.domain.command.IMoveInfo>", lastMove.getGenericType().getTypeName());
     }
 
     @Test
@@ -87,8 +87,8 @@ final class MoveInfoInterfacesTest {
         Method lastMove = IMoveHistory.class.getMethod("lastMove");
         Method moves = IMoveHistory.class.getMethod("moves");
 
-        assertEquals("java.util.Optional<com.chess.domain.IMoveInfo>", lastMove.getGenericReturnType().getTypeName());
-        assertEquals("java.util.List<com.chess.domain.IMoveInfo>", moves.getGenericReturnType().getTypeName());
+        assertEquals("java.util.Optional<com.chess.domain.command.IMoveInfo>", lastMove.getGenericReturnType().getTypeName());
+        assertEquals("java.util.List<com.chess.domain.command.IMoveInfo>", moves.getGenericReturnType().getTypeName());
     }
 
     @Test

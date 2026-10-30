@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.chess.domain.Color;
-import com.chess.domain.GameRecord;
-import com.chess.domain.GameResult;
-import com.chess.domain.IGameRepository;
-import com.chess.domain.IGameQueries;
-import com.chess.domain.SavedGames;
+import com.chess.domain.model.Color;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.port.IGameRepository;
+import com.chess.domain.port.IGameQueries;
+import com.chess.domain.port.SavedGames;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

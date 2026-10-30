@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.GameResult;
-import com.chess.domain.IGameState;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.state.IGameState;
 
 /**
  * What every {@link IGameState} promises, whichever implementation the game holds (Liskov). Each implementation has
