@@ -1,14 +1,14 @@
 package com.chess.domain.state;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-
-
 import java.util.List;
 import java.util.Objects;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.model.Position;
+import com.chess.domain.rule.IMoveGenerator;
+import com.chess.domain.rule.MoveRuleContext;
 
 /**
  * La partida está en curso y es el turno de {@code player}.

@@ -1,15 +1,12 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.rule.CastlingRights;
 
 /**
  * Contadores inmutables que leen las reglas de tablas: medias jugadas desde el último movimiento de peón o captura,

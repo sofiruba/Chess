@@ -1,11 +1,12 @@
 package com.chess.domain.game;
 
 
-import com.chess.domain.command.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.IMoveInfo;
 
 public final class MoveHistory implements IMoveHistory {
 

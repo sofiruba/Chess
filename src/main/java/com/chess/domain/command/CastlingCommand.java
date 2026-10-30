@@ -1,10 +1,11 @@
 package com.chess.domain.command;
 
-import com.chess.domain.model.*;
-
-
 import java.util.List;
 import java.util.Objects;
+
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.Position;
 
 public final class CastlingCommand implements ICommand {
 

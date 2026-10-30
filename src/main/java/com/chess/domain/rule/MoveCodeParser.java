@@ -1,13 +1,14 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Analiza códigos formados por origen, destino y una letra de promoción opcional. Las letras aceptadas son los

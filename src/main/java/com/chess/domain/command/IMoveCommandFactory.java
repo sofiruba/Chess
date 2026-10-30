@@ -1,8 +1,8 @@
 package com.chess.domain.command;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.rule.*;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Position;
+import com.chess.domain.rule.IMoveRule;
 
 
 /**

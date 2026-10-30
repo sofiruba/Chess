@@ -1,10 +1,10 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
 import java.util.List;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Una jugada especial (enroque, captura al paso, promoción, ...). Cada regla posee su propio comando, por lo que

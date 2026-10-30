@@ -1,8 +1,10 @@
 package com.chess.domain.command;
 
-import com.chess.domain.model.*;
-
 import java.util.Objects;
+
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.Position;
 
 public final class MoveCommand implements ICommand {
 

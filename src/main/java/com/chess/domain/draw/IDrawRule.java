@@ -1,6 +1,6 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Board;
 
 /**
  * Una condición que termina la partida en tablas. Cada regla es una clase propia y se registra en la configuración,

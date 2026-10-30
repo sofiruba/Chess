@@ -1,10 +1,10 @@
 package com.chess.domain.port;
 
-import com.chess.domain.model.*;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+
+import com.chess.domain.model.GameResult;
 
 /**
  * Una partida finalizada o interrumpida tal como se almacena: cuándo se guardó, cómo estaba y los códigos de jugada

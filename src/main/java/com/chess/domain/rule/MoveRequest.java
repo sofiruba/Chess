@@ -1,9 +1,9 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-
 import java.util.Objects;
+
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 
 public record MoveRequest(Position from, Position to, PieceType promotionType) {

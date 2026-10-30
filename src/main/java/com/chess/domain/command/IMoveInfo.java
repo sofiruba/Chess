@@ -1,9 +1,12 @@
 package com.chess.domain.command;
 
-import com.chess.domain.model.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.Position;
 
 /**
  * Vista de solo lectura de una jugada. Las reglas, los contadores de tablas y las consultas reciben este tipo, por

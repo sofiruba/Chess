@@ -1,6 +1,10 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.Position;
 
 
 public final class CheckDetector implements ICheckDetector {

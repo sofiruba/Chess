@@ -1,13 +1,15 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.IMoveCommandFactory;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 public final class MoveGenerator implements IMoveGenerator {
 

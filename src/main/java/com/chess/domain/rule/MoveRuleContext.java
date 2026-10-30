@@ -1,12 +1,10 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-
 import java.util.Objects;
 import java.util.Optional;
+
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.model.Board;
 
 /**
  * Lo que una regla necesita conocer sobre la posición actual. La última jugada es de solo lectura y está vacía antes

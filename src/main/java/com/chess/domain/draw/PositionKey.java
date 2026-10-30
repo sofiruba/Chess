@@ -1,13 +1,14 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-
-
 import java.util.Objects;
+
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.Position;
+import com.chess.domain.rule.CastlingRights;
 
 /**
  * Lo que hace que dos posiciones sean "iguales" para la regla de repetición: ubicación de las piezas, lado al que

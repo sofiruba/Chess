@@ -1,9 +1,10 @@
 package com.chess.domain.movement;
 
-import com.chess.domain.model.*;
-
-
 import java.util.List;
+
+import com.chess.domain.model.Board;
+import com.chess.domain.model.IMoveStrategy;
+import com.chess.domain.model.Position;
 
 public final class DiagonalMoveStrategy implements IMoveStrategy {
     @Override

@@ -1,12 +1,15 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.chess.domain.command.CastlingCommand;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.Position;
 
 /**
  * Enroque con el rey en la columna size / 2 y las torres en las esquinas. El rey siempre se mueve dos casillas, por

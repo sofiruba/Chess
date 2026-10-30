@@ -1,9 +1,12 @@
 package com.chess.domain.port;
 
-import com.chess.domain.model.*;
-
-
 import java.util.List;
+
+import com.chess.domain.model.Color;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Vista de solo lectura de una partida. Quien la recibe no puede modificarla.

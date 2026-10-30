@@ -1,13 +1,13 @@
 package com.chess.domain.state;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.draw.*;
-
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Position;
 
 public interface IGameEndEvaluator {
 

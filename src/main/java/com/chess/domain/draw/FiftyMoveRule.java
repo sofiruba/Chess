@@ -1,6 +1,6 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Board;
 
 /**
  * Tablas tras la cantidad indicada de jugadas de cada jugador (50 en ajedrez estándar) sin mover un peón ni capturar.

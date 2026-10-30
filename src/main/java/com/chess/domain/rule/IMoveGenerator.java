@@ -1,10 +1,11 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
 import java.util.List;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Sabe qué jugadas son legales en una posición y cómo construir el comando para una jugada.

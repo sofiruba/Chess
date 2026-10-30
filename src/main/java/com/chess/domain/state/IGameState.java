@@ -1,13 +1,12 @@
 package com.chess.domain.state;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-
-
 import java.util.List;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.model.Position;
+import com.chess.domain.rule.MoveRuleContext;
 
 /**
  * Estado de una partida: el turno de un jugador o una partida finalizada. Cada implementación cumple este contrato,

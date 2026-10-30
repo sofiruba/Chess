@@ -1,6 +1,6 @@
 package com.chess.domain.state;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Color;
 
 
 public interface ITurnStateFactory {

@@ -1,15 +1,14 @@
 package com.chess.domain.game;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-import com.chess.domain.draw.*;
-import com.chess.domain.state.*;
-
-
 import java.util.Objects;
+
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.draw.PositionKey;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.rule.CastlingRights;
+import com.chess.domain.state.IGameState;
 
 /**
  * Todo lo que cambia con cada jugada y debe recuperarse al deshacer: el estado de la partida, los derechos de

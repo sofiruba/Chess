@@ -1,7 +1,7 @@
 package com.chess.domain.port;
 
-import com.chess.domain.model.*;
-import com.chess.domain.port.*;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 
 /**

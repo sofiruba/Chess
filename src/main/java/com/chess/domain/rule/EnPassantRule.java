@@ -1,11 +1,14 @@
 package com.chess.domain.rule;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.command.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.chess.domain.command.EnPassantCommand;
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.Position;
 
 /**
  * La captura al paso se deriva únicamente de la última jugada, por lo que no necesita estado y se mantiene

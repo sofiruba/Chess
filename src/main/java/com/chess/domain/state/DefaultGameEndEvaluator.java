@@ -1,15 +1,16 @@
 package com.chess.domain.state;
 
-import com.chess.domain.model.*;
-
-import com.chess.domain.rule.*;
-import com.chess.domain.draw.*;
-
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.draw.IDrawRule;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.Position;
+import com.chess.domain.rule.ICheckDetector;
 
 /**
  * El jaque mate y las tablas por ahogado se evalúan primero (no hay jugadas legales); de lo contrario, cualquier

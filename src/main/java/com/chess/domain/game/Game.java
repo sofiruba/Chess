@@ -1,17 +1,25 @@
 package com.chess.domain.game;
 
-import com.chess.domain.model.*;
-import com.chess.domain.port.*;
-import com.chess.domain.command.*;
-
-import com.chess.domain.rule.*;
-
-import com.chess.domain.state.*;
-
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.GameResult;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.rule.ICheckDetector;
+import com.chess.domain.rule.IMoveCodeParser;
+import com.chess.domain.rule.IMoveGenerator;
+import com.chess.domain.rule.MoveRequest;
+import com.chess.domain.rule.MoveRuleContext;
+import com.chess.domain.state.IGameEndEvaluator;
+import com.chess.domain.state.IGameState;
 
 public final class Game implements IGameService {
 

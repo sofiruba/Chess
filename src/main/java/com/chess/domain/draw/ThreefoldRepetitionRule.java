@@ -1,6 +1,6 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Board;
 
 
 /**

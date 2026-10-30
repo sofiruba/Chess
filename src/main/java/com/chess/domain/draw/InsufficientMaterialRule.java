@@ -1,10 +1,13 @@
 package com.chess.domain.draw;
 
-import com.chess.domain.model.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 
 /**
  * Tablas cuando nadie puede dar jaque mate: R contra R, R+A contra R, R+C contra R, y reyes con alfiles que están

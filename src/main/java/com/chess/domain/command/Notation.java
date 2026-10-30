@@ -1,6 +1,6 @@
 package com.chess.domain.command;
 
-import com.chess.domain.model.*;
+import com.chess.domain.model.Position;
 
 
 final class Notation {
