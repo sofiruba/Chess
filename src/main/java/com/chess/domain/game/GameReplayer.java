@@ -8,8 +8,7 @@ import com.chess.domain.port.IGameReplayer;
 import com.chess.domain.port.IGameService;
 
 /**
- * Reproduce códigos de jugada en una partida creada por la fábrica indicada, para reconstruir una partida guardada
- * con las mismas reglas que una nueva.
+ * Replays move codes on a game created by the supplied factory.
  */
 public final class GameReplayer implements IGameReplayer {
 
@@ -21,20 +20,6 @@ public final class GameReplayer implements IGameReplayer {
 
     @Override
     public IGameService replay(List<String> moveCodes) {
-        Objects.requireNonNull(moveCodes, "moveCodes must not be null");
-        IGameService game = gameFactory.create();
-        for (int index = 0; index < moveCodes.size(); index++) {
-            replayMove(game, moveCodes.get(index), index + 1);
-        }
-        return game;
-    }
-
-    private void replayMove(IGameService game, String moveCode, int moveNumber) {
-        try {
-            game.playMoveCode(moveCode);
-        } catch (IllegalArgumentException exception) {
-            throw new IllegalArgumentException(
-                    "Move " + moveNumber + " cannot be replayed: '" + moveCode + "'", exception);
-        }
+        return gameFactory.create(moveCodes);
     }
 }

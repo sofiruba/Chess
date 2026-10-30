@@ -25,11 +25,16 @@ public record GameSnapshot(IGameState state, CastlingRights castlingRights, Draw
     }
 
     public static GameSnapshot initial(Board board, IGameState state) {
+        return initial(board, state, PieceRoles.standard());
+    }
+
+    public static GameSnapshot initial(Board board, IGameState state, PieceRoles roles) {
         Objects.requireNonNull(board, "board must not be null");
         Objects.requireNonNull(state, "state must not be null");
-        CastlingRights rights = CastlingRights.initial(board.size());
+        Objects.requireNonNull(roles, "roles must not be null");
+        CastlingRights rights = CastlingRights.initial(board.size(), roles);
         PositionKey start = PositionKey.initial(board, state.activePlayerColor(), rights);
-        return new GameSnapshot(state, rights, DrawCounters.initial(start));
+        return new GameSnapshot(state, rights, DrawCounters.initial(start, roles));
     }
 
     /**

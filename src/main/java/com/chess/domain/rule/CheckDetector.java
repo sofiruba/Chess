@@ -5,6 +5,16 @@ import com.chess.domain.model.*;
 
 public final class CheckDetector implements ICheckDetector {
 
+    private final PieceRoles roles;
+
+    public CheckDetector() {
+        this(PieceRoles.standard());
+    }
+
+    public CheckDetector(PieceRoles roles) {
+        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+    }
+
     @Override
     public boolean isInCheck(Board board, Color color) {
         return kingInCheckPosition(board, color) != null;
@@ -12,7 +22,7 @@ public final class CheckDetector implements ICheckDetector {
 
     @Override
     public Position kingInCheckPosition(Board board, Color color) {
-        Position kingPosition = board.findPiece(color, PieceType.KING);
+        Position kingPosition = board.findPiece(color, roles.king());
         if (kingPosition != null && isSquareAttacked(board, kingPosition, color.opposite())) {
             return kingPosition;
         }

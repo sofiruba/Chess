@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import com.chess.domain.port.GameRecord;
 import com.chess.domain.port.IGameFactory;
-import com.chess.domain.port.IGameReplayer;
 import com.chess.domain.port.IGameRepository;
 import com.chess.domain.port.IGameService;
 import com.chess.domain.model.PieceType;
@@ -20,7 +19,6 @@ import javafx.scene.layout.Pane;
 public final class ChessApplication {
     private final IGameRepository repository;
     private final IGameFactory gameFactory;
-    private final IGameReplayer gameReplayer;
     private final PieceSymbols symbols;
     private final IPromotionChooser promotionChooser;
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
@@ -34,12 +32,10 @@ public final class ChessApplication {
     public ChessApplication(
             IGameRepository repository,
             IGameFactory gameFactory,
-            IGameReplayer gameReplayer,
             PieceSymbols symbols,
             IPromotionChooser promotionChooser) {
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.gameFactory = Objects.requireNonNull(gameFactory, "gameFactory must not be null");
-        this.gameReplayer = Objects.requireNonNull(gameReplayer, "gameReplayer must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.promotionChooser = Objects.requireNonNull(promotionChooser, "promotionChooser must not be null");
     }
@@ -83,7 +79,7 @@ public final class ChessApplication {
     private void loadGame(GameRecord record) {
         IGameService loaded;
         try {
-            loaded = gameReplayer.replay(record.moveCodes());
+            loaded = gameFactory.create(record.moveCodes());
         } catch (IllegalArgumentException exception) {
             sidePanel.showMessage("La partida guardada está dañada y no se puede cargar.");
             return;

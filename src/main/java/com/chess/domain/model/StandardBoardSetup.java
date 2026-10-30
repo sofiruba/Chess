@@ -13,11 +13,17 @@ public final class StandardBoardSetup {
 
     private final IPieceFactory pieceFactory;
     private final List<PieceType> backRank;
+    private final PieceRoles roles;
 
     public StandardBoardSetup(IPieceFactory pieceFactory, List<PieceType> backRank) {
+        this(pieceFactory, backRank, PieceRoles.standard());
+    }
+
+    public StandardBoardSetup(IPieceFactory pieceFactory, List<PieceType> backRank, PieceRoles roles) {
         this.pieceFactory = Objects.requireNonNull(pieceFactory, "pieceFactory must not be null");
         Objects.requireNonNull(backRank, "backRank must not be null");
         this.backRank = List.copyOf(backRank);
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
         validateLayout();
     }
 
@@ -33,7 +39,7 @@ public final class StandardBoardSetup {
 
     private void placeColumn(Board board, int x, Color color, int backRankY, int pawnRankY) {
         board.placePiece(pieceFactory.create(color, backRank.get(x)), new Position(x, backRankY));
-        board.placePiece(pieceFactory.create(color, PieceType.PAWN), new Position(x, pawnRankY));
+        board.placePiece(pieceFactory.create(color, roles.pawn()), new Position(x, pawnRankY));
     }
 
     private void validateLayout() {
@@ -41,8 +47,8 @@ public final class StandardBoardSetup {
         if (size < MIN_SIZE) {
             throw new IllegalArgumentException("The back rank needs at least " + MIN_SIZE + " pieces but has " + size);
         }
-        int kingColumn = backRank.indexOf(PieceType.KING);
-        if (kingColumn < 0 || kingColumn != backRank.lastIndexOf(PieceType.KING)) {
+        int kingColumn = backRank.indexOf(roles.king());
+        if (kingColumn < 0 || kingColumn != backRank.lastIndexOf(roles.king())) {
             throw new IllegalArgumentException("The back rank must contain exactly one king");
         }
         if (kingColumn != size / 2) {

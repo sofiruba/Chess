@@ -39,19 +39,19 @@ public interface IMoveInfo {
         return List.of(new MovedPiece(movingPiece(), from()));
     }
 
-    /**
-     * La casilla que un peón salta con un avance doble, donde un peón enemigo podría capturarlo al paso.
-     * Vacía para cualquier otra jugada.
-     */
     default Optional<Position> enPassantSquare() {
-        if (!isPawnDoubleStep()) {
+        return enPassantSquare(PieceRoles.standard());
+    }
+
+    default Optional<Position> enPassantSquare(PieceRoles roles) {
+        if (!isPawnDoubleStep(roles)) {
             return Optional.empty();
         }
         return Optional.of(new Position(to().x(), (from().y() + to().y()) / 2));
     }
 
-    private boolean isPawnDoubleStep() {
-        return movingPiece().type() == PieceType.PAWN && Math.abs(to().y() - from().y()) == 2;
+    private boolean isPawnDoubleStep(PieceRoles roles) {
+        return movingPiece().type() == roles.pawn() && Math.abs(to().y() - from().y()) == 2;
     }
 
     record MovedPiece(Piece piece, Position from) {

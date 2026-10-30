@@ -11,13 +11,16 @@ public final class PromotionRule implements IMoveRule {
 
     private final IPieceFactory pieceFactory;
     private final List<PieceType> promotionTypes;
+    private final PieceRoles roles;
 
-    /**
-     * @param promotionTypes piezas permitidas; se usa la primera cuando el jugador no elige
-     */
     public PromotionRule(IPieceFactory pieceFactory, List<PieceType> promotionTypes) {
+        this(pieceFactory, promotionTypes, PieceRoles.standard());
+    }
+
+    public PromotionRule(IPieceFactory pieceFactory, List<PieceType> promotionTypes, PieceRoles roles) {
         this.pieceFactory = Objects.requireNonNull(pieceFactory, "pieceFactory must not be null");
         Objects.requireNonNull(promotionTypes, "promotionTypes must not be null");
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
         if (promotionTypes.isEmpty()) {
             throw new IllegalArgumentException("At least one promotion type is required");
         }
@@ -45,7 +48,7 @@ public final class PromotionRule implements IMoveRule {
     public boolean requiresPromotion(MoveRuleContext context, Position from, Position to) {
         Piece piece = context.board().pieceAt(from);
         return piece != null
-                && piece.type() == PieceType.PAWN
+                && piece.type() == roles.pawn()
                 && to.y() == lastRank(context.board(), piece.color());
     }
 

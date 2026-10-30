@@ -2,7 +2,6 @@ package com.chess;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
-import com.chess.domain.game.GameReplayer;
 import com.chess.persistence.SqliteGameRepository;
 import com.chess.ui.ChessApplication;
 import com.chess.ui.PieceSymbols;
@@ -22,7 +21,6 @@ public final class Main extends Application {
         ChessApplication application = new ChessApplication(
                 repository,
                 gameFactory,
-                new GameReplayer(gameFactory),
                 symbols,
                 new PromotionDialog(symbols));
         stage.setTitle("Ajedrez");

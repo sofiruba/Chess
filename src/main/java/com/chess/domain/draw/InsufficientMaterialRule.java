@@ -13,13 +13,23 @@ import java.util.List;
  */
 public final class InsufficientMaterialRule implements IDrawRule {
 
+    private final PieceRoles roles;
+
+    public InsufficientMaterialRule() {
+        this(PieceRoles.standard());
+    }
+
+    public InsufficientMaterialRule(PieceRoles roles) {
+        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+    }
+
     @Override
     public boolean isDraw(Board board, DrawCounters counters) {
         List<Position> minorOrOther = nonKingPositions(board);
         if (minorOrOther.isEmpty()) {
             return true;
         }
-        if (minorOrOther.size() == 1 && isType(board, minorOrOther.get(0), PieceType.KNIGHT)) {
+        if (minorOrOther.size() == 1 && isType(board, minorOrOther.get(0), roles.knight())) {
             return true;
         }
         return allBishopsOnSameColor(board, minorOrOther);
@@ -29,7 +39,7 @@ public final class InsufficientMaterialRule implements IDrawRule {
         List<Position> result = new ArrayList<>();
         for (Position position : board.positions()) {
             Piece piece = board.pieceAt(position);
-            if (piece != null && piece.type() != PieceType.KING) {
+            if (piece != null && piece.type() != roles.king()) {
                 result.add(position);
             }
         }
@@ -39,7 +49,7 @@ public final class InsufficientMaterialRule implements IDrawRule {
     private boolean allBishopsOnSameColor(Board board, List<Position> positions) {
         int firstSquareColor = squareColor(positions.get(0));
         for (Position position : positions) {
-            if (!isType(board, position, PieceType.BISHOP) || squareColor(position) != firstSquareColor) {
+            if (!isType(board, position, roles.bishop()) || squareColor(position) != firstSquareColor) {
                 return false;
             }
         }

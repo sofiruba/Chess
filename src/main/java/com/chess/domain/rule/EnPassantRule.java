@@ -13,6 +13,16 @@ import java.util.Optional;
  */
 public final class EnPassantRule implements IMoveRule {
 
+    private final PieceRoles roles;
+
+    public EnPassantRule() {
+        this(PieceRoles.standard());
+    }
+
+    public EnPassantRule(PieceRoles roles) {
+        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+    }
+
     @Override
     public List<Position> extraMoves(MoveRuleContext context, Position from) {
         Position target = enPassantTarget(context, from);
@@ -31,7 +41,7 @@ public final class EnPassantRule implements IMoveRule {
 
     private Position enPassantTarget(MoveRuleContext context, Position from) {
         Piece pawn = context.board().pieceAt(from);
-        if (pawn == null || pawn.type() != PieceType.PAWN) {
+        if (pawn == null || pawn.type() != roles.pawn()) {
             return null;
         }
         return context.lastMove().flatMap(lastMove -> capturableSquare(lastMove, pawn, from)).orElse(null);
@@ -39,7 +49,7 @@ public final class EnPassantRule implements IMoveRule {
 
     private Optional<Position> capturableSquare(IMoveInfo lastMove, Piece pawn, Position from) {
         boolean capturable = lastMove.movingColor() != pawn.color() && isBeside(lastMove.to(), from);
-        return capturable ? lastMove.enPassantSquare() : Optional.empty();
+        return capturable ? lastMove.enPassantSquare(roles) : Optional.empty();
     }
 
     private boolean isBeside(Position enemyPawn, Position from) {

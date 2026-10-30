@@ -35,6 +35,7 @@ import com.chess.domain.game.MoveHistory;
 import com.chess.domain.movement.OneStepMoveStrategy;
 import com.chess.domain.movement.PawnMoveStrategy;
 import com.chess.domain.model.PieceFactory;
+import com.chess.domain.model.PieceRoles;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.rule.PromotionRule;
 import com.chess.domain.model.StandardBoardSetup;
@@ -47,15 +48,20 @@ import com.chess.domain.state.TurnStateFactory;
  */
 public final class StandardGameFactory implements IGameFactory {
 
-    private static final List<PieceType> STANDARD_PROMOTION_TYPES =
-            List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT);
+    private static final PieceRoles STANDARD_ROLES = PieceRoles.standard();
+    private static final List<PieceType> STANDARD_PROMOTION_TYPES = List.of(
+            PieceType.QUEEN,
+            STANDARD_ROLES.rook(),
+            STANDARD_ROLES.bishop(),
+            STANDARD_ROLES.knight());
     private static final int FIFTY_MOVE_LIMIT = 50;
 
     private final List<IMoveRule> additionalRules;
     private final List<PieceType> promotionTypes;
+    private final PieceRoles roles;
     private final IPieceFactory pieceFactory;
     private final StandardBoardSetup boardSetup;
-    private final ICheckDetector checkDetector = new CheckDetector();
+    private final ICheckDetector checkDetector;
     private final IMoveGenerator moveGenerator;
     private final ITurnStateFactory stateFactory;
 
@@ -72,7 +78,13 @@ public final class StandardGameFactory implements IGameFactory {
             Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
             List<PieceType> backRank,
             List<IMoveRule> additionalRules) {
-        this(commandFactory, pieceDefinitions, backRank, additionalRules, STANDARD_PROMOTION_TYPES);
+        this(
+                commandFactory,
+                pieceDefinitions,
+                backRank,
+                additionalRules,
+                STANDARD_PROMOTION_TYPES,
+                STANDARD_ROLES);
     }
 
     /**
@@ -86,36 +98,62 @@ public final class StandardGameFactory implements IGameFactory {
             List<PieceType> backRank,
             List<IMoveRule> additionalRules,
             List<PieceType> promotionTypes) {
+        this(
+                commandFactory,
+                pieceDefinitions,
+                backRank,
+                additionalRules,
+                promotionTypes,
+                STANDARD_ROLES);
+    }
+
+    public StandardGameFactory(
+            IMoveCommandFactory commandFactory,
+            Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
+            List<PieceType> backRank,
+            List<IMoveRule> additionalRules,
+            List<PieceType> promotionTypes,
+            PieceRoles roles) {
         Objects.requireNonNull(commandFactory, "commandFactory must not be null");
         this.additionalRules = List.copyOf(Objects.requireNonNull(additionalRules, "additionalRules must not be null"));
         this.promotionTypes = List.copyOf(Objects.requireNonNull(promotionTypes, "promotionTypes must not be null"));
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
         this.pieceFactory = new PieceFactory(pieceDefinitions);
-        this.boardSetup = new StandardBoardSetup(pieceFactory, backRank);
+        this.boardSetup = new StandardBoardSetup(pieceFactory, backRank, roles);
+        this.checkDetector = new CheckDetector(roles);
         this.moveGenerator = new MoveGenerator(commandFactory, checkDetector, moveRules());
         this.stateFactory = new TurnStateFactory(moveGenerator);
     }
 
     public static Map<PieceType, List<IMoveStrategy>> standardPieceDefinitions() {
+        return standardPieceDefinitions(STANDARD_ROLES);
+    }
+
+    public static Map<PieceType, List<IMoveStrategy>> standardPieceDefinitions(PieceRoles roles) {
         Map<PieceType, List<IMoveStrategy>> definitions = new LinkedHashMap<>();
-        definitions.put(PieceType.KING, List.of(new OneStepMoveStrategy()));
+        definitions.put(roles.king(), List.of(new OneStepMoveStrategy()));
         definitions.put(PieceType.QUEEN, List.of(new LinearMoveStrategy(), new DiagonalMoveStrategy()));
-        definitions.put(PieceType.ROOK, List.of(new LinearMoveStrategy()));
-        definitions.put(PieceType.BISHOP, List.of(new DiagonalMoveStrategy()));
-        definitions.put(PieceType.KNIGHT, List.of(new LShapeMoveStrategy()));
-        definitions.put(PieceType.PAWN, List.of(new PawnMoveStrategy()));
+        definitions.put(roles.rook(), List.of(new LinearMoveStrategy()));
+        definitions.put(roles.bishop(), List.of(new DiagonalMoveStrategy()));
+        definitions.put(roles.knight(), List.of(new LShapeMoveStrategy()));
+        definitions.put(roles.pawn(), List.of(new PawnMoveStrategy()));
         return definitions;
     }
 
     public static List<PieceType> standardBackRank() {
+        return standardBackRank(STANDARD_ROLES);
+    }
+
+    public static List<PieceType> standardBackRank(PieceRoles roles) {
         return List.of(
-                PieceType.ROOK,
-                PieceType.KNIGHT,
-                PieceType.BISHOP,
+                roles.rook(),
+                roles.knight(),
+                roles.bishop(),
                 PieceType.QUEEN,
-                PieceType.KING,
-                PieceType.BISHOP,
-                PieceType.KNIGHT,
-                PieceType.ROOK);
+                roles.king(),
+                roles.bishop(),
+                roles.knight(),
+                roles.rook());
     }
 
     @Override
@@ -126,7 +164,7 @@ public final class StandardGameFactory implements IGameFactory {
     public IGameService create(Board board, Color firstPlayer) {
         return new Game(
                 board,
-                GameSnapshot.initial(board, stateFactory.forColor(firstPlayer)),
+                GameSnapshot.initial(board, stateFactory.forColor(firstPlayer), roles),
                 checkDetector,
                 new MoveHistory(),
                 new DefaultGameEndEvaluator(checkDetector, stateFactory, drawRules()),
@@ -136,16 +174,16 @@ public final class StandardGameFactory implements IGameFactory {
 
     private List<IMoveRule> moveRules() {
         List<IMoveRule> rules = new ArrayList<>();
-        rules.add(new CastlingRule());
-        rules.add(new EnPassantRule());
-        rules.add(new PromotionRule(pieceFactory, promotionTypes));
+        rules.add(new CastlingRule(roles));
+        rules.add(new EnPassantRule(roles));
+        rules.add(new PromotionRule(pieceFactory, promotionTypes, roles));
         rules.addAll(additionalRules);
         return rules;
     }
 
     private List<IDrawRule> drawRules() {
         return List.of(
-                new InsufficientMaterialRule(),
+                new InsufficientMaterialRule(roles),
                 new ThreefoldRepetitionRule(),
                 new FiftyMoveRule(FIFTY_MOVE_LIMIT));
     }

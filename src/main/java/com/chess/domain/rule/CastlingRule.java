@@ -17,6 +17,16 @@ public final class CastlingRule implements IMoveRule {
     private static final int[] DIRECTIONS = {-1, 1};
     private static final int MIN_KING_ROOK_DISTANCE = 3;
 
+    private final PieceRoles roles;
+
+    public CastlingRule() {
+        this(PieceRoles.standard());
+    }
+
+    public CastlingRule(PieceRoles roles) {
+        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+    }
+
     @Override
     public List<Position> extraMoves(MoveRuleContext context, Position from) {
         Board board = context.board();
@@ -37,7 +47,7 @@ public final class CastlingRule implements IMoveRule {
     public boolean appliesTo(MoveRuleContext context, MoveRequest request) {
         Piece piece = context.board().pieceAt(request.from());
         return piece != null
-                && piece.type() == PieceType.KING
+                && piece.type() == roles.king()
                 && Math.abs(request.to().x() - request.from().x()) == 2;
     }
 
@@ -48,7 +58,7 @@ public final class CastlingRule implements IMoveRule {
 
     private boolean isKingOnHomeSquare(Board board, Piece piece, Position position) {
         return piece != null
-                && piece.type() == PieceType.KING
+                && piece.type() == roles.king()
                 && position.x() == board.size() / 2
                 && position.y() == homeRank(board, piece.color());
     }
@@ -74,7 +84,7 @@ public final class CastlingRule implements IMoveRule {
 
     private boolean hasOwnRook(Board board, Color color, Position square) {
         Piece piece = board.pieceAt(square);
-        return piece != null && piece.type() == PieceType.ROOK && piece.color() == color;
+        return piece != null && piece.type() == roles.rook() && piece.color() == color;
     }
 
     private boolean isPathClear(Board board, Position king, Position rookSquare, int direction) {

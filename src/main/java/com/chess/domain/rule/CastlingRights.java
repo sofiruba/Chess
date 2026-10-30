@@ -10,10 +10,15 @@ public record CastlingRights(
         boolean whiteKingSide,
         boolean whiteQueenSide,
         boolean blackKingSide,
-        boolean blackQueenSide) {
+        boolean blackQueenSide,
+        PieceRoles roles) {
 
     public static CastlingRights initial(int boardSize) {
-        return new CastlingRights(boardSize, true, true, true, true);
+        return initial(boardSize, PieceRoles.standard());
+    }
+
+    public static CastlingRights initial(int boardSize, PieceRoles roles) {
+        return new CastlingRights(boardSize, true, true, true, true, roles);
     }
 
     public boolean canCastle(Color color, int direction) {
@@ -36,7 +41,7 @@ public record CastlingRights(
     }
 
     private CastlingRights afterPieceMoved(Piece piece, Position from) {
-        if (piece.type() == PieceType.KING) {
+        if (piece.type() == roles.king()) {
             return withoutKing(piece.color());
         }
         if (isHomeRook(piece, from)) {
@@ -47,9 +52,9 @@ public record CastlingRights(
 
     private CastlingRights withoutKing(Color color) {
         if (color == Color.WHITE) {
-            return new CastlingRights(boardSize, false, false, blackKingSide, blackQueenSide);
+            return new CastlingRights(boardSize, false, false, blackKingSide, blackQueenSide, roles);
         }
-        return new CastlingRights(boardSize, whiteKingSide, whiteQueenSide, false, false);
+        return new CastlingRights(boardSize, whiteKingSide, whiteQueenSide, false, false, roles);
     }
 
     private CastlingRights withoutRook(Color color, int file) {
@@ -60,19 +65,21 @@ public record CastlingRights(
                     whiteKingSide && queenSide,
                     whiteQueenSide && !queenSide,
                     blackKingSide,
-                    blackQueenSide);
+                    blackQueenSide,
+                    roles);
         }
         return new CastlingRights(
                 boardSize,
                 whiteKingSide,
                 whiteQueenSide,
                 blackKingSide && queenSide,
-                blackQueenSide && !queenSide);
+                blackQueenSide && !queenSide,
+                roles);
     }
 
     private boolean isHomeRook(Piece piece, Position position) {
         int lastIndex = boardSize - 1;
-        return piece.type() == PieceType.ROOK
+        return piece.type() == roles.rook()
                 && (position.x() == 0 || position.x() == lastIndex)
                 && position.y() == (piece.color() == Color.WHITE ? 0 : lastIndex);
     }

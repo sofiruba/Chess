@@ -16,7 +16,11 @@ import java.util.Objects;
  * y cuántas veces ocurrió cada posición. Como {@link CastlingRights}, se crea una instancia nueva después de cada
  * jugada y la anterior se conserva en el historial, para que deshacer y rehacer sean consistentes.
  */
-public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPositions, PositionKey current) {
+public record DrawCounters(
+        int halfMoveClock,
+        Map<PositionKey, Integer> seenPositions,
+        PositionKey current,
+        PieceRoles roles) {
 
     public DrawCounters {
         if (halfMoveClock < 0) {
@@ -24,11 +28,16 @@ public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPosi
         }
         Objects.requireNonNull(seenPositions, "seenPositions must not be null");
         Objects.requireNonNull(current, "current must not be null");
+        Objects.requireNonNull(roles, "roles must not be null");
         seenPositions = Map.copyOf(seenPositions);
     }
 
     public static DrawCounters initial(PositionKey position) {
-        return new DrawCounters(0, Map.of(position, 1), position);
+        return initial(position, PieceRoles.standard());
+    }
+
+    public static DrawCounters initial(PositionKey position, PieceRoles roles) {
+        return new DrawCounters(0, Map.of(position, 1), position, roles);
     }
 
     /**
@@ -38,7 +47,7 @@ public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPosi
     public DrawCounters after(IMoveInfo move, PositionKey newPosition) {
         Map<PositionKey, Integer> updated = new HashMap<>(seenPositions);
         updated.merge(newPosition, 1, Integer::sum);
-        return new DrawCounters(nextHalfMoveClock(move), updated, newPosition);
+        return new DrawCounters(nextHalfMoveClock(move), updated, newPosition, roles);
     }
 
     public int timesCurrentPositionSeen() {
@@ -50,6 +59,6 @@ public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPosi
     }
 
     private boolean isIrreversible(IMoveInfo move) {
-        return move.movingPiece().type() == PieceType.PAWN || move.capturedPiece() != null;
+        return move.movingPiece().type() == roles.pawn() || move.capturedPiece() != null;
     }
 }
