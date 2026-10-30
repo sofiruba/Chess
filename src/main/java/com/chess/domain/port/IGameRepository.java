@@ -2,7 +2,8 @@ package com.chess.domain.port;
 
 
 /**
- * Puerto de salida para el historial de partidas. Decisión: solo se almacena el historial de partidas; no hay usuarios.
+ * Puerto de salida para el historial de partidas. Decisión: solo se almacena el historial de partidas; no hay
+ * usuarios.
  */
 public interface IGameRepository {
     /**

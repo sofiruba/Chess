@@ -12,7 +12,10 @@ import com.chess.domain.model.Position;
  */
 public interface IMoveRule {
 
-    /** Destinos que esta regla pone a disposición de la pieza en {@code from}, antes de filtrar por seguridad del rey. */
+    /**
+     * Destinos que esta regla pone a disposición de la pieza en {@code from}, antes de filtrar por seguridad del
+     * rey.
+     */
     List<Position> extraMoves(MoveRuleContext context, Position from);
 
     /** Es verdadero cuando la jugada solicitada debe ejecutarse con el comando de esta regla y no con uno simple. */

@@ -10,7 +10,8 @@ import com.chess.domain.model.PieceType;
 
 /**
  * Símbolo Unicode de cada pieza, perteneciente a la interfaz. Una pieza sin símbolo registrado se dibuja con la letra
- * de su código de notación (mayúscula para blancas, minúscula para negras), por lo que una pieza nueva siempre es visible.
+ * de su código de notación (mayúscula para blancas, minúscula para negras), por lo que una pieza nueva siempre es
+ * visible.
  */
 public final class PieceSymbols {
 

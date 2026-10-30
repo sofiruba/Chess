@@ -90,7 +90,8 @@ public final class StandardGameFactory implements IGameFactory {
     /**
      * @param pieceDefinitions registro de tipos de pieza a estrategias de movimiento
      * @param backRank piezas de la fila trasera desde la columna 0; su longitud es el tamaño del tablero
-     * @param promotionTypes piezas en las que puede convertirse un peón, en el orden ofrecido; la primera es predeterminada
+     * @param promotionTypes piezas en las que puede convertirse un peón, en el orden ofrecido; la primera es la
+     *     predeterminada
      */
     public StandardGameFactory(
             IMoveCommandFactory commandFactory,

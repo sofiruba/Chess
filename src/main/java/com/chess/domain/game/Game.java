@@ -113,6 +113,12 @@ public final class Game implements IGameService {
     }
 
     @Override
+    public boolean belongsToActivePlayer(Position position) {
+        Piece piece = board.pieceAt(position);
+        return piece != null && piece.color() == turn();
+    }
+
+    @Override
     public boolean isInCheck(Color color) {
         return checkDetector.isInCheck(board, color);
     }

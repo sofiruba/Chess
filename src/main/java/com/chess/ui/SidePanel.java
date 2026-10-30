@@ -1,16 +1,14 @@
 package com.chess.ui;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.chess.domain.model.Color;
-import com.chess.domain.port.GameRecord;
 import com.chess.domain.model.GameResult;
-import com.chess.domain.port.IGameRepository;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameQueries;
 import com.chess.domain.port.SavedGames;
 
@@ -26,7 +24,7 @@ public final class SidePanel {
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
 
-    private final IGameRepository repository;
+    private final IGameArchive archive;
     private final IGameQueries game;
     private final PieceSymbols symbols;
     private final SavedGameTracker savedGameTracker;
@@ -39,12 +37,12 @@ public final class SidePanel {
     private final ListView<GameRecord> savedGames = new ListView<>();
 
     public SidePanel(
-            IGameRepository repository,
+            IGameArchive archive,
             IGameQueries game,
             PieceSymbols symbols,
             SavedGameTracker savedGameTracker,
             Consumer<GameRecord> loadHandler) {
-        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.game = Objects.requireNonNull(game, "game must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
@@ -102,14 +100,14 @@ public final class SidePanel {
     }
 
     private void save() {
-        List<String> moveCodes = game.moveCodes();
+        GameRecord saved;
         try {
-            repository.save(GameRecord.unsaved(Instant.now(), game.result(), moveCodes));
+            saved = archive.save(game);
         } catch (IllegalStateException exception) {
             status.setText("No se pudo guardar la partida.");
             return;
         }
-        savedGameTracker.markSaved(moveCodes);
+        savedGameTracker.markSaved(saved.moveCodes());
         updateSaveButton();
         refreshSavedGames();
         status.setText("Partida guardada");
@@ -130,7 +128,7 @@ public final class SidePanel {
 
     private void refreshSavedGames() {
         try {
-            SavedGames saved = repository.findAll();
+            SavedGames saved = archive.findAll();
             savedGames.getItems().setAll(saved.records());
             showUnreadableNotice(saved.unreadableRows());
         } catch (IllegalStateException exception) {

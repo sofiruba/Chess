@@ -7,8 +7,8 @@ import com.chess.domain.command.IMoveInfo;
 import com.chess.domain.model.Board;
 
 /**
- * Lo que una regla necesita conocer sobre la posición actual. La última jugada es de solo lectura y está vacía antes
- * de la primera jugada.
+ * Lo que una regla necesita conocer sobre la posición actual. La última jugada es de solo lectura y está vacía
+ * antes de la primera jugada.
  */
 public record MoveRuleContext(
         Board board,

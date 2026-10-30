@@ -10,7 +10,8 @@ import com.chess.domain.model.Position;
 
 /**
  * Vista de solo lectura de una jugada. Las reglas, los contadores de tablas y las consultas reciben este tipo, por
- * lo que pueden inspeccionar la última jugada, pero no ejecutarla ni deshacerla; esa facultad pertenece a {@link ICommand}.
+ * lo que pueden inspeccionar la última jugada, pero no ejecutarla ni deshacerla; esa facultad pertenece a
+ * {@link ICommand}.
  */
 public interface IMoveInfo {
 

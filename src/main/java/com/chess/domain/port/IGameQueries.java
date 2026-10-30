@@ -15,6 +15,10 @@ public interface IGameQueries {
     int boardSize();
     Piece pieceAt(Position position);
     Color turn();
+
+    /** Es verdadero cuando hay una pieza en la casilla y es del jugador que debe mover. */
+    boolean belongsToActivePlayer(Position position);
+
     boolean isInCheck(Color color);
     Position kingInCheckPosition();
     List<Position> legalMoves(Position from);

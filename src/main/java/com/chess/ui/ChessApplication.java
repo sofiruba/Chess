@@ -3,12 +3,12 @@ package com.chess.ui;
 import java.util.List;
 import java.util.Objects;
 
-import com.chess.domain.port.GameRecord;
-import com.chess.domain.port.IGameFactory;
-import com.chess.domain.port.IGameRepository;
-import com.chess.domain.port.IGameService;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
+import com.chess.domain.port.GameRecord;
+import com.chess.domain.port.IGameArchive;
+import com.chess.domain.port.IGameFactory;
+import com.chess.domain.port.IGameService;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 public final class ChessApplication {
-    private final IGameRepository repository;
+    private final IGameArchive archive;
     private final IGameFactory gameFactory;
     private final PieceSymbols symbols;
     private final IPromotionChooser promotionChooser;
@@ -30,11 +30,11 @@ public final class ChessApplication {
     private List<Position> legalMoves = List.of();
 
     public ChessApplication(
-            IGameRepository repository,
+            IGameArchive archive,
             IGameFactory gameFactory,
             PieceSymbols symbols,
             IPromotionChooser promotionChooser) {
-        this.repository = Objects.requireNonNull(repository, "repository must not be null");
+        this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.gameFactory = Objects.requireNonNull(gameFactory, "gameFactory must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.promotionChooser = Objects.requireNonNull(promotionChooser, "promotionChooser must not be null");
@@ -68,7 +68,7 @@ public final class ChessApplication {
         selected = null;
         legalMoves = List.of();
         boardView = new BoardView(game, symbols, this::click);
-        sidePanel = new SidePanel(repository, game, symbols, savedGameTracker, this::loadGame);
+        sidePanel = new SidePanel(archive, game, symbols, savedGameTracker, this::loadGame);
     }
 
     private void showGame() {
@@ -103,7 +103,7 @@ public final class ChessApplication {
                 message = exception.getMessage();
                 clearSelection();
             }
-        } else if (game.pieceAt(position) != null && game.pieceAt(position).color() == game.turn()) {
+        } else if (game.belongsToActivePlayer(position)) {
             select(position);
         } else {
             message = "Destino inválido: la pieza no puede moverse allí.";
@@ -116,7 +116,7 @@ public final class ChessApplication {
     }
 
     private boolean select(Position position) {
-        if (game.pieceAt(position) == null || game.pieceAt(position).color() != game.turn()) {
+        if (!game.belongsToActivePlayer(position)) {
             return false;
         }
         selected = position;
