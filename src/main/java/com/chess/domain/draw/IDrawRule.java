@@ -3,14 +3,14 @@ package com.chess.domain.draw;
 import com.chess.domain.model.*;
 
 /**
- * A condition that ends the game in a draw. Each rule is a class of its own and is registered in the wiring,
- * so adding one never touches the evaluator.
+ * Una condición que termina la partida en tablas. Cada regla es una clase propia y se registra en la configuración,
+ * por lo que agregar una nunca modifica el evaluador.
  */
 public interface IDrawRule {
 
     /**
-     * @param board the position right after the last move
-     * @param counters the 50-move clock and the positions seen so far, already updated for that move
+     * @param board la posición justo después de la última jugada
+     * @param counters el contador de 50 jugadas y las posiciones vistas hasta ahora, ya actualizados para esa jugada
      */
     boolean isDraw(Board board, DrawCounters counters);
 }

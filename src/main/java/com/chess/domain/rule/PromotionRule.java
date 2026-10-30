@@ -13,7 +13,7 @@ public final class PromotionRule implements IMoveRule {
     private final List<PieceType> promotionTypes;
 
     /**
-     * @param promotionTypes allowed pieces; the first one is used when the player does not choose
+     * @param promotionTypes piezas permitidas; se usa la primera cuando el jugador no elige
      */
     public PromotionRule(IPieceFactory pieceFactory, List<PieceType> promotionTypes) {
         this.pieceFactory = Objects.requireNonNull(pieceFactory, "pieceFactory must not be null");

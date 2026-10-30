@@ -10,32 +10,31 @@ import com.chess.domain.rule.*;
 import java.util.List;
 
 /**
- * State of a game: either a player's turn or a finished game. Every implementation honors this contract, so the game
- * can use any of them without asking which one it holds.
+ * Estado de una partida: el turno de un jugador o una partida finalizada. Cada implementación cumple este contrato,
+ * por lo que la partida puede usar cualquiera sin preguntar cuál tiene.
  */
 public interface IGameState {
 
-    /** The player to move, or the player who would have moved when the game is over. Never null. */
+    /** El jugador que debe mover, o quien habría movido al terminar la partida. Nunca null. */
     Color activePlayerColor();
 
-    /** True exactly when {@link #result()} is not {@link GameResult#IN_PROGRESS}. */
+    /** Es verdadero exactamente cuando {@link #result()} no es {@link GameResult#IN_PROGRESS}. */
     boolean isFinished();
 
     GameResult result();
 
     /**
-     * Executes the move and returns the state that follows it.
+     * Ejecuta la jugada y devuelve el estado que la sigue.
      * <ul>
-     *   <li>A turn state throws {@link NullPointerException} for a null move and
-     *   {@link IllegalArgumentException} when the move belongs to the other player. In both cases the move is not
-     *   executed.</li>
-     *   <li>A finished state throws {@link IllegalStateException} for any move and never executes it.</li>
+     *   <li>Un estado de turno lanza {@link NullPointerException} para una jugada null y
+     *   {@link IllegalArgumentException} cuando la jugada pertenece al otro jugador. En ambos casos no se ejecuta.</li>
+     *   <li>Un estado finalizado lanza {@link IllegalStateException} para cualquier jugada y nunca la ejecuta.</li>
      * </ul>
      */
     IGameState handleMove(ICommand move);
 
     /**
-     * Legal destinations for the piece at {@code from}. Never null; empty when the game is over.
+     * Destinos legales de la pieza en {@code from}. Nunca null; vacío cuando la partida terminó.
      */
     List<Position> legalMoves(MoveRuleContext context, Position from);
 }

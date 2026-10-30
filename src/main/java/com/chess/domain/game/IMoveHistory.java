@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface IMoveHistory {
 
     /**
-     * @param previous the snapshot before the command was executed; undo gives it back
+     * @param previous la instantánea anterior a ejecutar el comando; deshacer la recupera
      */
     void record(ICommand command, GameSnapshot previous);
 
@@ -18,10 +18,10 @@ public interface IMoveHistory {
 
     Entry redoLast();
 
-    /** Read-only view of the last executed move; empty before the first move. */
+    /** Vista de solo lectura de la última jugada ejecutada; vacía antes de la primera jugada. */
     Optional<IMoveInfo> lastMove();
 
-    /** Read-only view of the executed moves, oldest first. */
+    /** Vista de solo lectura de las jugadas ejecutadas, primero las más antiguas. */
     List<IMoveInfo> moves();
 
     record Entry(ICommand command, GameSnapshot previous) {

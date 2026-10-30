@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Read-only view of a move. Rules, draw counters and queries receive this type, so they can inspect the last
- * move but cannot execute or undo it; that power belongs to {@link ICommand}.
+ * Vista de solo lectura de una jugada. Las reglas, los contadores de tablas y las consultas reciben este tipo, por
+ * lo que pueden inspeccionar la última jugada, pero no ejecutarla ni deshacerla; esa facultad pertenece a {@link ICommand}.
  */
 public interface IMoveInfo {
 
@@ -19,12 +19,13 @@ public interface IMoveInfo {
 
     Piece capturedPiece();
 
-    /** Text shown to the player. It is not meant to rebuild a move, use {@link #moveCode()} for that. */
+    /** Texto mostrado al jugador. No sirve para reconstruir una jugada; para eso se usa {@link #moveCode()}. */
     String notation();
 
     /**
-     * Code used to persist and replay a move: origin, destination and an optional promotion letter ("e1g1",
-     * "e7e8q"). Castling is the king move and en passant is the pawn move, so the code is enough to rebuild them.
+     * Código usado para persistir y reproducir una jugada: origen, destino y una letra de promoción opcional
+     * ("e1g1", "e7e8q"). El enroque es el movimiento del rey y la captura al paso es el del peón, por lo que el
+     * código basta para reconstruirlos.
      */
     default String moveCode() {
         return Notation.square(from()) + Notation.square(to());
@@ -39,8 +40,8 @@ public interface IMoveInfo {
     }
 
     /**
-     * The square a pawn jumped over with a double step, which is where an enemy pawn could capture it en passant.
-     * Empty for any other move.
+     * La casilla que un peón salta con un avance doble, donde un peón enemigo podría capturarlo al paso.
+     * Vacía para cualquier otra jugada.
      */
     default Optional<Position> enPassantSquare() {
         if (!isPawnDoubleStep()) {

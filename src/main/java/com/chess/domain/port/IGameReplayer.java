@@ -4,15 +4,15 @@ package com.chess.domain.port;
 import java.util.List;
 
 /**
- * Rebuilds a game from the move codes that were stored for it. It exists so that the UI can load a saved game
- * without knowing how a game is created or how move codes are parsed.
+ * Reconstruye una partida a partir de los códigos de jugada almacenados. Existe para que la interfaz pueda cargar una
+ * partida guardada sin conocer cómo se crea una partida ni cómo se interpretan los códigos de jugada.
  */
 public interface IGameReplayer {
 
     /**
-     * @param moveCodes the move codes in the order they were played; an empty list gives a new game
-     * @return a game in which all the moves have been played and can be undone and redone
-     * @throws IllegalArgumentException if a move code is malformed or is not legal at its turn
+     * @param moveCodes los códigos de jugada en el orden en que se jugaron; una lista vacía crea una partida nueva
+     * @return una partida en la que se jugaron todas las jugadas y que se puede deshacer y rehacer
+     * @throws IllegalArgumentException si un código de jugada tiene un formato incorrecto o no es legal en su turno
      */
     IGameService replay(List<String> moveCodes);
 }

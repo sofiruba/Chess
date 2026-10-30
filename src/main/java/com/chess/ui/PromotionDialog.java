@@ -13,8 +13,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
 /**
- * Shows one button per promotion option. The options come from the game and the symbols from {@link PieceSymbols},
- * so a new promotion piece needs no change here.
+ * Muestra un botón por cada opción de promoción. Las opciones provienen de la partida y los símbolos de
+ * {@link PieceSymbols}, por lo que una nueva pieza de promoción no requiere cambios aquí.
  */
 public final class PromotionDialog implements IPromotionChooser {
 

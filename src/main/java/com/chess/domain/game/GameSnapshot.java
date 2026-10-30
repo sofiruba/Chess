@@ -12,8 +12,9 @@ import com.chess.domain.state.*;
 import java.util.Objects;
 
 /**
- * Everything that changes with each move and has to come back on undo: the game state, the castling rights and the
- * draw counters. It is immutable, so the history keeps one per move and undo only has to restore it.
+ * Todo lo que cambia con cada jugada y debe recuperarse al deshacer: el estado de la partida, los derechos de
+ * enroque y los contadores de tablas. Es inmutable, por lo que el historial guarda una por jugada y deshacer solo
+ * tiene que restaurarla.
  */
 public record GameSnapshot(IGameState state, CastlingRights castlingRights, DrawCounters drawCounters) {
 
@@ -32,9 +33,9 @@ public record GameSnapshot(IGameState state, CastlingRights castlingRights, Draw
     }
 
     /**
-     * @param move the move already executed on the board
-     * @param board the board after that move
-     * @param nextState the state that handled the move
+     * @param move la jugada ya ejecutada en el tablero
+     * @param board el tablero después de esa jugada
+     * @param nextState el estado que gestionó la jugada
      */
     public GameSnapshot after(IMoveInfo move, Board board, IGameState nextState) {
         Objects.requireNonNull(nextState, "nextState must not be null");

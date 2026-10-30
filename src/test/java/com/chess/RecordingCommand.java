@@ -10,7 +10,7 @@ import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
 
 /**
- * Command for state tests that only counts how many times it was executed.
+ * Comando para pruebas de estado que solo cuenta cuántas veces se ejecutó.
  */
 final class RecordingCommand implements ICommand {
 

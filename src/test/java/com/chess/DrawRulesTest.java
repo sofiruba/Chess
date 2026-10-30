@@ -266,8 +266,9 @@ final class DrawRulesTest {
     }
 
     /**
-     * White walks a rook one square at a time over files c-h and ranks 2-7 (forward, then back) while the black king
-     * swings between a8 and b8. No position can occur three times and nothing is a pawn move or a capture.
+     * Las blancas mueven una torre una casilla a la vez por las columnas c-h y filas 2-7 (hacia adelante y luego
+     * atrás), mientras el rey negro alterna entre a8 y b8. Ninguna posición puede ocurrir tres veces y no hay
+     * movimientos de peón ni capturas.
      */
     private List<String> nonRepeatingPlies(int count) {
         List<String> rookMoves = rookMoves(count / 2);

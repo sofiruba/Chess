@@ -18,11 +18,11 @@ import com.chess.domain.model.GameResult;
 import com.chess.domain.port.IGameRepository;
 import com.chess.domain.port.SavedGames;
 /**
- * SQLite adapter of the game history. Design decision: only the history of games is persisted, there are no users.
- * The database file and the table are created when the repository is built. A row that cannot be read (bad date or
- * result) is left out of the records of the {@link SavedGames} returned by {@link #findAll()} and counted in
- * {@link SavedGames#unreadableRows()}, so one damaged row does not hide the others and the caller can tell that
- * something was left out.
+ * Adaptador SQLite del historial de partidas. Decisión de diseño: solo se persiste el historial de partidas; no hay
+ * usuarios. El archivo de base de datos y la tabla se crean al construir el repositorio. Una fila que no se puede
+ * leer (fecha o resultado erróneos) se omite de los registros de {@link SavedGames} devueltos por {@link #findAll()}
+ * y se contabiliza en {@link SavedGames#unreadableRows()}, para que una fila dañada no oculte las demás y quien llama
+ * pueda saber que se omitió algo.
  */
 
 public final class SqliteGameRepository implements IGameRepository {

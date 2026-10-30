@@ -20,7 +20,7 @@ import com.chess.domain.movement.LShapeMoveStrategy;
 import com.chess.domain.model.PieceType;
 
 /**
- * The promotion options come from one place. A piece that only exists in this file is offered and can be chosen.
+ * Las opciones de promoción provienen de un único lugar. Se ofrece y puede elegirse una pieza que solo existe aquí.
  */
 final class PromotionOptionsTest {
 

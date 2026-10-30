@@ -3,7 +3,7 @@ package com.chess.domain.model;
 import java.util.Objects;
 
 /**
- * A coordinate. It only knows it cannot be negative; whether it fits is up to the {@link Board} that receives it.
+ * Una coordenada. Solo sabe que no puede ser negativa; corresponde al {@link Board} que la recibe determinar si cabe.
  */
 public record Position(int x, int y) {
 

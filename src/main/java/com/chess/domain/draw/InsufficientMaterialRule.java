@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Draw when nobody can deliver checkmate: K vs K, K+B vs K, K+N vs K, and kings with bishops that all stand on
- * squares of the same color. Any other piece, including pieces defined later, counts as enough material.
+ * Tablas cuando nadie puede dar jaque mate: R contra R, R+A contra R, R+C contra R, y reyes con alfiles que están
+ * todos en casillas del mismo color. Cualquier otra pieza, incluidas las definidas posteriormente, cuenta como
+ * material suficiente.
  */
 public final class InsufficientMaterialRule implements IDrawRule {
 

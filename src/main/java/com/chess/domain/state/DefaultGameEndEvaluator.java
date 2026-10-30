@@ -12,7 +12,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Checkmate and stalemate come first (no legal moves); otherwise any registered {@link IDrawRule} can end the game.
+ * El jaque mate y las tablas por ahogado se evalúan primero (no hay jugadas legales); de lo contrario, cualquier
+ * {@link IDrawRule} registrada puede terminar la partida.
  */
 public final class DefaultGameEndEvaluator implements IGameEndEvaluator {
 

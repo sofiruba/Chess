@@ -32,7 +32,7 @@ public final class Board {
         return contains(position.x(), position.y());
     }
 
-    /** Every square of the board, column by column. */
+    /** Todas las casillas del tablero, columna por columna. */
     public List<Position> positions() {
         return positions;
     }

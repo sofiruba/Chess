@@ -12,11 +12,11 @@ import java.util.function.Function;
 public interface IGameEndEvaluator {
 
     /**
-     * Decides whether the game is over for the player about to move.
+     * Decide si la partida terminó para el jugador que está por mover.
      *
-     * @param counters the 50-move clock and the positions seen, read by the draw rules
-     * @param legalMoves legal destinations for a given origin square
-     * @return the final state, or empty if the game goes on
+     * @param counters el contador de 50 jugadas y las posiciones vistas, leídos por las reglas de tablas
+     * @param legalMoves destinos legales para una casilla de origen dada
+     * @return el estado final, o vacío si la partida continúa
      */
     Optional<IGameState> evaluate(
             Board board,

@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The game is over. Checkmate, stalemate and draw by rule differ only in the result and the reason, so they share
- * this class.
+ * La partida terminó. El jaque mate, las tablas por ahogado y las tablas por regla solo difieren en el resultado y
+ * la razón, por lo que comparten esta clase.
  */
 public final class FinishedState implements IGameState {
 
@@ -22,8 +22,8 @@ public final class FinishedState implements IGameState {
     private final String reason;
 
     /**
-     * @param player the player who would have moved
-     * @param reason why the game ended, in English, used in the error for a move after the end ("checkmate")
+     * @param player el jugador que habría movido
+     * @param reason por qué terminó la partida, en inglés, usado en el error de una jugada posterior ("checkmate")
      */
     public FinishedState(Color player, GameResult result, String reason) {
         this.player = Objects.requireNonNull(player, "player must not be null");

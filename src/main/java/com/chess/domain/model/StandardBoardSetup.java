@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Builds the starting position. The board size is the length of the back rank, so both always agree.
+ * Construye la posición inicial. El tamaño del tablero es la longitud de la fila trasera, por lo que ambos coinciden.
  */
 public final class StandardBoardSetup {
 

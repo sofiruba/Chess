@@ -10,8 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses codes made of origin, destination and an optional promotion letter. The letters it accepts are the
- * notation codes of the promotion types it is built with, so it never needs to know the concrete pieces.
+ * Analiza códigos formados por origen, destino y una letra de promoción opcional. Las letras aceptadas son los
+ * códigos de notación de los tipos de promoción con los que se construye, por lo que nunca necesita conocer las
+ * piezas concretas.
  */
 public final class MoveCodeParser implements IMoveCodeParser {
 
@@ -66,3 +67,4 @@ public final class MoveCodeParser implements IMoveCodeParser {
         return Map.copyOf(index);
     }
 }
+

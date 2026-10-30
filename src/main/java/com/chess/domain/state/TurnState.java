@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The game is in progress and it is the turn of {@code player}.
+ * La partida está en curso y es el turno de {@code player}.
  */
 public final class TurnState implements IGameState {
 

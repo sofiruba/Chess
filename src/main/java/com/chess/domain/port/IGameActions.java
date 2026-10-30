@@ -5,7 +5,7 @@ import com.chess.domain.port.*;
 
 
 /**
- * The ways to change a game.
+ * Las formas de modificar una partida.
  */
 public interface IGameActions {
     void playMove(Position from, Position to);

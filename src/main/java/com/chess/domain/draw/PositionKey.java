@@ -10,9 +10,9 @@ import com.chess.domain.rule.*;
 import java.util.Objects;
 
 /**
- * What makes two positions "the same" for the repetition rule: piece placement, side to move, castling rights and
- * the en passant square. Assumption: the en passant square counts whenever the last move was a pawn double step,
- * even if no enemy pawn is in a position to capture.
+ * Lo que hace que dos posiciones sean "iguales" para la regla de repetición: ubicación de las piezas, lado al que
+ * le toca mover, derechos de enroque y casilla al paso. Supuesto: la casilla al paso cuenta cuando la última jugada
+ * fue un avance doble de peón, aunque ningún peón enemigo esté en posición de capturar.
  */
 public record PositionKey(String placement, Color turn, CastlingRights castlingRights, Position enPassantSquare) {
 
@@ -26,7 +26,7 @@ public record PositionKey(String placement, Color turn, CastlingRights castlingR
     }
 
     /**
-     * @param lastMove the move that led to this position, or null if it is the starting position
+     * @param lastMove la jugada que llevó a esta posición, o null si es la posición inicial
      */
     public static PositionKey of(Board board, Color turn, CastlingRights castlingRights, IMoveInfo lastMove) {
         Objects.requireNonNull(board, "board must not be null");

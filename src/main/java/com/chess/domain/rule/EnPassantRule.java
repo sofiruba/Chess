@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * En passant is derived from the last move only, so it needs no state and stays consistent with undo/redo.
+ * La captura al paso se deriva únicamente de la última jugada, por lo que no necesita estado y se mantiene
+ * consistente al deshacer o rehacer.
  */
 public final class EnPassantRule implements IMoveRule {
 

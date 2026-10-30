@@ -9,8 +9,8 @@ import com.chess.domain.model.GameResult;
 import com.chess.domain.state.IGameState;
 
 /**
- * What every {@link IGameState} promises, whichever implementation the game holds (Liskov). Each implementation has
- * a subclass that supplies the state to check.
+ * Lo que garantiza cada {@link IGameState}, sin importar la implementación que mantenga la partida (Liskov). Cada
+ * implementación tiene una subclase que proporciona el estado a comprobar.
  */
 abstract class GameStateContractTest {
 

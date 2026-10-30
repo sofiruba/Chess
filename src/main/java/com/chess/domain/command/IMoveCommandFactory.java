@@ -6,7 +6,7 @@ import com.chess.domain.rule.*;
 
 
 /**
- * Creates the command for a plain move. Special moves are created by their own {@link IMoveRule}.
+ * Crea el comando para una jugada simple. Las jugadas especiales son creadas por su propia {@link IMoveRule}.
  */
 public interface IMoveCommandFactory {
 

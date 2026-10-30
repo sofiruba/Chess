@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Builds pieces from a registry of definitions (piece type to movement strategies). The registry is built by the
- * wiring code, so adding a piece never requires editing this class.
+ * Construye piezas desde un registro de definiciones (tipo de pieza a estrategias de movimiento). El registro lo
+ * crea el código de configuración, por lo que agregar una pieza nunca requiere editar esta clase.
  */
 public final class PieceFactory implements IPieceFactory {
 

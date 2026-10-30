@@ -30,14 +30,14 @@ import com.chess.domain.model.Position;
 import com.chess.domain.model.StandardBoardSetup;
 
 /**
- * Extensions done only with wiring: a piece defined in this file and boards of other sizes.
+ * Extensiones realizadas solo con configuración: una pieza definida en este archivo y tableros de otros tamaños.
  */
 final class ExtensionTest {
 
     private static final PieceType CAMEL = new PieceType("CAMEL", "c");
     private static final String EMPTY_TEN = "..........";
 
-    /** Leaper that jumps three squares one way and one the other. Lives only in this test. */
+    /** Pieza saltadora que avanza tres casillas en una dirección y una en la otra. Solo existe en esta prueba. */
     private static final class CamelMoveStrategy implements IMoveStrategy {
 
         private static final int[][] OFFSETS = {

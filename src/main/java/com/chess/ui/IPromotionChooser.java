@@ -6,15 +6,15 @@ import com.chess.domain.model.Color;
 import com.chess.domain.model.PieceType;
 
 /**
- * Asks the player which piece a pawn becomes when it reaches the last rank. It exists so that ChessApplication
- * does not depend on the dialog that shows the question.
+ * Pregunta al jugador en qué pieza se convierte un peón cuando llega a la última fila. Existe para que
+ * ChessApplication no dependa del diálogo que muestra la pregunta.
  */
 public interface IPromotionChooser {
 
     /**
-     * @param color the color of the promoting pawn, so the options can be drawn in that color
-     * @param options the pieces the game allows, in the order they should be shown; never empty
-     * @return one of the options
+     * @param color el color del peón que promociona, para dibujar las opciones con ese color
+     * @param options las piezas permitidas por la partida, en el orden en que deben mostrarse; nunca está vacío
+     * @return una de las opciones
      */
     PieceType choosePiece(Color color, List<PieceType> options);
 }

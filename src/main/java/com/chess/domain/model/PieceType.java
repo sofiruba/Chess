@@ -5,8 +5,8 @@ package com.chess.domain.model;
 import java.util.Objects;
 
 /**
- * Identifies a kind of piece. It is an open type instead of an enum so a new piece can be defined outside this
- * class. Equality is by identity: create each type once and share the instance.
+ * Identifica un tipo de pieza. Es un tipo abierto en lugar de un enum para poder definir una pieza nueva fuera de
+ * esta clase. La igualdad es por identidad: cada tipo se crea una vez y se comparte la instancia.
  */
 public final class PieceType {
 
@@ -21,8 +21,8 @@ public final class PieceType {
     private final String notationCode;
 
     /**
-     * @param name unique readable name of the piece
-     * @param notationCode letter used to write this piece in a promotion, such as "q" in "e7e8q"
+     * @param name nombre único y legible de la pieza
+     * @param notationCode letra usada para escribir esta pieza en una promoción, como "q" en "e7e8q"
      */
     public PieceType(String name, String notationCode) {
         this.name = requireText(name, "name");

@@ -2,7 +2,7 @@ package com.chess.domain.command;
 
 
 /**
- * A move that can be executed and undone on the board. Everything that only reads a move uses {@link IMoveInfo}.
+ * Una jugada que puede ejecutarse y deshacerse en el tablero. Todo lo que solo lee una jugada usa {@link IMoveInfo}.
  */
 public interface ICommand extends IMoveInfo {
 

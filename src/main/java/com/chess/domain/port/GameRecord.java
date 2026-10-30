@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A finished or interrupted game as it is stored: when it was saved, how it stood and the move codes needed to
- * replay it. An id of {@link #UNSAVED_ID} means the repository has not stored it yet.
+ * Una partida finalizada o interrumpida tal como se almacena: cuándo se guardó, cómo estaba y los códigos de jugada
+ * necesarios para reproducirla. Un id de {@link #UNSAVED_ID} indica que el repositorio aún no la almacenó.
  */
 public record GameRecord(long id, Instant playedAt, GameResult result, List<String> moveCodes) {
 

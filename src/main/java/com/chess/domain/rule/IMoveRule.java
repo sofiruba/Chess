@@ -7,15 +7,15 @@ import com.chess.domain.command.*;
 import java.util.List;
 
 /**
- * A special move (castling, en passant, promotion, ...). Each rule owns its own command, so adding a
- * rule means adding a class and registering it in the wiring, without touching Game or other rules.
+ * Una jugada especial (enroque, captura al paso, promoción, ...). Cada regla posee su propio comando, por lo que
+ * agregar una regla implica añadir una clase y registrarla en la configuración, sin modificar Game u otras reglas.
  */
 public interface IMoveRule {
 
-    /** Destinations this rule makes available to the piece at {@code from}, before king-safety filtering. */
+    /** Destinos que esta regla pone a disposición de la pieza en {@code from}, antes de filtrar por seguridad del rey. */
     List<Position> extraMoves(MoveRuleContext context, Position from);
 
-    /** True when the requested move must be executed with this rule's command instead of a plain move. */
+    /** Es verdadero cuando la jugada solicitada debe ejecutarse con el comando de esta regla y no con uno simple. */
     boolean appliesTo(MoveRuleContext context, MoveRequest request);
 
     ICommand createCommand(MoveRuleContext context, MoveRequest request);
@@ -24,7 +24,7 @@ public interface IMoveRule {
         return false;
     }
 
-    /** Pieces a pawn can become under this rule. Only the promotion rule offers any. */
+    /** Piezas en las que puede convertirse un peón según esta regla. Solo la regla de promoción ofrece alguna. */
     default List<PieceType> promotionOptions() {
         return List.of();
     }

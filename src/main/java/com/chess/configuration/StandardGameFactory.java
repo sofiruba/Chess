@@ -42,8 +42,8 @@ import com.chess.domain.draw.ThreefoldRepetitionRule;
 import com.chess.domain.state.TurnStateFactory;
 
 /**
- * Wires a standard game. Pieces, back rank, move rules and draw rules are registered here, without touching Game
- * or the existing rules. The board size is the length of the back rank.
+ * Configura una partida estándar. Las piezas, fila trasera, reglas de movimiento y reglas de tablas se registran
+ * aquí, sin modificar Game ni las reglas existentes. El tamaño del tablero es la longitud de la fila trasera.
  */
 public final class StandardGameFactory implements IGameFactory {
 
@@ -76,9 +76,9 @@ public final class StandardGameFactory implements IGameFactory {
     }
 
     /**
-     * @param pieceDefinitions registry of piece type to movement strategies
-     * @param backRank pieces of the back rank from column 0; its length is the board size
-     * @param promotionTypes pieces a pawn can become, in the order they are offered; the first one is the default
+     * @param pieceDefinitions registro de tipos de pieza a estrategias de movimiento
+     * @param backRank piezas de la fila trasera desde la columna 0; su longitud es el tamaño del tablero
+     * @param promotionTypes piezas en las que puede convertirse un peón, en el orden ofrecido; la primera es predeterminada
      */
     public StandardGameFactory(
             IMoveCommandFactory commandFactory,

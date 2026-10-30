@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The result of reading the game history: the games that could be read, newest first, and how many stored rows
- * had to be left out because they were damaged.
+ * El resultado de leer el historial de partidas: las partidas que se pudieron leer, primero las más recientes, y
+ * cuántas filas almacenadas se omitieron porque estaban dañadas.
  */
 public record SavedGames(List<GameRecord> records, int unreadableRows) {
     public SavedGames {

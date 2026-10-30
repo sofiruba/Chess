@@ -3,12 +3,12 @@ package com.chess.domain.rule;
 
 
 /**
- * Turns a persisted move code ("e2e4", "e7e8q") back into a move request for the game.
+ * Convierte un código de jugada persistido ("e2e4", "e7e8q") nuevamente en una solicitud de jugada para la partida.
  */
 public interface IMoveCodeParser {
 
     /**
-     * @throws IllegalArgumentException if the text is not a well-formed move code
+     * @throws IllegalArgumentException si el texto no es un código de jugada bien formado
      */
     MoveRequest parse(String moveCode);
 }

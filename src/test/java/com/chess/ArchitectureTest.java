@@ -10,7 +10,7 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 
-/** Fails when a production dependency points in the wrong direction. */
+/** Falla cuando una dependencia de producción apunta en la dirección incorrecta. */
 final class ArchitectureTest {
 
     private static final String DOMAIN = "com.chess.domain..";

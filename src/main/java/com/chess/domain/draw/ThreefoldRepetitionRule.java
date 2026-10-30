@@ -4,7 +4,7 @@ import com.chess.domain.model.*;
 
 
 /**
- * Draw when the position just reached has occurred three times. It is applied automatically, without a claim.
+ * Tablas cuando la posición recién alcanzada ocurrió tres veces. Se aplica automáticamente, sin reclamación.
  */
 public final class ThreefoldRepetitionRule implements IDrawRule {
 

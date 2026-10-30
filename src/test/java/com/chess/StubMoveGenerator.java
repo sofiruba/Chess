@@ -11,7 +11,7 @@ import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
 
 /**
- * Generator for state tests: it answers a fixed list of destinations and remembers who it was asked for.
+ * Generador para pruebas de estado: devuelve una lista fija de destinos y recuerda para quién se solicitó.
  */
 final class StubMoveGenerator implements IMoveGenerator {
 

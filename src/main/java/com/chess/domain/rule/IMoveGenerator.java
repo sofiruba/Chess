@@ -7,7 +7,7 @@ import com.chess.domain.command.*;
 import java.util.List;
 
 /**
- * Knows which moves are legal in a position and how to build the command for a move.
+ * Sabe qué jugadas son legales en una posición y cómo construir el comando para una jugada.
  */
 public interface IMoveGenerator {
 
@@ -17,6 +17,6 @@ public interface IMoveGenerator {
 
     boolean requiresPromotion(MoveRuleContext context, Position from, Position to);
 
-    /** The pieces a pawn can be promoted to, as declared by the registered rules. */
+    /** Las piezas a las que puede promocionar un peón, según las reglas registradas. */
     List<PieceType> promotionOptions();
 }

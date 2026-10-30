@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Immutable counters the draw rules read: half-moves since the last pawn move or capture, and how many times each
- * position has occurred. Like {@link CastlingRights}, a new instance is produced after every move and the previous
- * one is kept in the history, so undo and redo stay consistent.
+ * Contadores inmutables que leen las reglas de tablas: medias jugadas desde el último movimiento de peón o captura,
+ * y cuántas veces ocurrió cada posición. Como {@link CastlingRights}, se crea una instancia nueva después de cada
+ * jugada y la anterior se conserva en el historial, para que deshacer y rehacer sean consistentes.
  */
 public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPositions, PositionKey current) {
 
@@ -32,8 +32,8 @@ public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPosi
     }
 
     /**
-     * @param move the move just executed
-     * @param newPosition the position reached by that move
+     * @param move la jugada recién ejecutada
+     * @param newPosition la posición alcanzada por esa jugada
      */
     public DrawCounters after(IMoveInfo move, PositionKey newPosition) {
         Map<PositionKey, Integer> updated = new HashMap<>(seenPositions);

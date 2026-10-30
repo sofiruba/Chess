@@ -3,8 +3,8 @@ package com.chess.domain.draw;
 import com.chess.domain.model.*;
 
 /**
- * Draw after the given number of moves by each player (50 in standard chess) without a pawn move or a capture.
- * It is applied automatically, without a claim.
+ * Tablas tras la cantidad indicada de jugadas de cada jugador (50 en ajedrez estándar) sin mover un peón ni capturar.
+ * Se aplica automáticamente, sin necesidad de reclamación.
  */
 public final class FiftyMoveRule implements IDrawRule {
 
@@ -13,7 +13,7 @@ public final class FiftyMoveRule implements IDrawRule {
     private final int halfMoveLimit;
 
     /**
-     * @param moveLimit moves by each player, so the limit in half-moves is twice this value
+     * @param moveLimit jugadas de cada jugador; el límite en medias jugadas es el doble de este valor
      */
     public FiftyMoveRule(int moveLimit) {
         if (moveLimit < 1) {

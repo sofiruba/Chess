@@ -8,7 +8,8 @@ import com.chess.domain.port.IGameReplayer;
 import com.chess.domain.port.IGameService;
 
 /**
- * Replays move codes on a game made by the given factory, so a saved game is rebuilt with the same rules as a new one.
+ * Reproduce códigos de jugada en una partida creada por la fábrica indicada, para reconstruir una partida guardada
+ * con las mismas reglas que una nueva.
  */
 public final class GameReplayer implements IGameReplayer {
 

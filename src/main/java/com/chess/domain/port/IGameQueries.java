@@ -6,7 +6,7 @@ import com.chess.domain.model.*;
 import java.util.List;
 
 /**
- * Read-only view of a game. Whoever receives this cannot change the game.
+ * Vista de solo lectura de una partida. Quien la recibe no puede modificarla.
  */
 public interface IGameQueries {
     int boardSize();
@@ -17,7 +17,7 @@ public interface IGameQueries {
     List<Position> legalMoves(Position from);
     boolean requiresPromotion(Position from, Position to);
 
-    /** The pieces a pawn can become, in the order they should be offered. */
+    /** Las piezas en las que puede convertirse un peón, en el orden en que se deben ofrecer. */
     List<PieceType> promotionOptions();
     boolean isFinished();
     GameResult result();

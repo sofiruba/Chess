@@ -9,8 +9,8 @@ import com.chess.domain.model.Piece;
 import com.chess.domain.model.PieceType;
 
 /**
- * Unicode symbol of each piece, owned by the UI. A piece without a registered symbol is drawn with the letter of
- * its notation code (uppercase for white, lowercase for black), so a new piece is always visible.
+ * Símbolo Unicode de cada pieza, perteneciente a la interfaz. Una pieza sin símbolo registrado se dibuja con la letra
+ * de su código de notación (mayúscula para blancas, minúscula para negras), por lo que una pieza nueva siempre es visible.
  */
 public final class PieceSymbols {
 
@@ -40,7 +40,7 @@ public final class PieceSymbols {
         return new PieceSymbols(white, black);
     }
 
-    /** Returns a copy that also knows the symbols of the given piece type. */
+    /** Devuelve una copia que también conoce los símbolos del tipo de pieza indicado. */
     public PieceSymbols with(PieceType type, String whiteSymbol, String blackSymbol) {
         Map<PieceType, String> white = new HashMap<>(whiteSymbols);
         Map<PieceType, String> black = new HashMap<>(blackSymbols);

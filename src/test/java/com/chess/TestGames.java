@@ -17,9 +17,9 @@ import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
 
 /**
- * Test helpers to build positions from text diagrams and to play moves written as "e2e4" or "e7e8q".
- * Diagram rows go from the top rank (first) to rank 1 (last); uppercase is white, lowercase is black, '.' is empty.
- * The diagram must be square, and its size is the size of the board.
+ * Utilidades de prueba para crear posiciones desde diagramas de texto y jugar movimientos escritos como "e2e4" o
+ * "e7e8q". Las filas del diagrama van desde la fila superior (primera) hasta la fila 1 (última); las mayúsculas son
+ * blancas, las minúsculas negras y '.' está vacío. El diagrama debe ser cuadrado y su tamaño es el del tablero.
  */
 public final class TestGames {
 

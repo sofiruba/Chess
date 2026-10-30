@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Castling with the king on column size / 2 and the rooks in the corners. The king always moves two squares, so
- * there must be at least three columns between king and rook; smaller boards simply have no castling.
+ * Enroque con el rey en la columna size / 2 y las torres en las esquinas. El rey siempre se mueve dos casillas, por
+ * lo que debe haber al menos tres columnas entre el rey y la torre; los tableros más pequeños no tienen enroque.
  */
 public final class CastlingRule implements IMoveRule {
 
