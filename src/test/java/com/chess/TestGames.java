@@ -1,6 +1,8 @@
 package com.chess;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +56,15 @@ public final class TestGames {
         int x = square.charAt(0) - 'a';
         int y = Integer.parseInt(square.substring(1)) - 1;
         return new Position(x, y);
+    }
+
+    /** The given squares as a set, to compare destinations without depending on the order of a list. */
+    public static Set<Position> squares(String... squares) {
+        List<Position> positions = new ArrayList<>();
+        for (String square : squares) {
+            positions.add(at(square));
+        }
+        return Set.copyOf(positions);
     }
 
     public static void play(IGameService game, String... moves) {
