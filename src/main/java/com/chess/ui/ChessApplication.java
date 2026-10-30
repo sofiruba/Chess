@@ -69,6 +69,8 @@ public final class ChessApplication {
         legalMoves = List.of();
         boardView = new BoardView(game, symbols, this::click);
         sidePanel = new SidePanel(archive, game, symbols, savedGameTracker, this::loadGame);
+        game.addListener(boardView);
+        game.addListener(sidePanel);
     }
 
     private void showGame() {
@@ -109,9 +111,10 @@ public final class ChessApplication {
             message = "Destino inválido: la pieza no puede moverse allí.";
             clearSelection();
         }
-        refresh();
         if (message != null) {
             sidePanel.showMessage(message);
+        } else {
+            sidePanel.refresh();
         }
     }
 
@@ -139,7 +142,6 @@ public final class ChessApplication {
         try {
             game.undoLastMove();
             clearSelection();
-            refresh();
         } catch (IllegalStateException exception) {
             sidePanel.showMessage("No hay movimientos para deshacer.");
         }
@@ -149,7 +151,6 @@ public final class ChessApplication {
         try {
             game.redoLastMove();
             clearSelection();
-            refresh();
         } catch (IllegalStateException exception) {
             sidePanel.showMessage("No hay movimientos para rehacer.");
         }
@@ -159,10 +160,5 @@ public final class ChessApplication {
         selected = null;
         legalMoves = List.of();
         boardView.clearSelection();
-    }
-
-    private void refresh() {
-        boardView.render();
-        sidePanel.refresh();
     }
 }

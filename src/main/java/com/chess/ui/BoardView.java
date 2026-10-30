@@ -1,19 +1,21 @@
 package com.chess.ui;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import com.chess.domain.model.Piece;
+import com.chess.domain.model.Position;
+import com.chess.domain.port.IGameListener;
+import com.chess.domain.port.IGameQueries;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import com.chess.domain.port.IGameQueries;
-import com.chess.domain.model.Piece;
-import com.chess.domain.model.Position;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-public final class BoardView {
+public final class BoardView implements IGameListener {
     private static final int SQUARE_SIZE = 64;
     private final IGameQueries game;
     private final PieceSymbols symbols;
@@ -53,6 +55,21 @@ public final class BoardView {
                 addSquare(new Position(x, y));
             }
         }
+    }
+
+    @Override
+    public void moveMade() {
+        render();
+    }
+
+    @Override
+    public void moveUndone() {
+        render();
+    }
+
+    @Override
+    public void moveRedone() {
+        render();
     }
 
     private HBox fileLabels() {

@@ -1,6 +1,4 @@
 package com.chess.domain.port;
 
-
-
-public interface IGameService extends IGameQueries, IGameActions {
+public interface IGameService extends IGameQueries, IGameActions, IGameObservable {
 }

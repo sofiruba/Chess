@@ -9,6 +9,7 @@ import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
 import com.chess.domain.port.GameRecord;
 import com.chess.domain.port.IGameArchive;
+import com.chess.domain.port.IGameListener;
 import com.chess.domain.port.IGameQueries;
 import com.chess.domain.port.SavedGames;
 
@@ -19,7 +20,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
-public final class SidePanel {
+public final class SidePanel implements IGameListener {
 
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
@@ -79,6 +80,21 @@ public final class SidePanel {
         moves.getItems().setAll(game.moveNotation());
         captured.setText(game.capturedPieces().stream().map(symbols::symbolFor).reduce("", String::concat));
         updateSaveButton();
+    }
+
+    @Override
+    public void moveMade() {
+        refresh();
+    }
+
+    @Override
+    public void moveUndone() {
+        refresh();
+    }
+
+    @Override
+    public void moveRedone() {
+        refresh();
     }
 
     public void showMessage(String message) {

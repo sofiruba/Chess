@@ -2,6 +2,8 @@ package com.chess.domain.game;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import com.chess.domain.command.ICommand;
 import com.chess.domain.command.IMoveInfo;
@@ -11,6 +13,7 @@ import com.chess.domain.model.GameResult;
 import com.chess.domain.model.Piece;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
+import com.chess.domain.port.IGameListener;
 import com.chess.domain.port.IGameService;
 import com.chess.domain.rule.ICheckDetector;
 import com.chess.domain.rule.IMoveCodeParser;
@@ -27,6 +30,7 @@ public final class Game implements IGameService {
     private final IGameEndEvaluator endEvaluator;
     private final IMoveGenerator moveGenerator;
     private final IMoveCodeParser codeParser;
+    private final CopyOnWriteArrayList<IGameListener> listeners = new CopyOnWriteArrayList<>();
 
     public Game(
             Board board,
@@ -74,12 +78,26 @@ public final class Game implements IGameService {
     @Override
     public void undoLastMove() {
         timeline.undo();
+        notifyListeners(IGameListener::moveUndone);
     }
 
     @Override
     public void redoLastMove() {
         timeline.redo(board);
         updateEndState();
+        notifyListeners(IGameListener::moveRedone);
+        notifyIfFinished();
+    }
+
+    @Override
+    public void addListener(IGameListener listener) {
+        Objects.requireNonNull(listener, "listener must not be null");
+        listeners.addIfAbsent(listener);
+    }
+
+    @Override
+    public void removeListener(IGameListener listener) {
+        listeners.remove(listener);
     }
 
     @Override
@@ -151,6 +169,18 @@ public final class Game implements IGameService {
         ICommand command = moveGenerator.createCommand(ruleContext(), request);
         timeline.advance(command, board);
         updateEndState();
+        notifyListeners(IGameListener::moveMade);
+        notifyIfFinished();
+    }
+
+    private void notifyIfFinished() {
+        if (isFinished()) {
+            notifyListeners(IGameListener::gameFinished);
+        }
+    }
+
+    private void notifyListeners(Consumer<IGameListener> event) {
+        listeners.forEach(event);
     }
 
     private void requirePromotionMatches(MoveRequest request, String moveCode) {
