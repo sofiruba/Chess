@@ -21,6 +21,7 @@ import com.chess.domain.game.GameTimeline;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
+import com.chess.domain.model.PieceRoles;
 import com.chess.domain.state.ITurnStateFactory;
 import com.chess.domain.state.TurnStateFactory;
 
@@ -42,7 +43,7 @@ final class GameTimelineTest {
                 "........",
                 "P.......",
                 "....K...");
-        start = GameSnapshot.initial(board, states.forColor(Color.WHITE));
+        start = GameSnapshot.initial(board, states.forColor(Color.WHITE), PieceRoles.standard());
         timeline = new GameTimeline(start);
     }
 

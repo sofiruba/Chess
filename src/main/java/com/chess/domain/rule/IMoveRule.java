@@ -14,9 +14,12 @@ public interface IMoveRule {
 
     /**
      * Destinos que esta regla pone a disposición de la pieza en {@code from}, antes de filtrar por seguridad del
-     * rey.
+     * rey. Las reglas que solo cambian cómo se ejecuta una jugada ya permitida, como la promoción, no agregan
+     * destinos.
      */
-    List<Position> extraMoves(MoveRuleContext context, Position from);
+    default List<Position> extraMoves(MoveRuleContext context, Position from) {
+        return List.of();
+    }
 
     /** Es verdadero cuando la jugada solicitada debe ejecutarse con el comando de esta regla y no con uno simple. */
     boolean appliesTo(MoveRuleContext context, MoveRequest request);

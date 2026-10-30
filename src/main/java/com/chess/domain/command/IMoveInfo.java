@@ -43,10 +43,6 @@ public interface IMoveInfo {
         return List.of(new MovedPiece(movingPiece(), from()));
     }
 
-    default Optional<Position> enPassantSquare() {
-        return enPassantSquare(PieceRoles.standard());
-    }
-
     default Optional<Position> enPassantSquare(PieceRoles roles) {
         if (!isPawnDoubleStep(roles)) {
             return Optional.empty();

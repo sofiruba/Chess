@@ -30,11 +30,6 @@ public final class PromotionRule implements IMoveRule {
     }
 
     @Override
-    public List<Position> extraMoves(MoveRuleContext context, Position from) {
-        return List.of();
-    }
-
-    @Override
     public boolean appliesTo(MoveRuleContext context, MoveRequest request) {
         return requiresPromotion(context, request.from(), request.to());
     }

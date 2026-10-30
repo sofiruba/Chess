@@ -23,10 +23,6 @@ public record GameSnapshot(IGameState state, CastlingRights castlingRights, Draw
         Objects.requireNonNull(drawCounters, "drawCounters must not be null");
     }
 
-    public static GameSnapshot initial(Board board, IGameState state) {
-        return initial(board, state, PieceRoles.standard());
-    }
-
     public static GameSnapshot initial(Board board, IGameState state, PieceRoles roles) {
         Objects.requireNonNull(board, "board must not be null");
         Objects.requireNonNull(state, "state must not be null");

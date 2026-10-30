@@ -8,17 +8,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.chess.domain.model.Board;
-import com.chess.domain.rule.CastlingRights;
-import com.chess.domain.model.Color;
-import com.chess.domain.draw.DrawCounters;
 import com.chess.domain.command.ICommand;
 import com.chess.domain.command.MoveCommand;
+import com.chess.domain.draw.DrawCounters;
 import com.chess.domain.draw.PositionKey;
+import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceRoles;
+import com.chess.domain.rule.CastlingRights;
 
 final class DrawCountersTest {
 
-    private final CastlingRights rights = CastlingRights.initial(8);
+    private static final PieceRoles ROLES = PieceRoles.standard();
+
+    private final CastlingRights rights = CastlingRights.initial(8, ROLES);
     private Board board;
     private DrawCounters counters;
 
@@ -33,7 +36,7 @@ final class DrawCountersTest {
                 "........",
                 "P.......",
                 "....K..R");
-        counters = DrawCounters.initial(PositionKey.of(board, Color.WHITE, rights, null));
+        counters = DrawCounters.initial(PositionKey.of(board, Color.WHITE, rights, null), ROLES);
     }
 
     @Test

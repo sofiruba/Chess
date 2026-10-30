@@ -11,14 +11,14 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
+import com.chess.configuration.GameSetup;
 import com.chess.configuration.StandardGameFactory;
 import com.chess.domain.model.Color;
-import com.chess.domain.movement.DiagonalMoveStrategy;
-import com.chess.domain.port.IGameService;
 import com.chess.domain.model.IMoveStrategy;
-import com.chess.domain.movement.LShapeMoveStrategy;
 import com.chess.domain.model.PieceType;
-
+import com.chess.domain.movement.DiagonalMoveStrategy;
+import com.chess.domain.movement.LShapeMoveStrategy;
+import com.chess.domain.port.IGameService;
 /**
  * Las opciones de promoción provienen de un único lugar. Se ofrece y puede elegirse una pieza que solo existe aquí.
  */
@@ -72,14 +72,13 @@ final class PromotionOptionsTest {
 
     private IGameService archbishopGame() {
         Map<PieceType, List<IMoveStrategy>> definitions =
-                new LinkedHashMap<>(StandardGameFactory.standardPieceDefinitions());
+                new LinkedHashMap<>(GameSetup.standardPieceDefinitions());
         definitions.put(ARCHBISHOP, List.of(new DiagonalMoveStrategy(), new LShapeMoveStrategy()));
         StandardGameFactory factory = new StandardGameFactory(
                 new DefaultMoveCommandFactory(),
-                definitions,
-                StandardGameFactory.standardBackRank(),
-                List.of(),
-                List.of(PieceType.QUEEN, ARCHBISHOP));
+        GameSetup.standard()
+                .withPieceDefinitions(definitions)
+                .withPromotionTypes(List.of(PieceType.QUEEN, ARCHBISHOP)));
         return factory.create(TestGames.board(
                 "....k...",
                 "P.......",

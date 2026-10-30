@@ -7,16 +7,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
+import com.chess.configuration.GameSetup;
 import com.chess.configuration.StandardGameFactory;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
-import com.chess.domain.port.IGameService;
-import com.chess.domain.rule.IMoveRule;
 import com.chess.domain.model.IPieceFactory;
 import com.chess.domain.model.Piece;
 import com.chess.domain.model.PieceFactory;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
+import com.chess.domain.port.IGameService;
+import com.chess.domain.rule.IMoveRule;
 
 /**
  * Utilidades de prueba para crear posiciones desde diagramas de texto y jugar movimientos escritos como "e2e4" o
@@ -26,7 +27,7 @@ import com.chess.domain.model.Position;
 public final class TestGames {
 
     private static final Pattern MOVE_PATTERN = Pattern.compile("([a-z]\\d+)([a-z]\\d+)([a-z])?");
-    private static final IPieceFactory PIECES = new PieceFactory(StandardGameFactory.standardPieceDefinitions());
+    private static final IPieceFactory PIECES = new PieceFactory(GameSetup.standardPieceDefinitions());
 
     private TestGames() {
     }
@@ -40,7 +41,8 @@ public final class TestGames {
     }
 
     public static IGameService fromDiagram(List<IMoveRule> extraRules, Color turn, String... rows) {
-        StandardGameFactory factory = new StandardGameFactory(new DefaultMoveCommandFactory(), extraRules);
+        GameSetup setup = GameSetup.standard().withAdditionalMoveRules(extraRules);
+        StandardGameFactory factory = new StandardGameFactory(new DefaultMoveCommandFactory(), setup);
         return factory.create(board(rows), turn);
     }
 

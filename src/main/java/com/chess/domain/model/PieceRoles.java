@@ -2,6 +2,10 @@ package com.chess.domain.model;
 
 import java.util.Objects;
 
+/**
+ * Las piezas a las que las reglas del núcleo les atribuyen un papel (rey, torre, peón, alfil y caballo). La reina no
+ * tiene rol porque ninguna regla depende de ella: solo la conocen la configuración y la interfaz.
+ */
 public record PieceRoles(
         PieceType king,
         PieceType rook,

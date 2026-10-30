@@ -12,13 +12,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.MoveCommand;
+import com.chess.domain.game.GameSnapshot;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
-import com.chess.domain.game.GameSnapshot;
-import com.chess.domain.command.ICommand;
+import com.chess.domain.model.PieceRoles;
 import com.chess.domain.state.IGameState;
 import com.chess.domain.state.ITurnStateFactory;
-import com.chess.domain.command.MoveCommand;
 import com.chess.domain.state.TurnStateFactory;
 
 final class GameSnapshotTest {
@@ -38,7 +39,7 @@ final class GameSnapshotTest {
                 "........",
                 "P.......",
                 "....K..R");
-        start = GameSnapshot.initial(board, states.forColor(Color.WHITE));
+        start = GameSnapshot.initial(board, states.forColor(Color.WHITE), PieceRoles.standard());
     }
 
     @Test
@@ -80,6 +81,9 @@ final class GameSnapshotTest {
     void itRejectsMissingParts() {
         assertThrows(NullPointerException.class,
                 () -> new GameSnapshot(null, start.castlingRights(), start.drawCounters()));
-        assertThrows(NullPointerException.class, () -> GameSnapshot.initial(null, states.forColor(Color.WHITE)));
+        IGameState turn = states.forColor(Color.WHITE);
+        PieceRoles roles = PieceRoles.standard();
+
+        assertThrows(NullPointerException.class, () -> GameSnapshot.initial(null, turn, roles));
     }
 }

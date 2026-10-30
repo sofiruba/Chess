@@ -29,10 +29,6 @@ public record DrawCounters(
         seenPositions = Map.copyOf(seenPositions);
     }
 
-    public static DrawCounters initial(PositionKey position) {
-        return initial(position, PieceRoles.standard());
-    }
-
     public static DrawCounters initial(PositionKey position, PieceRoles roles) {
         return new DrawCounters(0, Map.of(position, 1), position, roles);
     }

@@ -15,10 +15,6 @@ public record CastlingRights(
         boolean blackQueenSide,
         PieceRoles roles) {
 
-    public static CastlingRights initial(int boardSize) {
-        return initial(boardSize, PieceRoles.standard());
-    }
-
     public static CastlingRights initial(int boardSize, PieceRoles roles) {
         return new CastlingRights(boardSize, true, true, true, true, roles);
     }

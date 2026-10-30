@@ -15,10 +15,6 @@ public final class StandardBoardSetup {
     private final List<PieceType> backRank;
     private final PieceRoles roles;
 
-    public StandardBoardSetup(IPieceFactory pieceFactory, List<PieceType> backRank) {
-        this(pieceFactory, backRank, PieceRoles.standard());
-    }
-
     public StandardBoardSetup(IPieceFactory pieceFactory, List<PieceType> backRank, PieceRoles roles) {
         this.pieceFactory = Objects.requireNonNull(pieceFactory, "pieceFactory must not be null");
         Objects.requireNonNull(backRank, "backRank must not be null");

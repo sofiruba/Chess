@@ -28,6 +28,7 @@ import com.chess.domain.game.GameTimeline;
 import com.chess.domain.game.IGameTimeline;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceRoles;
 import com.chess.domain.port.IGameQueries;
 import com.chess.domain.rule.CastlingRights;
 import com.chess.domain.rule.CastlingRule;
@@ -101,7 +102,8 @@ final class MoveInfoInterfacesTest {
         Board board = TestGames.board("....k...", "........", "........", "........",
                 "........", "........", "........", "....K...");
         ITurnStateFactory states = new TurnStateFactory(new StubMoveGenerator(List.of()));
-        GameTimeline timeline = new GameTimeline(GameSnapshot.initial(board, states.forColor(Color.WHITE)));
+        GameSnapshot start = GameSnapshot.initial(board, states.forColor(Color.WHITE), PieceRoles.standard());
+        GameTimeline timeline = new GameTimeline(start);
 
         assertEquals(Optional.empty(), timeline.lastMove());
         assertTrue(timeline.moves().isEmpty());
@@ -119,9 +121,11 @@ final class MoveInfoInterfacesTest {
                 "P.......",
                 "....K...");
 
-        assertEquals(Optional.of(at("a3")), new MoveCommand(board, at("a2"), at("a4")).enPassantSquare());
-        assertEquals(Optional.empty(), new MoveCommand(board, at("a2"), at("a3")).enPassantSquare());
-        assertEquals(Optional.empty(), new MoveCommand(board, at("e1"), at("e2")).enPassantSquare());
+        PieceRoles roles = PieceRoles.standard();
+
+        assertEquals(Optional.of(at("a3")), new MoveCommand(board, at("a2"), at("a4")).enPassantSquare(roles));
+        assertEquals(Optional.empty(), new MoveCommand(board, at("a2"), at("a3")).enPassantSquare(roles));
+        assertEquals(Optional.empty(), new MoveCommand(board, at("e1"), at("e2")).enPassantSquare(roles));
     }
 
     private static boolean takesACommand(Class<?> type) {

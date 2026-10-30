@@ -18,16 +18,18 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.chess.configuration.DefaultMoveCommandFactory;
+import com.chess.configuration.GameSetup;
 import com.chess.configuration.StandardGameFactory;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
-import com.chess.domain.port.IGameService;
 import com.chess.domain.model.IMoveStrategy;
 import com.chess.domain.model.PieceFactory;
+import com.chess.domain.model.PieceRoles;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
 import com.chess.domain.model.StandardBoardSetup;
+import com.chess.domain.port.IGameService;
 
 /**
  * Extensiones realizadas solo con configuración: una pieza definida en este archivo y tableros de otros tamaños.
@@ -36,6 +38,7 @@ final class ExtensionTest {
 
     private static final PieceType CAMEL = new PieceType("CAMEL", "c");
     private static final String EMPTY_TEN = "..........";
+    private static final PieceRoles ROLES = PieceRoles.standard();
 
     /** Pieza saltadora que avanza tres casillas en una dirección y una en la otra. Solo existe en esta prueba. */
     private static final class CamelMoveStrategy implements IMoveStrategy {
@@ -168,10 +171,8 @@ final class ExtensionTest {
     void sixBySixBoardOnlyAllowsCastlingWhereThereIsRoom() {
         StandardGameFactory factory = new StandardGameFactory(
                 new DefaultMoveCommandFactory(),
-                StandardGameFactory.standardPieceDefinitions(),
-                List.of(PieceType.ROOK, PieceType.KNIGHT, PieceType.QUEEN, PieceType.KING, PieceType.KNIGHT,
-                        PieceType.ROOK),
-                List.of());
+                GameSetup.standard().withBackRank(List.of(PieceType.ROOK, PieceType.KNIGHT, PieceType.QUEEN,
+                        PieceType.KING, PieceType.KNIGHT, PieceType.ROOK)));
         Board board = TestGames.board(
                 "...k..",
                 "......",
@@ -196,16 +197,18 @@ final class ExtensionTest {
 
     @Test
     void setupRejectsBackRanksThatDoNotFit() {
-        PieceFactory pieces = new PieceFactory(StandardGameFactory.standardPieceDefinitions());
+        PieceFactory pieces = new PieceFactory(GameSetup.standardPieceDefinitions());
 
         IllegalArgumentException tooShort = assertThrows(IllegalArgumentException.class,
-                () -> new StandardBoardSetup(pieces, List.of(PieceType.ROOK, PieceType.KING, PieceType.ROOK)));
+                () -> new StandardBoardSetup(pieces, List.of(PieceType.ROOK, PieceType.KING, PieceType.ROOK), ROLES));
         IllegalArgumentException noKing = assertThrows(IllegalArgumentException.class,
                 () -> new StandardBoardSetup(pieces, List.of(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP,
-                        PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK, PieceType.ROOK)));
+                        PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK, PieceType.ROOK),
+                        ROLES));
         IllegalArgumentException misplacedKing = assertThrows(IllegalArgumentException.class,
                 () -> new StandardBoardSetup(pieces, List.of(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP,
-                        PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK, PieceType.KING)));
+                        PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK, PieceType.KING),
+                        ROLES));
 
         assertTrue(tooShort.getMessage().contains("at least 4"));
         assertTrue(noKing.getMessage().contains("exactly one king"));
@@ -214,14 +217,14 @@ final class ExtensionTest {
 
     @Test
     void unregisteredPiecesAreRejectedByTheFactory() {
-        PieceFactory pieces = new PieceFactory(StandardGameFactory.standardPieceDefinitions());
+        PieceFactory pieces = new PieceFactory(GameSetup.standardPieceDefinitions());
 
         assertThrows(IllegalArgumentException.class, () -> pieces.create(Color.WHITE, CAMEL));
     }
 
     private Map<PieceType, List<IMoveStrategy>> camelDefinitions() {
         Map<PieceType, List<IMoveStrategy>> definitions =
-                new LinkedHashMap<>(StandardGameFactory.standardPieceDefinitions());
+                new LinkedHashMap<>(GameSetup.standardPieceDefinitions());
         definitions.put(CAMEL, List.of(new CamelMoveStrategy()));
         return definitions;
     }
@@ -232,7 +235,9 @@ final class ExtensionTest {
     }
 
     private StandardGameFactory camelFactory(List<PieceType> backRank) {
-        return new StandardGameFactory(new DefaultMoveCommandFactory(), camelDefinitions(), backRank, List.of());
+        return new StandardGameFactory(
+                new DefaultMoveCommandFactory(),
+                GameSetup.standard().withPieceDefinitions(camelDefinitions()).withBackRank(backRank));
     }
 
     private List<PieceType> tenBackRank() {
@@ -243,9 +248,7 @@ final class ExtensionTest {
     private StandardGameFactory tenFactory() {
         return new StandardGameFactory(
                 new DefaultMoveCommandFactory(),
-                StandardGameFactory.standardPieceDefinitions(),
-                tenBackRank(),
-                List.of());
+                GameSetup.standard().withBackRank(tenBackRank()));
     }
 
     private IGameService tenGameFromDiagram(Color turn, String... rows) {
