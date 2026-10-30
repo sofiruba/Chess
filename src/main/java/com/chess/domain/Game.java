@@ -72,10 +72,7 @@ public final class Game implements IGameService {
 
     @Override
     public List<Position> legalMoves(Position from) {
-        if (isFinished()) {
-            return List.of();
-        }
-        return moveGenerator.legalMoves(ruleContext(), turn(), from);
+        return snapshot.state().legalMoves(ruleContext(), from);
     }
 
     @Override

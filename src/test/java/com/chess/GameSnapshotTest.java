@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +23,7 @@ import com.chess.domain.TurnStateFactory;
 
 final class GameSnapshotTest {
 
-    private final ITurnStateFactory states = new TurnStateFactory();
+    private final ITurnStateFactory states = new TurnStateFactory(new StubMoveGenerator(List.of()));
     private Board board;
     private GameSnapshot start;
 

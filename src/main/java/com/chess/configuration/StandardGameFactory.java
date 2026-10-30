@@ -21,6 +21,7 @@ import com.chess.domain.IDrawRule;
 import com.chess.domain.IGameFactory;
 import com.chess.domain.IGameService;
 import com.chess.domain.IMoveCommandFactory;
+import com.chess.domain.IMoveGenerator;
 import com.chess.domain.IMoveRule;
 import com.chess.domain.IMoveStrategy;
 import com.chess.domain.IPieceFactory;
@@ -50,13 +51,13 @@ public final class StandardGameFactory implements IGameFactory {
             List.of(PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT);
     private static final int FIFTY_MOVE_LIMIT = 50;
 
-    private final IMoveCommandFactory commandFactory;
     private final List<IMoveRule> additionalRules;
     private final List<PieceType> promotionTypes;
     private final IPieceFactory pieceFactory;
     private final StandardBoardSetup boardSetup;
-    private final ITurnStateFactory stateFactory = new TurnStateFactory();
     private final ICheckDetector checkDetector = new CheckDetector();
+    private final IMoveGenerator moveGenerator;
+    private final ITurnStateFactory stateFactory;
 
     public StandardGameFactory(IMoveCommandFactory commandFactory) {
         this(commandFactory, List.of());
@@ -85,11 +86,13 @@ public final class StandardGameFactory implements IGameFactory {
             List<PieceType> backRank,
             List<IMoveRule> additionalRules,
             List<PieceType> promotionTypes) {
-        this.commandFactory = Objects.requireNonNull(commandFactory, "commandFactory must not be null");
+        Objects.requireNonNull(commandFactory, "commandFactory must not be null");
         this.additionalRules = List.copyOf(Objects.requireNonNull(additionalRules, "additionalRules must not be null"));
         this.promotionTypes = List.copyOf(Objects.requireNonNull(promotionTypes, "promotionTypes must not be null"));
         this.pieceFactory = new PieceFactory(pieceDefinitions);
         this.boardSetup = new StandardBoardSetup(pieceFactory, backRank);
+        this.moveGenerator = new MoveGenerator(commandFactory, checkDetector, moveRules());
+        this.stateFactory = new TurnStateFactory(moveGenerator);
     }
 
     public static Map<PieceType, List<IMoveStrategy>> standardPieceDefinitions() {
@@ -127,7 +130,7 @@ public final class StandardGameFactory implements IGameFactory {
                 checkDetector,
                 new MoveHistory(),
                 new DefaultGameEndEvaluator(checkDetector, stateFactory, drawRules()),
-                new MoveGenerator(commandFactory, checkDetector, moveRules()),
+                moveGenerator,
                 new MoveCodeParser(promotionTypes));
     }
 
