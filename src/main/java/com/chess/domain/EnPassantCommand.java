@@ -65,6 +65,6 @@ public final class EnPassantCommand implements ICommand {
 
     @Override
     public String notation() {
-        return Notation.square(from) + Notation.square(to) + "e";
+        return moveCode() + "e";
     }
 }

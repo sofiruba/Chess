@@ -25,24 +25,24 @@ public record DrawCounters(int halfMoveClock, Map<PositionKey, Integer> seenPosi
     }
 
     /**
-     * @param command the move just executed
+     * @param move the move just executed
      * @param newPosition the position reached by that move
      */
-    public DrawCounters after(ICommand command, PositionKey newPosition) {
+    public DrawCounters after(IMoveInfo move, PositionKey newPosition) {
         Map<PositionKey, Integer> updated = new HashMap<>(seenPositions);
         updated.merge(newPosition, 1, Integer::sum);
-        return new DrawCounters(nextHalfMoveClock(command), updated, newPosition);
+        return new DrawCounters(nextHalfMoveClock(move), updated, newPosition);
     }
 
     public int timesCurrentPositionSeen() {
         return seenPositions.getOrDefault(current, 0);
     }
 
-    private int nextHalfMoveClock(ICommand command) {
-        return isIrreversible(command) ? 0 : halfMoveClock + 1;
+    private int nextHalfMoveClock(IMoveInfo move) {
+        return isIrreversible(move) ? 0 : halfMoveClock + 1;
     }
 
-    private boolean isIrreversible(ICommand command) {
-        return command.movingPiece().type() == PieceType.PAWN || command.capturedPiece() != null;
+    private boolean isIrreversible(IMoveInfo move) {
+        return move.movingPiece().type() == PieceType.PAWN || move.capturedPiece() != null;
     }
 }

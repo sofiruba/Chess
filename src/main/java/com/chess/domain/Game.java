@@ -12,27 +12,23 @@ public final class Game implements IGameService {
     private final IGameEndEvaluator endEvaluator;
     private final IMoveGenerator moveGenerator;
     private final IMoveCodeParser codeParser;
-    private IGameState currentState;
-    private CastlingRights castlingRights;
-    private DrawCounters drawCounters;
+    private GameSnapshot snapshot;
 
     public Game(
             Board board,
-            IGameState initialState,
+            GameSnapshot initialSnapshot,
             ICheckDetector checkDetector,
             IMoveHistory moveHistory,
             IGameEndEvaluator endEvaluator,
             IMoveGenerator moveGenerator,
             IMoveCodeParser codeParser) {
         this.board = Objects.requireNonNull(board, "board must not be null");
-        this.currentState = Objects.requireNonNull(initialState, "initialState must not be null");
+        this.snapshot = Objects.requireNonNull(initialSnapshot, "initialSnapshot must not be null");
         this.checkDetector = Objects.requireNonNull(checkDetector, "checkDetector must not be null");
         this.moveHistory = Objects.requireNonNull(moveHistory, "moveHistory must not be null");
         this.endEvaluator = Objects.requireNonNull(endEvaluator, "endEvaluator must not be null");
         this.moveGenerator = Objects.requireNonNull(moveGenerator, "moveGenerator must not be null");
         this.codeParser = Objects.requireNonNull(codeParser, "codeParser must not be null");
-        this.castlingRights = CastlingRights.initial(board.size());
-        this.drawCounters = DrawCounters.initial(currentPositionKey(null));
         updateEndState();
     }
 
@@ -65,16 +61,12 @@ public final class Game implements IGameService {
 
     @Override
     public void undoLastMove() {
-        IMoveHistory.Entry entry = moveHistory.undoLast();
-        currentState = entry.previousState();
-        castlingRights = entry.previousCastlingRights();
-        drawCounters = entry.previousDrawCounters();
+        snapshot = moveHistory.undoLast().previous();
     }
 
     @Override
     public void redoLastMove() {
-        IMoveHistory.Entry entry = moveHistory.redoLast();
-        applyMove(entry.command());
+        applyMove(moveHistory.redoLast().command());
         updateEndState();
     }
 
@@ -103,7 +95,7 @@ public final class Game implements IGameService {
 
     @Override
     public Color turn() {
-        return currentState.activePlayerColor();
+        return snapshot.state().activePlayerColor();
     }
 
     @Override
@@ -113,27 +105,27 @@ public final class Game implements IGameService {
 
     @Override
     public boolean isFinished() {
-        return currentState.isFinished();
+        return snapshot.state().isFinished();
     }
 
     @Override
     public GameResult result() {
-        return currentState.result();
+        return snapshot.state().result();
     }
 
     @Override
     public List<String> moveNotation() {
-        return moveHistory.commands().stream().map(ICommand::notation).toList();
+        return moveHistory.moves().stream().map(IMoveInfo::notation).toList();
     }
 
     @Override
     public List<String> moveCodes() {
-        return moveHistory.commands().stream().map(ICommand::moveCode).toList();
+        return moveHistory.moves().stream().map(IMoveInfo::moveCode).toList();
     }
 
     @Override
     public List<Piece> capturedPieces() {
-        return moveHistory.commands().stream().map(ICommand::capturedPiece).filter(Objects::nonNull).toList();
+        return moveHistory.moves().stream().map(IMoveInfo::capturedPiece).filter(Objects::nonNull).toList();
     }
 
     private void play(MoveRequest request) {
@@ -142,11 +134,9 @@ public final class Game implements IGameService {
             throw new IllegalArgumentException("Illegal movement from " + request.from() + " to " + request.to());
         }
         ICommand command = moveGenerator.createCommand(ruleContext(), request);
-        IGameState previousState = currentState;
-        CastlingRights previousRights = castlingRights;
-        DrawCounters previousCounters = drawCounters;
+        GameSnapshot previous = snapshot;
         applyMove(command);
-        moveHistory.record(command, previousState, previousRights, previousCounters);
+        moveHistory.record(command, previous);
         updateEndState();
     }
 
@@ -158,13 +148,8 @@ public final class Game implements IGameService {
     }
 
     private void applyMove(ICommand command) {
-        currentState = currentState.handleMove(command);
-        castlingRights = castlingRights.after(command);
-        drawCounters = drawCounters.after(command, currentPositionKey(command));
-    }
-
-    private PositionKey currentPositionKey(ICommand lastMove) {
-        return PositionKey.of(board, turn(), castlingRights, lastMove);
+        IGameState nextState = snapshot.state().handleMove(command);
+        snapshot = snapshot.after(command, board, nextState);
     }
 
     private void requireOwnPieceAt(Position from) {
@@ -178,11 +163,12 @@ public final class Game implements IGameService {
     }
 
     private MoveRuleContext ruleContext() {
-        return new MoveRuleContext(board, checkDetector, moveHistory.lastCommand(), castlingRights);
+        return new MoveRuleContext(board, checkDetector, moveHistory.lastMove(), snapshot.castlingRights());
     }
 
     private void updateEndState() {
-        Optional<IGameState> endState = endEvaluator.evaluate(board, turn(), drawCounters, this::legalMoves);
-        endState.ifPresent(state -> currentState = state);
+        Optional<IGameState> endState =
+                endEvaluator.evaluate(board, turn(), snapshot.drawCounters(), this::legalMoves);
+        endState.ifPresent(state -> snapshot = snapshot.withState(state));
     }
 }

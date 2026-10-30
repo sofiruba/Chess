@@ -67,7 +67,7 @@ public final class PromotionCommand implements ICommand {
 
     @Override
     public String notation() {
-        return Notation.square(from) + Notation.square(to) + promotedPiece.type().notationCode();
+        return moveCode();
     }
 
     @Override

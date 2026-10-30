@@ -61,6 +61,6 @@ public final class MoveCommand implements ICommand {
 
     @Override
     public String notation() {
-        return Notation.square(from) + Notation.square(to);
+        return moveCode();
     }
 }

@@ -2,6 +2,7 @@ package com.chess.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class MoveHistory implements IMoveHistory {
 
@@ -9,12 +10,8 @@ public final class MoveHistory implements IMoveHistory {
     private final List<Entry> undoneMoves = new ArrayList<>();
 
     @Override
-    public void record(
-            ICommand command,
-            IGameState previousState,
-            CastlingRights previousCastlingRights,
-            DrawCounters previousDrawCounters) {
-        executedMoves.add(new Entry(command, previousState, previousCastlingRights, previousDrawCounters));
+    public void record(ICommand command, GameSnapshot previous) {
+        executedMoves.add(new Entry(command, previous));
         undoneMoves.clear();
     }
 
@@ -40,16 +37,15 @@ public final class MoveHistory implements IMoveHistory {
     }
 
     @Override
-    public ICommand lastCommand() {
+    public Optional<IMoveInfo> lastMove() {
         if (executedMoves.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-        return executedMoves.get(executedMoves.size() - 1).command();
+        return Optional.of(executedMoves.get(executedMoves.size() - 1).command());
     }
 
     @Override
-    public List<ICommand> commands() {
-        return executedMoves.stream().map(Entry::command).toList();
+    public List<IMoveInfo> moves() {
+        return executedMoves.stream().<IMoveInfo>map(Entry::command).toList();
     }
-
 }

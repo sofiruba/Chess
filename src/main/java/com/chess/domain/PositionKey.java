@@ -21,9 +21,14 @@ public record PositionKey(String placement, Color turn, CastlingRights castlingR
     /**
      * @param lastMove the move that led to this position, or null if it is the starting position
      */
-    public static PositionKey of(Board board, Color turn, CastlingRights castlingRights, ICommand lastMove) {
+    public static PositionKey of(Board board, Color turn, CastlingRights castlingRights, IMoveInfo lastMove) {
         Objects.requireNonNull(board, "board must not be null");
         return new PositionKey(placementOf(board), turn, castlingRights, enPassantSquareAfter(lastMove));
+    }
+
+    public static PositionKey initial(Board board, Color turn, CastlingRights castlingRights) {
+        Objects.requireNonNull(board, "board must not be null");
+        return new PositionKey(placementOf(board), turn, castlingRights, null);
     }
 
     private static String placementOf(Board board) {
@@ -43,15 +48,10 @@ public record PositionKey(String placement, Color turn, CastlingRights castlingR
         return piece.color().name().charAt(0) + piece.type().name();
     }
 
-    private static Position enPassantSquareAfter(ICommand lastMove) {
-        if (lastMove == null || !isPawnDoubleStep(lastMove)) {
+    private static Position enPassantSquareAfter(IMoveInfo lastMove) {
+        if (lastMove == null) {
             return null;
         }
-        return new Position(lastMove.to().x(), (lastMove.from().y() + lastMove.to().y()) / 2);
-    }
-
-    private static boolean isPawnDoubleStep(ICommand move) {
-        return move.movingPiece().type() == PieceType.PAWN
-                && Math.abs(move.to().y() - move.from().y()) == 2;
+        return lastMove.enPassantSquare().orElse(null);
     }
 }

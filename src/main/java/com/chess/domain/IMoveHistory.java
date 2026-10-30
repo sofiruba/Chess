@@ -1,20 +1,25 @@
 package com.chess.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IMoveHistory {
-    void record(ICommand command, IGameState previousState, CastlingRights previousRights,
-            DrawCounters previousCounters);
+
+    /**
+     * @param previous the snapshot before the command was executed; undo gives it back
+     */
+    void record(ICommand command, GameSnapshot previous);
 
     Entry undoLast();
 
     Entry redoLast();
 
-    ICommand lastCommand();
+    /** Read-only view of the last executed move; empty before the first move. */
+    Optional<IMoveInfo> lastMove();
 
-    List<ICommand> commands();
+    /** Read-only view of the executed moves, oldest first. */
+    List<IMoveInfo> moves();
 
-    record Entry(ICommand command, IGameState previousState, CastlingRights previousCastlingRights,
-            DrawCounters previousDrawCounters) {
+    record Entry(ICommand command, GameSnapshot previous) {
     }
 }

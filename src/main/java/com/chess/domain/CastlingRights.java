@@ -18,14 +18,14 @@ public record CastlingRights(
         return direction > 0 ? blackKingSide : blackQueenSide;
     }
 
-    public CastlingRights after(ICommand command) {
+    public CastlingRights after(IMoveInfo move) {
         CastlingRights updated = this;
-        for (ICommand.MovedPiece moved : command.movedPieces()) {
+        for (IMoveInfo.MovedPiece moved : move.movedPieces()) {
             updated = updated.afterPieceMoved(moved.piece(), moved.from());
         }
-        Piece captured = command.capturedPiece();
-        if (captured != null && isHomeRook(captured, command.to())) {
-            updated = updated.withoutRook(captured.color(), command.to().x());
+        Piece captured = move.capturedPiece();
+        if (captured != null && isHomeRook(captured, move.to())) {
+            updated = updated.withoutRook(captured.color(), move.to().x());
         }
         return updated;
     }
