@@ -2,6 +2,7 @@ package com.chess.domain.rule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.chess.domain.command.CastlingCommand;
 import com.chess.domain.command.ICommand;
@@ -22,12 +23,8 @@ public final class CastlingRule implements IMoveRule {
 
     private final PieceRoles roles;
 
-    public CastlingRule() {
-        this(PieceRoles.standard());
-    }
-
     public CastlingRule(PieceRoles roles) {
-        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
     }
 
     @Override

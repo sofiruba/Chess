@@ -2,7 +2,6 @@ package com.chess.domain.game;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.chess.domain.command.ICommand;
 import com.chess.domain.command.IMoveInfo;
@@ -19,30 +18,26 @@ import com.chess.domain.rule.IMoveGenerator;
 import com.chess.domain.rule.MoveRequest;
 import com.chess.domain.rule.MoveRuleContext;
 import com.chess.domain.state.IGameEndEvaluator;
-import com.chess.domain.state.IGameState;
 
 public final class Game implements IGameService {
 
     private final Board board;
     private final ICheckDetector checkDetector;
-    private final IMoveHistory moveHistory;
+    private final IGameTimeline timeline;
     private final IGameEndEvaluator endEvaluator;
     private final IMoveGenerator moveGenerator;
     private final IMoveCodeParser codeParser;
-    private GameSnapshot snapshot;
 
     public Game(
             Board board,
-            GameSnapshot initialSnapshot,
             ICheckDetector checkDetector,
-            IMoveHistory moveHistory,
+            IGameTimeline timeline,
             IGameEndEvaluator endEvaluator,
             IMoveGenerator moveGenerator,
             IMoveCodeParser codeParser) {
         this.board = Objects.requireNonNull(board, "board must not be null");
-        this.snapshot = Objects.requireNonNull(initialSnapshot, "initialSnapshot must not be null");
         this.checkDetector = Objects.requireNonNull(checkDetector, "checkDetector must not be null");
-        this.moveHistory = Objects.requireNonNull(moveHistory, "moveHistory must not be null");
+        this.timeline = Objects.requireNonNull(timeline, "timeline must not be null");
         this.endEvaluator = Objects.requireNonNull(endEvaluator, "endEvaluator must not be null");
         this.moveGenerator = Objects.requireNonNull(moveGenerator, "moveGenerator must not be null");
         this.codeParser = Objects.requireNonNull(codeParser, "codeParser must not be null");
@@ -78,18 +73,18 @@ public final class Game implements IGameService {
 
     @Override
     public void undoLastMove() {
-        snapshot = moveHistory.undoLast().previous();
+        timeline.undo();
     }
 
     @Override
     public void redoLastMove() {
-        applyMove(moveHistory.redoLast().command());
+        timeline.redo(board);
         updateEndState();
     }
 
     @Override
     public List<Position> legalMoves(Position from) {
-        return snapshot.state().legalMoves(ruleContext(), from);
+        return timeline.current().state().legalMoves(ruleContext(), from);
     }
 
     @Override
@@ -109,7 +104,7 @@ public final class Game implements IGameService {
 
     @Override
     public Color turn() {
-        return snapshot.state().activePlayerColor();
+        return timeline.current().state().activePlayerColor();
     }
 
     @Override
@@ -125,27 +120,27 @@ public final class Game implements IGameService {
 
     @Override
     public boolean isFinished() {
-        return snapshot.state().isFinished();
+        return timeline.current().state().isFinished();
     }
 
     @Override
     public GameResult result() {
-        return snapshot.state().result();
+        return timeline.current().state().result();
     }
 
     @Override
     public List<String> moveNotation() {
-        return moveHistory.moves().stream().map(IMoveInfo::notation).toList();
+        return timeline.moves().stream().map(IMoveInfo::notation).toList();
     }
 
     @Override
     public List<String> moveCodes() {
-        return moveHistory.moves().stream().map(IMoveInfo::moveCode).toList();
+        return timeline.moves().stream().map(IMoveInfo::moveCode).toList();
     }
 
     @Override
     public List<Piece> capturedPieces() {
-        return moveHistory.moves().stream().map(IMoveInfo::capturedPiece).filter(Objects::nonNull).toList();
+        return timeline.moves().stream().map(IMoveInfo::capturedPiece).filter(Objects::nonNull).toList();
     }
 
     private void play(MoveRequest request) {
@@ -154,9 +149,7 @@ public final class Game implements IGameService {
             throw new IllegalArgumentException("Illegal movement from " + request.from() + " to " + request.to());
         }
         ICommand command = moveGenerator.createCommand(ruleContext(), request);
-        GameSnapshot previous = snapshot;
-        applyMove(command);
-        moveHistory.record(command, previous);
+        timeline.advance(command, board);
         updateEndState();
     }
 
@@ -165,11 +158,6 @@ public final class Game implements IGameService {
         if (promotes != (request.promotionType() != null)) {
             throw new IllegalArgumentException("The promotion does not match the move code: " + moveCode);
         }
-    }
-
-    private void applyMove(ICommand command) {
-        IGameState nextState = snapshot.state().handleMove(command);
-        snapshot = snapshot.after(command, board, nextState);
     }
 
     private void requireOwnPieceAt(Position from) {
@@ -183,12 +171,12 @@ public final class Game implements IGameService {
     }
 
     private MoveRuleContext ruleContext() {
-        return new MoveRuleContext(board, checkDetector, moveHistory.lastMove(), snapshot.castlingRights());
+        return new MoveRuleContext(board, checkDetector, timeline.lastMove(), timeline.current().castlingRights());
     }
 
     private void updateEndState() {
-        Optional<IGameState> endState =
-                endEvaluator.evaluate(board, turn(), snapshot.drawCounters(), this::legalMoves);
-        endState.ifPresent(state -> snapshot = snapshot.withState(state));
+        endEvaluator
+                .evaluate(board, turn(), timeline.current().drawCounters(), this::legalMoves)
+                .ifPresent(timeline::replaceState);
     }
 }

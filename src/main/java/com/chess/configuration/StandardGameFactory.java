@@ -13,7 +13,7 @@ import com.chess.domain.draw.InsufficientMaterialRule;
 import com.chess.domain.draw.ThreefoldRepetitionRule;
 import com.chess.domain.game.Game;
 import com.chess.domain.game.GameSnapshot;
-import com.chess.domain.game.MoveHistory;
+import com.chess.domain.game.GameTimeline;
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.IMoveStrategy;
@@ -163,11 +163,11 @@ public final class StandardGameFactory implements IGameFactory {
     }
 
     public IGameService create(Board board, Color firstPlayer) {
+        GameSnapshot initial = GameSnapshot.initial(board, stateFactory.forColor(firstPlayer), roles);
         return new Game(
                 board,
-                GameSnapshot.initial(board, stateFactory.forColor(firstPlayer), roles),
                 checkDetector,
-                new MoveHistory(),
+                new GameTimeline(initial),
                 new DefaultGameEndEvaluator(checkDetector, stateFactory, drawRules()),
                 moveGenerator,
                 new MoveCodeParser(promotionTypes));

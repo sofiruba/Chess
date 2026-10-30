@@ -2,6 +2,7 @@ package com.chess.domain.draw;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Piece;
@@ -18,12 +19,8 @@ public final class InsufficientMaterialRule implements IDrawRule {
 
     private final PieceRoles roles;
 
-    public InsufficientMaterialRule() {
-        this(PieceRoles.standard());
-    }
-
     public InsufficientMaterialRule(PieceRoles roles) {
-        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
     }
 
     @Override

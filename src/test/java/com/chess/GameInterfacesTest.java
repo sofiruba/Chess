@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,10 +58,10 @@ final class GameInterfacesTest {
     private static void assertTakesQueriesNotActions(String className) throws ClassNotFoundException {
         Class<?> type = Class.forName(className, false, GameInterfacesTest.class.getClassLoader());
         for (Constructor<?> constructor : type.getDeclaredConstructors()) {
-            Class<?>[] parameters = constructor.getParameterTypes();
-            assertTrue(Arrays.asList(parameters).contains(IGameQueries.class), className + " must receive IGameQueries");
-            assertFalse(Arrays.asList(parameters).contains(IGameService.class), className + " must not receive IGameService");
-            assertFalse(Arrays.asList(parameters).contains(IGameActions.class), className + " must not receive IGameActions");
+            List<Class<?>> parameters = Arrays.asList(constructor.getParameterTypes());
+            assertTrue(parameters.contains(IGameQueries.class), className + " must receive IGameQueries");
+            assertFalse(parameters.contains(IGameService.class), className + " must not receive IGameService");
+            assertFalse(parameters.contains(IGameActions.class), className + " must not receive IGameActions");
         }
     }
 

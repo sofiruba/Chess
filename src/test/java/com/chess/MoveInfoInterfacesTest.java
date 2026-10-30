@@ -18,22 +18,25 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.chess.domain.command.ICommand;
+import com.chess.domain.command.IMoveInfo;
+import com.chess.domain.command.MoveCommand;
+import com.chess.domain.draw.DrawCounters;
+import com.chess.domain.draw.PositionKey;
+import com.chess.domain.game.GameSnapshot;
+import com.chess.domain.game.GameTimeline;
+import com.chess.domain.game.IGameTimeline;
 import com.chess.domain.model.Board;
+import com.chess.domain.model.Color;
+import com.chess.domain.port.IGameQueries;
 import com.chess.domain.rule.CastlingRights;
 import com.chess.domain.rule.CastlingRule;
-import com.chess.domain.draw.DrawCounters;
 import com.chess.domain.rule.EnPassantRule;
-import com.chess.domain.game.GameSnapshot;
-import com.chess.domain.command.ICommand;
-import com.chess.domain.port.IGameQueries;
-import com.chess.domain.game.IMoveHistory;
-import com.chess.domain.command.IMoveInfo;
 import com.chess.domain.rule.IMoveRule;
-import com.chess.domain.command.MoveCommand;
-import com.chess.domain.game.MoveHistory;
 import com.chess.domain.rule.MoveRuleContext;
-import com.chess.domain.draw.PositionKey;
 import com.chess.domain.rule.PromotionRule;
+import com.chess.domain.state.ITurnStateFactory;
+import com.chess.domain.state.TurnStateFactory;
 
 final class MoveInfoInterfacesTest {
 
@@ -83,20 +86,25 @@ final class MoveInfoInterfacesTest {
     }
 
     @Test
-    void theHistoryExposesReadOnlyViewsOfTheMoves() throws NoSuchMethodException {
-        Method lastMove = IMoveHistory.class.getMethod("lastMove");
-        Method moves = IMoveHistory.class.getMethod("moves");
+    void theTimelineExposesReadOnlyViewsOfTheMoves() throws NoSuchMethodException {
+        Method lastMove = IGameTimeline.class.getMethod("lastMove");
+        Method moves = IGameTimeline.class.getMethod("moves");
+        String optionalOfMoveInfo = "java.util.Optional<com.chess.domain.command.IMoveInfo>";
+        String listOfMoveInfo = "java.util.List<com.chess.domain.command.IMoveInfo>";
 
-        assertEquals("java.util.Optional<com.chess.domain.command.IMoveInfo>", lastMove.getGenericReturnType().getTypeName());
-        assertEquals("java.util.List<com.chess.domain.command.IMoveInfo>", moves.getGenericReturnType().getTypeName());
+        assertEquals(optionalOfMoveInfo, lastMove.getGenericReturnType().getTypeName());
+        assertEquals(listOfMoveInfo, moves.getGenericReturnType().getTypeName());
     }
 
     @Test
-    void theHistoryHasNoLastMoveBeforeTheFirstMove() {
-        MoveHistory history = new MoveHistory();
+    void theTimelineHasNoLastMoveBeforeTheFirstMove() {
+        Board board = TestGames.board("....k...", "........", "........", "........",
+                "........", "........", "........", "....K...");
+        ITurnStateFactory states = new TurnStateFactory(new StubMoveGenerator(List.of()));
+        GameTimeline timeline = new GameTimeline(GameSnapshot.initial(board, states.forColor(Color.WHITE)));
 
-        assertEquals(Optional.empty(), history.lastMove());
-        assertTrue(history.moves().isEmpty());
+        assertEquals(Optional.empty(), timeline.lastMove());
+        assertTrue(timeline.moves().isEmpty());
     }
 
     @Test

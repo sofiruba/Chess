@@ -19,10 +19,6 @@ public final class PromotionRule implements IMoveRule {
     private final List<PieceType> promotionTypes;
     private final PieceRoles roles;
 
-    public PromotionRule(IPieceFactory pieceFactory, List<PieceType> promotionTypes) {
-        this(pieceFactory, promotionTypes, PieceRoles.standard());
-    }
-
     public PromotionRule(IPieceFactory pieceFactory, List<PieceType> promotionTypes, PieceRoles roles) {
         this.pieceFactory = Objects.requireNonNull(pieceFactory, "pieceFactory must not be null");
         Objects.requireNonNull(promotionTypes, "promotionTypes must not be null");

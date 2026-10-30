@@ -1,6 +1,7 @@
 package com.chess.domain.rule;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.chess.domain.command.EnPassantCommand;
@@ -18,12 +19,8 @@ public final class EnPassantRule implements IMoveRule {
 
     private final PieceRoles roles;
 
-    public EnPassantRule() {
-        this(PieceRoles.standard());
-    }
-
     public EnPassantRule(PieceRoles roles) {
-        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
     }
 
     @Override

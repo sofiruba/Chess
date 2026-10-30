@@ -1,5 +1,7 @@
 package com.chess.domain.rule;
 
+import java.util.Objects;
+
 import com.chess.domain.model.Board;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.Piece;
@@ -11,12 +13,8 @@ public final class CheckDetector implements ICheckDetector {
 
     private final PieceRoles roles;
 
-    public CheckDetector() {
-        this(PieceRoles.standard());
-    }
-
     public CheckDetector(PieceRoles roles) {
-        this.roles = java.util.Objects.requireNonNull(roles, "roles must not be null");
+        this.roles = Objects.requireNonNull(roles, "roles must not be null");
     }
 
     @Override
