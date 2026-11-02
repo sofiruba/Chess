@@ -1,5 +1,6 @@
 package com.chess.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,8 +11,13 @@ import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameFactory;
 import com.chess.domain.port.IGameService;
 
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleRole;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -22,6 +28,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 public final class ChessApplication {
     private final IGameArchive archive;
@@ -30,6 +41,7 @@ public final class ChessApplication {
     private final IPromotionChooser promotionChooser;
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
     private final BorderPane root = new BorderPane();
+    private final List<Animation> homeAnimations = new ArrayList<>();
     private IGameService game;
     private BoardView boardView;
     private SidePanel sidePanel;
@@ -59,9 +71,14 @@ public final class ChessApplication {
     }
 
     private void showHome() {
+        stopHomeAnimations();
         root.setTop(null);
         root.setRight(null);
         root.setBottom(null);
+
+        StackPane screen = new StackPane();
+        screen.setPadding(new Insets(16));
+        screen.getStyleClass().add("home-screen");
 
         var logoResource = getClass().getResource("/com/chess/ui/assets/chess-title.png");
         if (logoResource == null) {
@@ -69,15 +86,17 @@ public final class ChessApplication {
         }
         Image logo = new Image(logoResource.toExternalForm(), 500, 300, true, true);
         ImageView logoView = new ImageView(logo);
-        logoView.setFitWidth(500);
-        logoView.setFitHeight(300);
+        logoView.fitWidthProperty().bind(Bindings.min(
+                500,
+                Bindings.min(screen.widthProperty().multiply(0.68), screen.heightProperty().multiply(0.34))));
+        logoView.fitHeightProperty().bind(screen.heightProperty().multiply(0.34));
         logoView.setPreserveRatio(true);
         logoView.setAccessibleText("CHESSS");
 
-        Label eyebrow = new Label("ESTRATEGIA · AVENTURA · DIVERSIÓN");
-        eyebrow.getStyleClass().add("home-eyebrow");
-        Label subtitle = new Label("Cada jugada abre un nuevo camino.");
+        Label subtitle = new Label("¡Tu próxima gran jugada te espera!");
         subtitle.getStyleClass().add("home-subtitle");
+        subtitle.setWrapText(true);
+        subtitle.maxWidthProperty().bind(screen.widthProperty().multiply(0.72));
 
         Button fresh = new Button("Nueva partida");
         fresh.setOnAction(event -> resetGame());
@@ -93,15 +112,79 @@ public final class ChessApplication {
         actions.setAlignment(Pos.CENTER);
         actions.getStyleClass().add("home-actions");
 
-        VBox content = new VBox(8, eyebrow, logoView, subtitle, actions);
+        VBox content = new VBox(8, logoView, subtitle, actions);
         content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(36));
+        content.setPadding(new Insets(24));
+        content.prefWidthProperty().bind(Bindings.min(780, screen.widthProperty().multiply(0.84)));
         content.getStyleClass().add("home-card");
 
-        StackPane screen = new StackPane(content);
-        screen.setPadding(new Insets(30));
-        screen.getStyleClass().add("home-screen");
+        Pane coinLayer = new Pane();
+        coinLayer.setMouseTransparent(true);
+        addFloatingCoin(coinLayer, screen, 0.10, 0.16, 0);
+        addFloatingCoin(coinLayer, screen, 0.88, 0.18, 0.35);
+        addFloatingCoin(coinLayer, screen, 0.07, 0.78, 0.7);
+        addFloatingCoin(coinLayer, screen, 0.91, 0.76, 1.05);
+        addFloatingCoin(coinLayer, screen, 0.25, 0.91, 1.4);
+        screen.getChildren().addAll(coinLayer, content);
         root.setCenter(screen);
+    }
+
+    private void addFloatingCoin(Pane layer, StackPane screen, double x, double y, double delay) {
+        Circle coin = new Circle(24, Color.web("#ffc928"));
+        coin.setStroke(Color.web("#9b5b00"));
+        coin.setStrokeWidth(3);
+
+        Circle innerRing = new Circle(18, Color.web("#ffd94a"));
+        innerRing.setStroke(Color.web("#fff0a5"));
+        innerRing.setStrokeWidth(2);
+
+        Polygon star = new Polygon(
+                0.0, -9.0,
+                2.5, -2.8,
+                9.0, -2.8,
+                4.0, 1.0,
+                5.5, 8.0,
+                0.0, 4.0,
+                -5.5, 8.0,
+                -4.0, 1.0,
+                -9.0, -2.8,
+                -2.5, -2.8);
+        star.setFill(Color.web("#c98500"));
+        star.setStroke(Color.web("#fff0a5"));
+        star.setStrokeWidth(1);
+
+        StackPane token = new StackPane(coin, innerRing, star);
+        token.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
+        token.setAccessibleText("Moneda dorada");
+        token.setPrefSize(52, 52);
+        token.setMinSize(52, 52);
+        token.setMaxSize(52, 52);
+        token.layoutXProperty().bind(screen.widthProperty().multiply(x).subtract(26));
+        token.layoutYProperty().bind(screen.heightProperty().multiply(y).subtract(26));
+        layer.getChildren().add(token);
+
+        RotateTransition spin = new RotateTransition(Duration.seconds(2.4 + delay), token);
+        spin.setAxis(Rotate.Y_AXIS);
+        spin.setFromAngle(0);
+        spin.setToAngle(360);
+        spin.setCycleCount(Animation.INDEFINITE);
+        spin.setDelay(Duration.seconds(delay));
+
+        TranslateTransition bob = new TranslateTransition(Duration.seconds(1.3 + delay / 2), token);
+        bob.setByY(-10);
+        bob.setAutoReverse(true);
+        bob.setCycleCount(Animation.INDEFINITE);
+        bob.setDelay(Duration.seconds(delay));
+
+        homeAnimations.add(spin);
+        homeAnimations.add(bob);
+        spin.play();
+        bob.play();
+    }
+
+    private void stopHomeAnimations() {
+        homeAnimations.forEach(Animation::stop);
+        homeAnimations.clear();
     }
 
     private void resetGame() {
@@ -130,6 +213,7 @@ public final class ChessApplication {
     }
 
     private void showGame() {
+        stopHomeAnimations();
         root.setCenter(boardView.createView());
         root.setRight(sidePanel.createView());
         root.setTop(gameHeader());

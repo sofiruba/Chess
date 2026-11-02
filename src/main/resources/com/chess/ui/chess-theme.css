@@ -1,35 +1,29 @@
 .app-root {
     -fx-background-color: linear-gradient(to bottom right, #fdfdd0, #e9f2d9);
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-family: "Comic Sans MS", "Trebuchet MS", "Arial", sans-serif;
 }
 
 .home-screen {
-    -fx-background-color: linear-gradient(to bottom right, #2e8a57, #4169e1);
+    -fx-background-color: #cd212a;
+    -fx-background-image: url("assets/background.png");
+    -fx-background-repeat: repeat;
+    -fx-background-position: top left;
 }
 
 .home-card {
     -fx-background-color: #fdfdd0;
-    -fx-background-radius: 28;
+    -fx-background-radius: 34;
     -fx-border-color: #fbc02d;
-    -fx-border-width: 5;
-    -fx-border-radius: 24;
-    -fx-effect: dropshadow(gaussian, rgba(12, 39, 27, 0.32), 24, 0.18, 0, 10);
-}
-
-.home-eyebrow {
-    -fx-background-color: #4169e1;
-    -fx-background-radius: 18;
-    -fx-text-fill: white;
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-padding: 8 18;
+    -fx-border-width: 6;
+    -fx-border-radius: 30;
+    -fx-effect: dropshadow(gaussian, rgba(63, 23, 12, 0.42), 26, 0.2, 0, 10);
 }
 
 .home-subtitle {
-    -fx-text-fill: #235d3b;
-    -fx-font-size: 18px;
+    -fx-text-fill: #2e8a57;
+    -fx-font-size: 21px;
     -fx-font-weight: bold;
-    -fx-padding: 0 0 12 0;
+    -fx-padding: 4 0 12 0;
 }
 
 .home-actions {
