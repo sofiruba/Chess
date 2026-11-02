@@ -11,10 +11,17 @@ import com.chess.domain.port.IGameFactory;
 import com.chess.domain.port.IGameService;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public final class ChessApplication {
     private final IGameArchive archive;
@@ -41,22 +48,71 @@ public final class ChessApplication {
     }
 
     public Pane createView() {
-        startNewGame();
-        showGame();
+        root.getStyleClass().add("app-root");
+        var stylesheet = getClass().getResource("chess-theme.css");
+        if (stylesheet == null) {
+            throw new IllegalStateException("Missing chess UI stylesheet.");
+        }
+        root.getStylesheets().add(stylesheet.toExternalForm());
+        showHome();
+        return root;
+    }
+
+    private void showHome() {
+        root.setTop(null);
+        root.setRight(null);
+        root.setBottom(null);
+
+        var logoResource = getClass().getResource("/com/chess/ui/assets/chess-title.png");
+        if (logoResource == null) {
+            throw new IllegalStateException("Missing chess title artwork.");
+        }
+        Image logo = new Image(logoResource.toExternalForm(), 500, 300, true, true);
+        ImageView logoView = new ImageView(logo);
+        logoView.setFitWidth(500);
+        logoView.setFitHeight(300);
+        logoView.setPreserveRatio(true);
+        logoView.setAccessibleText("CHESSS");
+
+        Label eyebrow = new Label("ESTRATEGIA · AVENTURA · DIVERSIÓN");
+        eyebrow.getStyleClass().add("home-eyebrow");
+        Label subtitle = new Label("Cada jugada abre un nuevo camino.");
+        subtitle.getStyleClass().add("home-subtitle");
+
         Button fresh = new Button("Nueva partida");
         fresh.setOnAction(event -> resetGame());
-        Button undo = new Button("Deshacer");
-        undo.setOnAction(event -> undo());
-        Button redo = new Button("Rehacer");
-        redo.setOnAction(event -> redo());
-        root.setBottom(new HBox(8, fresh, undo, redo));
-        BorderPane.setMargin(root.getBottom(), new Insets(10));
-        return root;
+        fresh.getStyleClass().addAll("game-button", "primary-button");
+        Button load = new Button("Cargar partida");
+        load.setOnAction(event -> openSavedGames());
+        load.getStyleClass().addAll("game-button", "secondary-button");
+        fresh.setMaxWidth(Double.MAX_VALUE);
+        load.setMaxWidth(Double.MAX_VALUE);
+
+        VBox actions = new VBox(12, fresh, load);
+        actions.setMaxWidth(280);
+        actions.setAlignment(Pos.CENTER);
+        actions.getStyleClass().add("home-actions");
+
+        VBox content = new VBox(8, eyebrow, logoView, subtitle, actions);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(36));
+        content.getStyleClass().add("home-card");
+
+        StackPane screen = new StackPane(content);
+        screen.setPadding(new Insets(30));
+        screen.getStyleClass().add("home-screen");
+        root.setCenter(screen);
     }
 
     private void resetGame() {
         startNewGame();
         showGame();
+    }
+
+    private void openSavedGames() {
+        startNewGame();
+        showGame();
+        sidePanel.showMessage("Selecciona una partida guardada para continuar.");
     }
 
     private void startNewGame() {
@@ -76,6 +132,43 @@ public final class ChessApplication {
     private void showGame() {
         root.setCenter(boardView.createView());
         root.setRight(sidePanel.createView());
+        root.setTop(gameHeader());
+
+        Button fresh = new Button("Nueva partida");
+        fresh.setOnAction(event -> resetGame());
+        fresh.getStyleClass().addAll("game-button", "primary-button");
+        Button undo = new Button("Deshacer");
+        undo.setOnAction(event -> undo());
+        undo.getStyleClass().addAll("game-button", "secondary-button");
+        Button redo = new Button("Rehacer");
+        redo.setOnAction(event -> redo());
+        redo.getStyleClass().addAll("game-button", "secondary-button");
+        HBox actions = new HBox(10, fresh, undo, redo);
+        actions.setAlignment(Pos.CENTER_LEFT);
+        actions.setPadding(new Insets(14, 24, 18, 30));
+        root.setBottom(actions);
+        BorderPane.setMargin(root.getCenter(), new Insets(20, 10, 10, 20));
+        BorderPane.setMargin(root.getRight(), new Insets(20, 24, 14, 14));
+    }
+
+    private HBox gameHeader() {
+        Label brand = new Label("CHESSS");
+        brand.getStyleClass().add("game-brand");
+        Label hint = new Label("Una jugada a la vez");
+        hint.getStyleClass().add("header-hint");
+        VBox identity = new VBox(2, brand, hint);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        Button home = new Button("Inicio");
+        home.setOnAction(event -> showHome());
+        home.getStyleClass().addAll("game-button", "home-button");
+
+        HBox header = new HBox(18, identity, spacer, home);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(14, 24, 14, 30));
+        header.getStyleClass().add("game-header");
+        return header;
     }
 
     private void loadGame(GameRecord record) {

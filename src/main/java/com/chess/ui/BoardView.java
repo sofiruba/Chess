@@ -10,6 +10,7 @@ import com.chess.domain.port.IGameQueries;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -19,6 +20,7 @@ public final class BoardView implements IGameListener {
     private static final int SQUARE_SIZE = 64;
     private final IGameQueries game;
     private final PieceSymbols symbols;
+    private final PieceArtwork artwork = new PieceArtwork();
     private final Consumer<Position> squareClickHandler;
     private final GridPane squares = new GridPane();
     private Position selected;
@@ -32,6 +34,7 @@ public final class BoardView implements IGameListener {
 
     public BorderPane createView() {
         BorderPane view = new BorderPane(squares);
+        view.getStyleClass().add("board-frame");
         view.setTop(fileLabels());
         view.setLeft(rankLabels());
         render();
@@ -50,6 +53,7 @@ public final class BoardView implements IGameListener {
 
     public void render() {
         squares.getChildren().clear();
+        squares.getStyleClass().setAll("chess-grid");
         for (int y = game.boardSize() - 1; y >= 0; y--) {
             for (int x = 0; x < game.boardSize(); x++) {
                 addSquare(new Position(x, y));
@@ -76,10 +80,12 @@ public final class BoardView implements IGameListener {
         HBox labels = new HBox();
         for (int x = 0; x < game.boardSize(); x++) {
             Label label = new Label(String.valueOf((char) ('a' + x)));
-            label.setMinWidth(SQUARE_SIZE);
-            label.setStyle("-fx-alignment: center;");
+            label.setMinSize(SQUARE_SIZE, 24);
+            label.setMaxWidth(SQUARE_SIZE);
+            label.getStyleClass().add("coordinate-label");
             labels.getChildren().add(label);
         }
+        labels.getStyleClass().add("file-coordinates");
         return labels;
     }
 
@@ -87,33 +93,51 @@ public final class BoardView implements IGameListener {
         VBox labels = new VBox();
         for (int rank = game.boardSize(); rank >= 1; rank--) {
             Label label = new Label(String.valueOf(rank));
-            label.setMinSize(22, SQUARE_SIZE);
-            label.setStyle("-fx-alignment: center;");
+            label.setMinSize(24, SQUARE_SIZE);
+            label.getStyleClass().add("coordinate-label");
             labels.getChildren().add(label);
         }
+        labels.getStyleClass().add("rank-coordinates");
         return labels;
     }
 
     private void addSquare(Position position) {
         Piece piece = game.pieceAt(position);
-        Button square = new Button(symbols.symbolFor(piece));
+        Button square = new Button();
+        square.getStyleClass().add("board-square");
+        if (piece != null) {
+            artwork.imageFor(piece).ifPresentOrElse(
+                    image -> {
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(58);
+                        imageView.setFitHeight(58);
+                        imageView.setPreserveRatio(true);
+                        square.setGraphic(imageView);
+                    },
+                    () -> square.setText(symbols.symbolFor(piece)));
+        }
+        square.getStyleClass().add(squareColorClass(position));
+        if (position.equals(selected)) {
+            square.getStyleClass().add("selected-square");
+        } else if (legalMoves.contains(position)) {
+            square.getStyleClass().add("legal-square");
+        }
+        if (position.equals(game.kingInCheckPosition())) {
+            square.getStyleClass().add("check-square");
+        }
+        square.setAccessibleText(squareLabel(position, piece));
         square.setMinSize(SQUARE_SIZE, SQUARE_SIZE);
         square.setMaxSize(SQUARE_SIZE, SQUARE_SIZE);
-        square.setStyle("-fx-font-size: 32; -fx-background-color: " + backgroundColor(position) + ";");
         square.setOnAction(event -> squareClickHandler.accept(position));
         squares.add(square, position.x(), game.boardSize() - 1 - position.y());
     }
 
-    private String backgroundColor(Position position) {
-        if (position.equals(selected)) {
-            return "#f6f669";
-        }
-        if (legalMoves.contains(position)) {
-            return "#8fbc8f";
-        }
-        if (position.equals(game.kingInCheckPosition())) {
-            return "#e57373";
-        }
-        return (position.x() + position.y()) % 2 == 0 ? "#f0d9b5" : "#b58863";
+    private static String squareColorClass(Position position) {
+        return (position.x() + position.y()) % 2 == 0 ? "cream-square" : "meadow-square";
+    }
+
+    private static String squareLabel(Position position, Piece piece) {
+        String description = piece == null ? "casilla vacía" : piece.color() + " " + piece.type().name();
+        return description + ", " + (char) ('a' + position.x()) + (position.y() + 1);
     }
 }

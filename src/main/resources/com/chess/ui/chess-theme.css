@@ -1,0 +1,207 @@
+.app-root {
+    -fx-background-color: linear-gradient(to bottom right, #fdfdd0, #e9f2d9);
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.home-screen {
+    -fx-background-color: linear-gradient(to bottom right, #2e8a57, #4169e1);
+}
+
+.home-card {
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 28;
+    -fx-border-color: #fbc02d;
+    -fx-border-width: 5;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(12, 39, 27, 0.32), 24, 0.18, 0, 10);
+}
+
+.home-eyebrow {
+    -fx-background-color: #4169e1;
+    -fx-background-radius: 18;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+}
+
+.home-subtitle {
+    -fx-text-fill: #235d3b;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 12 0;
+}
+
+.home-actions {
+    -fx-padding: 8 0 0 0;
+}
+
+.game-header {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #fbc02d;
+    -fx-border-width: 0 0 4 0;
+}
+
+.game-brand {
+    -fx-text-fill: #fdfdd0;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.header-hint {
+    -fx-text-fill: #e4f2dc;
+    -fx-font-size: 12px;
+}
+
+.game-button {
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 11 20;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-width: 2;
+}
+
+.primary-button {
+    -fx-background-color: #cd212a;
+    -fx-border-color: #8d171d;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(82, 20, 17, 0.24), 7, 0.1, 0, 3);
+}
+
+.primary-button:hover {
+    -fx-background-color: #e6383d;
+}
+
+.secondary-button {
+    -fx-background-color: #fbc02d;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #3a2a08;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #ffd65a;
+}
+
+.home-button {
+    -fx-background-color: #4169e1;
+    -fx-border-color: #2e4fae;
+    -fx-text-fill: white;
+}
+
+.home-button:hover {
+    -fx-background-color: #5c7ff0;
+}
+
+.side-panel {
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 20;
+    -fx-border-color: #2e8a57;
+    -fx-border-width: 3;
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.18), 12, 0.12, 0, 4);
+}
+
+.section-title {
+    -fx-text-fill: #2e8a57;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.game-status {
+    -fx-background-color: #fff3bd;
+    -fx-background-radius: 10;
+    -fx-text-fill: #5b4110;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 9 11;
+}
+
+.captured-pieces {
+    -fx-min-height: 34;
+    -fx-alignment: center-left;
+}
+
+.game-list {
+    -fx-background-color: white;
+    -fx-border-color: #d3dfbd;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-control-inner-background: white;
+    -fx-padding: 3;
+}
+
+.game-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #263b2c;
+    -fx-padding: 7 9;
+}
+
+.game-list .list-cell:filled:selected {
+    -fx-background-color: #4169e1;
+    -fx-text-fill: white;
+    -fx-background-radius: 7;
+}
+
+.error-notice {
+    -fx-text-fill: #cd212a;
+    -fx-font-weight: bold;
+}
+
+.board-frame {
+    -fx-background-color: transparent;
+}
+
+.chess-grid {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #2e8a57;
+    -fx-border-width: 6;
+}
+
+.coordinate-label {
+    -fx-alignment: center;
+    -fx-text-fill: #2e8a57;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.board-square {
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: rgba(26, 66, 39, 0.14);
+    -fx-border-width: 0.5;
+    -fx-content-display: center;
+    -fx-focus-traversable: false;
+}
+
+.cream-square {
+    -fx-background-color: #fdfdd0;
+}
+
+.meadow-square {
+    -fx-background-color: #2e8a57;
+}
+
+.board-square:hover {
+    -fx-effect: innershadow(gaussian, rgba(255, 255, 255, 0.6), 12, 0.12, 0, 0);
+}
+
+.board-square.selected-square {
+    -fx-background-color: #fbc02d;
+    -fx-border-color: #cd212a;
+    -fx-border-width: 3;
+}
+
+.board-square.legal-square {
+    -fx-background-color: #4169e1;
+    -fx-border-color: #fbc02d;
+    -fx-border-width: 3;
+}
+
+.board-square.check-square {
+    -fx-background-color: #cd212a;
+    -fx-border-color: #fbc02d;
+    -fx-border-width: 3;
+}

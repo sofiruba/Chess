@@ -18,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public final class SidePanel implements IGameListener {
@@ -30,8 +32,9 @@ public final class SidePanel implements IGameListener {
     private final PieceSymbols symbols;
     private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
+    private final PieceArtwork artwork = new PieceArtwork();
     private final Label status = new Label();
-    private final Label captured = new Label();
+    private final HBox captured = new HBox(4);
     private final Label unreadableNotice = new Label();
     private final Button saveButton = new Button("Guardar partida");
     private final ListView<String> moves = new ListView<>();
@@ -49,27 +52,37 @@ public final class SidePanel implements IGameListener {
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
         saveButton.setOnAction(event -> save());
-        unreadableNotice.setStyle("-fx-text-fill: #b00020;");
+        unreadableNotice.getStyleClass().add("error-notice");
         savedGames.setCellFactory(list -> new SavedGameCell());
+        moves.getStyleClass().add("game-list");
+        savedGames.getStyleClass().add("game-list");
+        moves.setPrefHeight(150);
+        savedGames.setPrefHeight(150);
+        saveButton.getStyleClass().addAll("game-button", "secondary-button");
     }
 
     public VBox createView() {
         Button load = new Button("Cargar");
         load.setOnAction(event -> loadSelected());
+        load.getStyleClass().addAll("game-button", "primary-button");
+        status.getStyleClass().add("game-status");
+        captured.getStyleClass().add("captured-pieces");
         VBox panel = new VBox(
                 10,
-                new Label("Partida"),
+                sectionTitle("PARTIDA"),
                 status,
-                new Label("Movimientos"),
+                sectionTitle("MOVIMIENTOS"),
                 moves,
-                new Label("Capturadas"),
+                sectionTitle("CAPTURADAS"),
                 captured,
                 saveButton,
-                new Label("Partidas guardadas"),
+                sectionTitle("PARTIDAS GUARDADAS"),
                 savedGames,
                 unreadableNotice,
                 load);
         panel.setPadding(new Insets(12));
+        panel.setPrefWidth(300);
+        panel.getStyleClass().add("side-panel");
         refresh();
         refreshSavedGames();
         return panel;
@@ -78,7 +91,17 @@ public final class SidePanel implements IGameListener {
     public void refresh() {
         status.setText(statusText());
         moves.getItems().setAll(game.moveNotation());
-        captured.setText(game.capturedPieces().stream().map(symbols::symbolFor).reduce("", String::concat));
+        captured.getChildren().clear();
+        game.capturedPieces().forEach(piece -> artwork.imageFor(piece).ifPresentOrElse(
+                image -> {
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(30);
+                    imageView.setFitHeight(30);
+                    imageView.setPreserveRatio(true);
+                    imageView.setAccessibleText(symbols.symbolFor(piece));
+                    captured.getChildren().add(imageView);
+                },
+                () -> captured.getChildren().add(new Label(symbols.symbolFor(piece)))));
         updateSaveButton();
     }
 
@@ -170,6 +193,12 @@ public final class SidePanel implements IGameListener {
 
     private static String describe(GameRecord record) {
         return DATE_FORMAT.format(record.playedAt()) + " — " + resultText(record.result());
+    }
+
+    private static Label sectionTitle(String text) {
+        Label title = new Label(text);
+        title.getStyleClass().add("section-title");
+        return title;
     }
 
     private static String resultText(GameResult result) {
