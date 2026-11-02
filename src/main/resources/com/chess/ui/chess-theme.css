@@ -6,8 +6,9 @@
 .home-screen {
     -fx-background-color: #cd212a;
     -fx-background-image: url("assets/background.png");
-    -fx-background-repeat: repeat;
-    -fx-background-position: top left;
+    -fx-background-repeat: no-repeat;        /* Evita que se repita en mosaico */
+    -fx-background-size: cover;             /* Escala la imagen para cubrir toda la pantalla sin deformar proporciones */
+    -fx-background-position: center center;   /* Centra la imagen perfectamente en cualquier resolución */
 }
 
 .home-content {

@@ -89,9 +89,9 @@ public final class ChessApplication {
         Image logo = loadUiImage("/com/chess/ui/assets/chess-title.png");
         ImageView logoView = new ImageView(logo);
         logoView.fitWidthProperty().bind(Bindings.min(
-                610,
-                Bindings.min(screen.widthProperty().multiply(0.68), screen.heightProperty().multiply(0.25))));
-        logoView.fitHeightProperty().bind(screen.heightProperty().multiply(0.25));
+                760,
+                Bindings.min(screen.widthProperty().multiply(0.82), screen.heightProperty().multiply(0.33))));
+        logoView.fitHeightProperty().bind(screen.heightProperty().multiply(0.33));
         logoView.setPreserveRatio(true);
         logoView.setAccessibleText("Chess Quest");
 
@@ -133,8 +133,7 @@ public final class ChessApplication {
         addFloatingCoin(coinLayer, screen, coin, 0.90, 0.16, 0.35);
         addFloatingCoin(coinLayer, screen, coin, 0.07, 0.76, 0.7);
         addFloatingCoin(coinLayer, screen, coin, 0.93, 0.76, 1.05);
-        addFloatingCoin(coinLayer, screen, coin, 0.20, 0.50, 1.4);
-        screen.getChildren().addAll(coinLayer, content);
+        screen.getChildren().addAll(content, coinLayer);
         root.setCenter(screen);
     }
 
@@ -401,7 +400,7 @@ public final class ChessApplication {
     }
 
     private HBox gameHeader() {
-        Label brand = new Label("CHESSS");
+        Label brand = new Label("SUPER CHESS BROS");
         brand.getStyleClass().add("game-brand");
         Label hint = new Label("Una jugada a la vez");
         hint.getStyleClass().add("header-hint");
