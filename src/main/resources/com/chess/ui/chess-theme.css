@@ -1,6 +1,6 @@
 .app-root {
     -fx-background-color: linear-gradient(to bottom right, #fdfdd0, #e9f2d9);
-    -fx-font-family: "Comic Sans MS", "Trebuchet MS", "Arial", sans-serif;
+    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
 }
 
 .home-screen {
@@ -10,24 +10,44 @@
     -fx-background-position: top left;
 }
 
-.home-card {
-    -fx-background-color: #fdfdd0;
-    -fx-background-radius: 34;
-    -fx-border-color: #fbc02d;
-    -fx-border-width: 6;
-    -fx-border-radius: 30;
-    -fx-effect: dropshadow(gaussian, rgba(63, 23, 12, 0.42), 26, 0.2, 0, 10);
+.home-content {
+    -fx-background-color: transparent;
 }
 
-.home-subtitle {
-    -fx-text-fill: #2e8a57;
-    -fx-font-size: 21px;
-    -fx-font-weight: bold;
-    -fx-padding: 4 0 12 0;
+.preview-board {
+    -fx-effect: dropshadow(gaussian, rgba(24, 21, 12, 0.5), 14, 0.22, 0, 8);
 }
 
 .home-actions {
     -fx-padding: 8 0 0 0;
+}
+
+.home-action-button {
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 16px;
+    -fx-padding: 13 18;
+}
+
+.red-button {
+    -fx-background-color: #cd212a;
+    -fx-border-color: #781719;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(44, 18, 12, 0.42), 8, 0.12, 0, 4);
+}
+
+.red-button:hover {
+    -fx-background-color: #e33a3e;
+}
+
+.blue-button {
+    -fx-background-color: #4169e1;
+    -fx-border-color: #273f93;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(25, 30, 75, 0.4), 8, 0.12, 0, 4);
+}
+
+.blue-button:hover {
+    -fx-background-color: #5e80ee;
 }
 
 .game-header {
@@ -49,12 +69,12 @@
 
 .game-button {
     -fx-cursor: hand;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-padding: 11 20;
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
-    -fx-border-width: 2;
+    -fx-padding: 11 18;
+    -fx-background-radius: 13;
+    -fx-border-radius: 13;
+    -fx-border-width: 3;
 }
 
 .primary-button {

@@ -1,7 +1,9 @@
 package com.chess.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.chess.domain.model.PieceType;
@@ -23,15 +25,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 public final class ChessApplication {
@@ -61,6 +64,10 @@ public final class ChessApplication {
 
     public Pane createView() {
         root.getStyleClass().add("app-root");
+        root.setPrefSize(1100, 760);
+        root.setMinSize(600, 500);
+        loadUiFont("/com/chess/ui/assets/titles1.ttf", 28);
+        loadUiFont("/com/chess/ui/assets/text1.otf", 16);
         var stylesheet = getClass().getResource("chess-theme.css");
         if (stylesheet == null) {
             throw new IllegalStateException("Missing chess UI stylesheet.");
@@ -77,90 +84,79 @@ public final class ChessApplication {
         root.setBottom(null);
 
         StackPane screen = new StackPane();
-        screen.setPadding(new Insets(16));
         screen.getStyleClass().add("home-screen");
 
-        var logoResource = getClass().getResource("/com/chess/ui/assets/chess-title.png");
-        if (logoResource == null) {
-            throw new IllegalStateException("Missing chess title artwork.");
-        }
-        Image logo = new Image(logoResource.toExternalForm(), 500, 300, true, true);
+        Image logo = loadUiImage("/com/chess/ui/assets/chess-title.png");
         ImageView logoView = new ImageView(logo);
         logoView.fitWidthProperty().bind(Bindings.min(
-                500,
-                Bindings.min(screen.widthProperty().multiply(0.68), screen.heightProperty().multiply(0.34))));
-        logoView.fitHeightProperty().bind(screen.heightProperty().multiply(0.34));
+                610,
+                Bindings.min(screen.widthProperty().multiply(0.68), screen.heightProperty().multiply(0.25))));
+        logoView.fitHeightProperty().bind(screen.heightProperty().multiply(0.25));
         logoView.setPreserveRatio(true);
-        logoView.setAccessibleText("CHESSS");
+        logoView.setAccessibleText("Chess Quest");
 
-        Label subtitle = new Label("¡Tu próxima gran jugada te espera!");
-        subtitle.getStyleClass().add("home-subtitle");
-        subtitle.setWrapText(true);
-        subtitle.maxWidthProperty().bind(screen.widthProperty().multiply(0.72));
+        PerspectiveBoard board = new PerspectiveBoard();
+        board.prefWidthProperty().bind(Bindings.min(720, screen.widthProperty().multiply(0.72)));
+        board.prefHeightProperty().bind(Bindings.min(310, screen.heightProperty().multiply(0.39)));
+        board.setMinSize(300, 150);
+        board.getStyleClass().add("preview-board");
 
         Button fresh = new Button("Nueva partida");
         fresh.setOnAction(event -> resetGame());
-        fresh.getStyleClass().addAll("game-button", "primary-button");
+        fresh.getStyleClass().addAll("game-button", "home-action-button", "red-button");
         Button load = new Button("Cargar partida");
         load.setOnAction(event -> openSavedGames());
-        load.getStyleClass().addAll("game-button", "secondary-button");
-        fresh.setMaxWidth(Double.MAX_VALUE);
-        load.setMaxWidth(Double.MAX_VALUE);
+        load.getStyleClass().addAll("game-button", "home-action-button", "blue-button");
+        for (Button button : List.of(fresh, load)) {
+            button.prefWidthProperty().bind(Bindings.max(
+                    150,
+                    Bindings.min(270, screen.widthProperty().multiply(0.39))));
+            button.setMaxWidth(Double.MAX_VALUE);
+        }
 
-        VBox actions = new VBox(12, fresh, load);
-        actions.setMaxWidth(280);
+        FlowPane actions = new FlowPane(16, 12, fresh, load);
         actions.setAlignment(Pos.CENTER);
+        actions.prefWrapLengthProperty().bind(screen.widthProperty().multiply(0.86));
         actions.getStyleClass().add("home-actions");
 
-        VBox content = new VBox(8, logoView, subtitle, actions);
+        VBox content = new VBox(0, logoView, board, actions);
         content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(24));
-        content.prefWidthProperty().bind(Bindings.min(780, screen.widthProperty().multiply(0.84)));
-        content.getStyleClass().add("home-card");
+        content.setPadding(new Insets(12, 24, 22, 24));
+        content.prefWidthProperty().bind(screen.widthProperty());
+        content.prefHeightProperty().bind(screen.heightProperty());
+        content.getStyleClass().add("home-content");
 
         Pane coinLayer = new Pane();
         coinLayer.setMouseTransparent(true);
-        addFloatingCoin(coinLayer, screen, 0.10, 0.16, 0);
-        addFloatingCoin(coinLayer, screen, 0.88, 0.18, 0.35);
-        addFloatingCoin(coinLayer, screen, 0.07, 0.78, 0.7);
-        addFloatingCoin(coinLayer, screen, 0.91, 0.76, 1.05);
-        addFloatingCoin(coinLayer, screen, 0.25, 0.91, 1.4);
+        Image coin = loadUiImage("/com/chess/ui/assets/coin.png", 64, 64);
+        addFloatingCoin(coinLayer, screen, coin, 0.10, 0.17, 0);
+        addFloatingCoin(coinLayer, screen, coin, 0.90, 0.16, 0.35);
+        addFloatingCoin(coinLayer, screen, coin, 0.07, 0.76, 0.7);
+        addFloatingCoin(coinLayer, screen, coin, 0.93, 0.76, 1.05);
+        addFloatingCoin(coinLayer, screen, coin, 0.20, 0.50, 1.4);
         screen.getChildren().addAll(coinLayer, content);
         root.setCenter(screen);
     }
 
-    private void addFloatingCoin(Pane layer, StackPane screen, double x, double y, double delay) {
-        Circle coin = new Circle(24, Color.web("#ffc928"));
-        coin.setStroke(Color.web("#9b5b00"));
-        coin.setStrokeWidth(3);
-
-        Circle innerRing = new Circle(18, Color.web("#ffd94a"));
-        innerRing.setStroke(Color.web("#fff0a5"));
-        innerRing.setStrokeWidth(2);
-
-        Polygon star = new Polygon(
-                0.0, -9.0,
-                2.5, -2.8,
-                9.0, -2.8,
-                4.0, 1.0,
-                5.5, 8.0,
-                0.0, 4.0,
-                -5.5, 8.0,
-                -4.0, 1.0,
-                -9.0, -2.8,
-                -2.5, -2.8);
-        star.setFill(Color.web("#c98500"));
-        star.setStroke(Color.web("#fff0a5"));
-        star.setStrokeWidth(1);
-
-        StackPane token = new StackPane(coin, innerRing, star);
+    private void addFloatingCoin(
+            Pane layer,
+            StackPane screen,
+            Image coinImage,
+            double x,
+            double y,
+            double delay) {
+        ImageView coin = new ImageView(coinImage);
+        coin.setFitWidth(64);
+        coin.setFitHeight(64);
+        coin.setPreserveRatio(true);
+        StackPane token = new StackPane(coin);
         token.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
         token.setAccessibleText("Moneda dorada");
-        token.setPrefSize(52, 52);
-        token.setMinSize(52, 52);
-        token.setMaxSize(52, 52);
-        token.layoutXProperty().bind(screen.widthProperty().multiply(x).subtract(26));
-        token.layoutYProperty().bind(screen.heightProperty().multiply(y).subtract(26));
+        token.setPrefSize(64, 64);
+        token.setMinSize(64, 64);
+        token.setMaxSize(64, 64);
+        token.layoutXProperty().bind(screen.widthProperty().multiply(x).subtract(32));
+        token.layoutYProperty().bind(screen.heightProperty().multiply(y).subtract(32));
         layer.getChildren().add(token);
 
         RotateTransition spin = new RotateTransition(Duration.seconds(2.4 + delay), token);
@@ -180,6 +176,175 @@ public final class ChessApplication {
         homeAnimations.add(bob);
         spin.play();
         bob.play();
+    }
+
+    private static void loadUiFont(String resourcePath, double size) {
+        try (var stream = ChessApplication.class.getResourceAsStream(resourcePath)) {
+            if (stream == null || Font.loadFont(stream, size) == null) {
+                throw new IllegalStateException("Could not load UI font: " + resourcePath);
+            }
+        } catch (java.io.IOException exception) {
+            throw new IllegalStateException("Could not load UI font: " + resourcePath, exception);
+        }
+    }
+
+    private static Image loadUiImage(String resourcePath) {
+        var resource = ChessApplication.class.getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalStateException("Missing UI image: " + resourcePath);
+        }
+        Image image = new Image(resource.toExternalForm());
+        if (image.isError()) {
+            throw new IllegalStateException("Could not load UI image: " + resourcePath, image.getException());
+        }
+        return image;
+    }
+
+    private static Image loadUiImage(String resourcePath, double width, double height) {
+        var resource = ChessApplication.class.getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalStateException("Missing UI image: " + resourcePath);
+        }
+        Image image = new Image(resource.toExternalForm(), width, height, true, true);
+        if (image.isError()) {
+            throw new IllegalStateException("Could not load UI image: " + resourcePath, image.getException());
+        }
+        return image;
+    }
+
+    private static final class PerspectiveBoard extends Pane {
+        private static final String[] BACK_RANK = {
+                "rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"
+        };
+        private static final String[] COLORS = {"#fdfdd0", "#2e8a57"};
+        private final Polygon platform = new Polygon();
+        private final Polygon boardBacking = new Polygon();
+        private final List<Polygon> squares = new ArrayList<>(64);
+        private final ImageView[][] pieces = new ImageView[8][8];
+        private final Map<String, Image> pieceImages = new HashMap<>();
+
+        private PerspectiveBoard() {
+            platform.setFill(Color.web("#8a4c26"));
+            platform.setStroke(Color.web("#4d2c20"));
+            platform.setStrokeWidth(4);
+            boardBacking.setFill(Color.web("#fbc02d"));
+            boardBacking.setStroke(Color.web("#3f2a1c"));
+            boardBacking.setStrokeWidth(3);
+            getChildren().addAll(platform, boardBacking);
+
+            for (int row = 0; row < 8; row++) {
+                for (int column = 0; column < 8; column++) {
+                    Polygon square = new Polygon();
+                    square.setFill(Color.web(COLORS[(row + column) % 2]));
+                    square.setStroke(Color.web("#253329"));
+                    square.setStrokeWidth(1);
+                    squares.add(square);
+                    getChildren().add(square);
+
+                    String piece = pieceAt(row, column);
+                    if (piece != null) {
+                        boolean white = row >= 6;
+                        String color = white ? "white" : "black";
+                        String imageName = color + "-" + piece;
+                        Image imageData = pieceImages.computeIfAbsent(
+                                imageName,
+                                name -> loadUiImage("/com/chess/ui/assets/" + name + ".png", 90, 90));
+                        ImageView image = new ImageView(imageData);
+                        image.setPreserveRatio(true);
+                        image.setMouseTransparent(true);
+                        pieces[row][column] = image;
+                    }
+                }
+            }
+            for (ImageView[] row : pieces) {
+                for (ImageView piece : row) {
+                    if (piece != null) {
+                        getChildren().add(piece);
+                    }
+                }
+            }
+            getStyleClass().add("perspective-board");
+        }
+
+        @Override
+        protected void layoutChildren() {
+            double width = getWidth();
+            double height = getHeight();
+            if (width <= 0 || height <= 0) {
+                return;
+            }
+
+            double center = width / 2;
+            double planeTop = height * 0.06;
+            double planeHeight = height * 0.76;
+            double topWidth = width * 0.70;
+            double bottomWidth = width * 0.98;
+            setPoints(platform,
+                    center - topWidth / 2 - 7, planeTop - 5,
+                    center + topWidth / 2 + 7, planeTop - 5,
+                    center + bottomWidth / 2 + 13, planeTop + planeHeight + height * 0.13,
+                    center - bottomWidth / 2 - 13, planeTop + planeHeight + height * 0.13);
+            setPoints(boardBacking,
+                    center - topWidth / 2 - 4, planeTop - 3,
+                    center + topWidth / 2 + 4, planeTop - 3,
+                    center + bottomWidth / 2 + 5, planeTop + planeHeight + 4,
+                    center - bottomWidth / 2 - 5, planeTop + planeHeight + 4);
+
+            for (int row = 0; row < 8; row++) {
+                double front = row / 8.0;
+                double back = (row + 1) / 8.0;
+                double rowTop = planeTop + Math.pow(front, 1.25) * planeHeight;
+                double rowBottom = planeTop + Math.pow(back, 1.25) * planeHeight;
+                double rowTopWidth = topWidth + (bottomWidth - topWidth) * front;
+                double rowBottomWidth = topWidth + (bottomWidth - topWidth) * back;
+                double topLeft = center - rowTopWidth / 2;
+                double bottomLeft = center - rowBottomWidth / 2;
+                double topCellWidth = rowTopWidth / 8;
+                double bottomCellWidth = rowBottomWidth / 8;
+                double cellHeight = rowBottom - rowTop;
+
+                for (int column = 0; column < 8; column++) {
+                    Polygon square = squares.get(row * 8 + column);
+                    setPoints(square,
+                            topLeft + topCellWidth * column, rowTop,
+                            topLeft + topCellWidth * (column + 1), rowTop,
+                            bottomLeft + bottomCellWidth * (column + 1), rowBottom,
+                            bottomLeft + bottomCellWidth * column, rowBottom);
+
+                    ImageView piece = pieces[row][column];
+                    if (piece != null) {
+                        double cellWidth = (topCellWidth + bottomCellWidth) / 2;
+                        double pieceSize = Math.min(cellWidth * 0.76, Math.max(30, cellHeight * 1.42));
+                        double pieceCenter = (topLeft + topCellWidth * (column + 0.5)
+                                + bottomLeft + bottomCellWidth * (column + 0.5)) / 2;
+                        piece.setFitWidth(pieceSize);
+                        piece.setFitHeight(pieceSize);
+                        piece.relocate(pieceCenter - pieceSize / 2, rowBottom - pieceSize * 0.88);
+                    }
+                }
+            }
+        }
+
+        private static String pieceAt(int row, int column) {
+            if (row == 0) {
+                return BACK_RANK[column];
+            }
+            if (row == 1) {
+                return "pawn";
+            }
+            if (row == 6) {
+                return "pawn";
+            }
+            if (row == 7) {
+                return BACK_RANK[column];
+            }
+            return null;
+        }
+
+        private static void setPoints(Polygon polygon, double... points) {
+            polygon.getPoints().setAll(
+                    java.util.Arrays.stream(points).boxed().toList());
+        }
     }
 
     private void stopHomeAnimations() {
