@@ -15,6 +15,7 @@ import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
 import com.chess.domain.port.IGameListener;
 import com.chess.domain.port.IGameService;
+import com.chess.domain.port.MoveHistoryEntry;
 import com.chess.domain.rule.ICheckDetector;
 import com.chess.domain.rule.IMoveCodeParser;
 import com.chess.domain.rule.IMoveGenerator;
@@ -154,6 +155,13 @@ public final class Game implements IGameService {
     @Override
     public List<String> moveCodes() {
         return timeline.moves().stream().map(IMoveInfo::moveCode).toList();
+    }
+
+    @Override
+    public List<MoveHistoryEntry> moveHistory() {
+        return timeline.moves().stream()
+                .map(move -> new MoveHistoryEntry(move.movingPiece(), move.notation()))
+                .toList();
     }
 
     @Override

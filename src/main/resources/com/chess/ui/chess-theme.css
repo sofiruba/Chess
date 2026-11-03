@@ -52,9 +52,10 @@
 }
 
 .game-header {
-    -fx-background-color: #2e8a57;
+    -fx-background-color: #d7eff0;
     -fx-border-color: #fbc02d;
     -fx-border-width: 0 0 4 0;
+    -fx-alignment: center-left;
 }
 
 .game-brand {
@@ -133,6 +134,22 @@
     -fx-padding: 9 11;
 }
 
+.turn-indicator {
+    -fx-alignment: center-left;
+    -fx-background-color: #2e8a57;
+    -fx-background-radius: 14;
+    -fx-border-color: #1d603b;
+    -fx-border-radius: 14;
+    -fx-border-width: 2;
+    -fx-padding: 8 10;
+}
+
+.turn-indicator .label {
+    -fx-text-fill: #fdfdd0;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
 .captured-pieces {
     -fx-min-height: 34;
     -fx-alignment: center-left;
@@ -153,6 +170,16 @@
     -fx-padding: 7 9;
 }
 
+.game-list .list-cell:filled {
+    -fx-cell-size: 42px;
+}
+
+.move-notation {
+    -fx-text-fill: #263b2c;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
 .game-list .list-cell:filled:selected {
     -fx-background-color: #4169e1;
     -fx-text-fill: white;
@@ -164,14 +191,37 @@
     -fx-font-weight: bold;
 }
 
+.new-game-button {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+    -fx-text-fill: #fdfdd0;
+}
+
+.new-game-button:hover {
+    -fx-background-color: #3b9c68;
+}
+
+.game-board-area {
+    -fx-background-image: url("assets/background1.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-padding: 16;
+}
+
 .board-frame {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(253, 253, 208, 0.92);
+    -fx-background-radius: 10;
+    -fx-border-color: #714a34;
+    -fx-border-width: 4;
+    -fx-border-radius: 10;
+    -fx-padding: 6;
 }
 
 .chess-grid {
-    -fx-background-color: #2e8a57;
-    -fx-border-color: #2e8a57;
-    -fx-border-width: 6;
+    -fx-background-color: #714a34;
+    -fx-border-color: #714a34;
+    -fx-border-width: 3;
 }
 
 .coordinate-label {
@@ -204,19 +254,19 @@
 }
 
 .board-square.selected-square {
-    -fx-background-color: #fbc02d;
-    -fx-border-color: #cd212a;
+    -fx-background-color: #e9b949;
+    -fx-border-color: #8a4c26;
     -fx-border-width: 3;
 }
 
 .board-square.legal-square {
-    -fx-background-color: #4169e1;
-    -fx-border-color: #fbc02d;
+    -fx-background-color: #a8cd8d;
+    -fx-border-color: #5c8c42;
     -fx-border-width: 3;
 }
 
 .board-square.check-square {
-    -fx-background-color: #cd212a;
-    -fx-border-color: #fbc02d;
+    -fx-background-color: #d98c6a;
+    -fx-border-color: #8a4c26;
     -fx-border-width: 3;
 }

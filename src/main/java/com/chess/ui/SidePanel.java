@@ -11,6 +11,7 @@ import com.chess.domain.port.GameRecord;
 import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameListener;
 import com.chess.domain.port.IGameQueries;
+import com.chess.domain.port.MoveHistoryEntry;
 import com.chess.domain.port.SavedGames;
 
 import javafx.geometry.Insets;
@@ -18,8 +19,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public final class SidePanel implements IGameListener {
@@ -32,57 +35,79 @@ public final class SidePanel implements IGameListener {
     private final PieceSymbols symbols;
     private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
+    private final Runnable newGameHandler;
     private final PieceArtwork artwork = new PieceArtwork();
     private final Label status = new Label();
+    private final ImageView turnArtwork = new ImageView();
+    private final HBox turnIndicator = new HBox(10, turnArtwork, status);
     private final HBox captured = new HBox(4);
     private final Label unreadableNotice = new Label();
     private final Button saveButton = new Button("Guardar partida");
-    private final ListView<String> moves = new ListView<>();
+    private final Button newGameButton = new Button("Nueva partida");
+    private final ListView<MoveHistoryEntry> moves = new ListView<>();
     private final ListView<GameRecord> savedGames = new ListView<>();
+    private final Image heroesArtwork = loadArtwork("/com/chess/ui/assets/heroes.png");
+    private final Image villainsArtwork = loadArtwork("/com/chess/ui/assets/villains.png");
 
     public SidePanel(
             IGameArchive archive,
             IGameQueries game,
             PieceSymbols symbols,
             SavedGameTracker savedGameTracker,
-            Consumer<GameRecord> loadHandler) {
+            Consumer<GameRecord> loadHandler,
+            Runnable newGameHandler) {
         this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.game = Objects.requireNonNull(game, "game must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
+        this.newGameHandler = Objects.requireNonNull(newGameHandler, "newGameHandler must not be null");
         saveButton.setOnAction(event -> save());
+        newGameButton.setOnAction(event -> newGameHandler.run());
         unreadableNotice.getStyleClass().add("error-notice");
+        moves.setCellFactory(list -> new MoveCell());
         savedGames.setCellFactory(list -> new SavedGameCell());
         moves.getStyleClass().add("game-list");
         savedGames.getStyleClass().add("game-list");
-        moves.setPrefHeight(150);
-        savedGames.setPrefHeight(150);
+        moves.setPrefHeight(180);
+        savedGames.setPrefHeight(130);
         saveButton.getStyleClass().addAll("game-button", "secondary-button");
+        newGameButton.getStyleClass().addAll("game-button", "primary-button", "new-game-button");
+        turnIndicator.getStyleClass().add("turn-indicator");
+        turnArtwork.setFitWidth(56);
+        turnArtwork.setFitHeight(56);
+        turnArtwork.setPreserveRatio(true);
+        turnArtwork.setAccessibleRole(javafx.scene.AccessibleRole.IMAGE_VIEW);
+        turnArtwork.setAccessibleText("Héroes");
+        status.setWrapText(true);
+        HBox.setHgrow(status, Priority.ALWAYS);
     }
 
     public VBox createView() {
         Button load = new Button("Cargar");
         load.setOnAction(event -> loadSelected());
         load.getStyleClass().addAll("game-button", "primary-button");
-        status.getStyleClass().add("game-status");
         captured.getStyleClass().add("captured-pieces");
         VBox panel = new VBox(
                 10,
                 sectionTitle("PARTIDA"),
-                status,
+                turnIndicator,
                 sectionTitle("MOVIMIENTOS"),
                 moves,
                 sectionTitle("CAPTURADAS"),
                 captured,
+                newGameButton,
                 saveButton,
                 sectionTitle("PARTIDAS GUARDADAS"),
                 savedGames,
                 unreadableNotice,
                 load);
         panel.setPadding(new Insets(12));
-        panel.setPrefWidth(300);
+        panel.setMinWidth(250);
+        panel.setPrefWidth(320);
         panel.getStyleClass().add("side-panel");
+        VBox.setVgrow(moves, Priority.ALWAYS);
+        VBox.setVgrow(savedGames, Priority.ALWAYS);
         refresh();
         refreshSavedGames();
         return panel;
@@ -90,7 +115,8 @@ public final class SidePanel implements IGameListener {
 
     public void refresh() {
         status.setText(statusText());
-        moves.getItems().setAll(game.moveNotation());
+        moves.getItems().setAll(game.moveHistory());
+        refreshTurnArtwork();
         captured.getChildren().clear();
         game.capturedPieces().forEach(piece -> artwork.imageFor(piece).ifPresentOrElse(
                 image -> {
@@ -134,8 +160,20 @@ public final class SidePanel implements IGameListener {
         if (game.result() == GameResult.DRAW) {
             return "Tablas";
         }
-        String player = game.turn() == Color.WHITE ? "blancas" : "negras";
-        return game.kingInCheckPosition() == null ? "Turno: " + player : "Jaque. Turno: " + player;
+        String player = game.turn() == Color.WHITE ? "los héroes" : "los villanos";
+        return game.kingInCheckPosition() == null
+                ? "Turno de " + player
+                : "Jaque. Turno de " + player;
+    }
+
+    private void refreshTurnArtwork() {
+        boolean heroes = switch (game.result()) {
+            case WHITE_WINS -> true;
+            case BLACK_WINS -> false;
+            case DRAW, IN_PROGRESS -> game.turn() == Color.WHITE;
+        };
+        turnArtwork.setImage(heroes ? heroesArtwork : villainsArtwork);
+        turnArtwork.setAccessibleText(heroes ? "Héroes" : "Villanos");
     }
 
     private void save() {
@@ -208,6 +246,48 @@ public final class SidePanel implements IGameListener {
             case DRAW -> "Tablas";
             case IN_PROGRESS -> "En curso";
         };
+    }
+
+    private static Image loadArtwork(String resourcePath) {
+        var resource = SidePanel.class.getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalStateException("Missing game artwork: " + resourcePath);
+        }
+        Image image = new Image(resource.toExternalForm());
+        if (image.isError()) {
+            throw new IllegalStateException("Could not load game artwork: " + resourcePath, image.getException());
+        }
+        return image;
+    }
+
+    private final class MoveCell extends ListCell<MoveHistoryEntry> {
+
+        @Override
+        protected void updateItem(MoveHistoryEntry entry, boolean empty) {
+            super.updateItem(entry, empty);
+            if (empty || entry == null) {
+                setText(null);
+                setGraphic(null);
+                return;
+            }
+
+            var icon = artwork.imageFor(entry.movingPiece());
+            ImageView image = icon.map(ImageView::new).orElse(null);
+            if (image != null) {
+                image.setFitWidth(28);
+                image.setFitHeight(28);
+                image.setPreserveRatio(true);
+                image.setAccessibleText(symbols.symbolFor(entry.movingPiece()));
+            }
+            Label notation = new Label(entry.notation());
+            notation.getStyleClass().add("move-notation");
+            HBox row = new HBox(8, image == null
+                    ? new Label(symbols.symbolFor(entry.movingPiece()))
+                    : image, notation);
+            row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            setText(null);
+            setGraphic(row);
+        }
     }
 
     private static final class SavedGameCell extends ListCell<GameRecord> {

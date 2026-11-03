@@ -19,6 +19,7 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -371,7 +372,7 @@ public final class ChessApplication {
         selected = null;
         legalMoves = List.of();
         boardView = new BoardView(game, symbols, this::click);
-        sidePanel = new SidePanel(archive, game, symbols, savedGameTracker, this::loadGame);
+        sidePanel = new SidePanel(archive, game, symbols, savedGameTracker, this::loadGame, this::resetGame);
         game.addListener(boardView);
         game.addListener(sidePanel);
     }
@@ -382,16 +383,13 @@ public final class ChessApplication {
         root.setRight(sidePanel.createView());
         root.setTop(gameHeader());
 
-        Button fresh = new Button("Nueva partida");
-        fresh.setOnAction(event -> resetGame());
-        fresh.getStyleClass().addAll("game-button", "primary-button");
         Button undo = new Button("Deshacer");
         undo.setOnAction(event -> undo());
         undo.getStyleClass().addAll("game-button", "secondary-button");
         Button redo = new Button("Rehacer");
         redo.setOnAction(event -> redo());
         redo.getStyleClass().addAll("game-button", "secondary-button");
-        HBox actions = new HBox(10, fresh, undo, redo);
+        HBox actions = new HBox(10, undo, redo);
         actions.setAlignment(Pos.CENTER_LEFT);
         actions.setPadding(new Insets(14, 24, 18, 30));
         root.setBottom(actions);
@@ -400,11 +398,13 @@ public final class ChessApplication {
     }
 
     private HBox gameHeader() {
-        Label brand = new Label("SUPER CHESS BROS");
-        brand.getStyleClass().add("game-brand");
-        Label hint = new Label("Una jugada a la vez");
-        hint.getStyleClass().add("header-hint");
-        VBox identity = new VBox(2, brand, hint);
+        Image titleImage = loadUiImage("/com/chess/ui/assets/chess-title1.png");
+        ImageView title = new ImageView(titleImage);
+        title.setViewport(new Rectangle2D(50, 649, 1536, 307));
+        title.setFitWidth(360);
+        title.setFitHeight(92);
+        title.setPreserveRatio(true);
+        title.setAccessibleText("Chess Quest");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
@@ -412,9 +412,9 @@ public final class ChessApplication {
         home.setOnAction(event -> showHome());
         home.getStyleClass().addAll("game-button", "home-button");
 
-        HBox header = new HBox(18, identity, spacer, home);
+        HBox header = new HBox(18, title, spacer, home);
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(14, 24, 14, 30));
+        header.setPadding(new Insets(6, 24, 6, 24));
         header.getStyleClass().add("game-header");
         return header;
     }

@@ -31,4 +31,5 @@ public interface IGameQueries {
     List<Piece> capturedPieces();
     List<String> moveNotation();
     List<String> moveCodes();
+    List<MoveHistoryEntry> moveHistory();
 }

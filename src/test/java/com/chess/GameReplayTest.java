@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.chess.configuration.DefaultMoveCommandFactory;
 import com.chess.configuration.StandardGameFactory;
 import com.chess.domain.model.Color;
+import com.chess.domain.model.PieceType;
 import com.chess.domain.port.IGameFactory;
 import com.chess.domain.port.IGameService;
 
@@ -32,6 +33,21 @@ final class GameReplayTest {
 
         assertEquals(List.of("e2e4", "e7e5", "g1f3"), game.moveCodes());
         assertEquals(Color.BLACK, game.turn());
+    }
+
+    @Test
+    void moveHistoryExposesThePieceAndNotationForEachMove() {
+        IGameService game = gameFactory.create(List.of("e2e4", "e7e5", "g1f3"));
+
+        assertEquals(
+                List.of("e2e4", "e7e5", "g1f3"),
+                game.moveHistory().stream().map(entry -> entry.notation()).toList());
+        assertEquals(
+                List.of(PieceType.PAWN, PieceType.PAWN, PieceType.KNIGHT),
+                game.moveHistory().stream().map(entry -> entry.movingPiece().type()).toList());
+
+        game.undoLastMove();
+        assertEquals(2, game.moveHistory().size());
     }
 
     @Test
