@@ -82,6 +82,10 @@
     -fx-border-width: 3;
 }
 
+.game-button.text-button {
+    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+}
+
 .primary-button {
     -fx-background-color: #cd212a;
     -fx-border-color: #8d171d;
@@ -139,13 +143,19 @@
 }
 
 .turn-indicator {
+    -fx-padding: 8 8 8 12;
+    -fx-min-height: 78;
+}
+
+.turn-plate {
     -fx-alignment: center-left;
     -fx-background-color: #2e8a57;
     -fx-background-radius: 14;
     -fx-border-color: #1d603b;
     -fx-border-radius: 14;
     -fx-border-width: 2;
-    -fx-padding: 8 10;
+    -fx-min-height: 72;
+    -fx-padding: 12 76 12 14;
 }
 
 .turn-indicator .label {

@@ -19,7 +19,6 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -386,10 +385,10 @@ public final class ChessApplication {
 
         Button undo = new Button("Deshacer");
         undo.setOnAction(event -> undo());
-        undo.getStyleClass().addAll("game-button", "secondary-button");
+        undo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "undo-button");
         Button redo = new Button("Rehacer");
         redo.setOnAction(event -> redo());
-        redo.getStyleClass().addAll("game-button", "secondary-button");
+        redo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "redo-button");
         HBox actions = new HBox(10, undo, redo);
         actions.setAlignment(Pos.CENTER_LEFT);
         actions.setPadding(new Insets(14, 24, 18, 30));
@@ -399,21 +398,13 @@ public final class ChessApplication {
     }
 
     private HBox gameHeader() {
-        Image titleImage = loadUiImage("/com/chess/ui/assets/chess-title1.png");
-        ImageView title = new ImageView(titleImage);
-        title.setViewport(new Rectangle2D(50, 649, 1536, 307));
-        title.setFitWidth(360);
-        title.setFitHeight(92);
-        title.setPreserveRatio(true);
-        title.setAccessibleText("Chess Quest");
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         Button home = new Button("Inicio");
         home.setOnAction(event -> showHome());
-        home.getStyleClass().addAll("game-button", "home-button");
+        home.getStyleClass().addAll("game-button", "home-button", "text-button");
 
-        HBox header = new HBox(18, title, spacer, home);
+        HBox header = new HBox(spacer, home);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(6, 24, 6, 24));
         header.getStyleClass().add("game-header");

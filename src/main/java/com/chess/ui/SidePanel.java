@@ -15,6 +15,8 @@ import com.chess.domain.port.MoveHistoryEntry;
 import com.chess.domain.port.SavedGames;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -23,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public final class SidePanel implements IGameListener {
@@ -39,7 +42,9 @@ public final class SidePanel implements IGameListener {
     private final PieceArtwork artwork = new PieceArtwork();
     private final Label status = new Label();
     private final ImageView turnArtwork = new ImageView();
-    private final HBox turnIndicator = new HBox(10, turnArtwork, status);
+    private final HBox turnPlate = new HBox(status);
+    private final StackPane turnIndicator = new StackPane(turnPlate, turnArtwork);
+    private final ImageView titleArtwork = new ImageView(loadArtwork("/com/chess/ui/assets/chess-title1.png"));
     private final HBox captured = new HBox(4);
     private final Label unreadableNotice = new Label();
     private final Button saveButton = new Button("Guardar partida");
@@ -74,11 +79,19 @@ public final class SidePanel implements IGameListener {
         saveButton.getStyleClass().addAll("game-button", "secondary-button");
         newGameButton.getStyleClass().addAll("game-button", "primary-button", "new-game-button");
         turnIndicator.getStyleClass().add("turn-indicator");
-        turnArtwork.setFitWidth(56);
-        turnArtwork.setFitHeight(56);
+        turnPlate.getStyleClass().add("turn-plate");
+        turnPlate.setAlignment(Pos.CENTER_LEFT);
+        turnArtwork.setFitWidth(92);
+        turnArtwork.setFitHeight(92);
         turnArtwork.setPreserveRatio(true);
         turnArtwork.setAccessibleRole(javafx.scene.AccessibleRole.IMAGE_VIEW);
         turnArtwork.setAccessibleText("Héroes");
+        StackPane.setAlignment(turnArtwork, Pos.CENTER_RIGHT);
+        StackPane.setMargin(turnArtwork, new Insets(-9, -8, -9, 0));
+        titleArtwork.setViewport(new Rectangle2D(50, 649, 1536, 307));
+        titleArtwork.setPreserveRatio(true);
+        titleArtwork.setFitHeight(58);
+        titleArtwork.setAccessibleText("Chess Quest");
         status.setWrapText(true);
         HBox.setHgrow(status, Priority.ALWAYS);
     }
@@ -86,10 +99,13 @@ public final class SidePanel implements IGameListener {
     public VBox createView() {
         Button load = new Button("Cargar");
         load.setOnAction(event -> loadSelected());
-        load.getStyleClass().addAll("game-button", "primary-button");
+        load.getStyleClass().addAll("game-button", "primary-button", "text-button");
         captured.getStyleClass().add("captured-pieces");
+        StackPane titleBanner = new StackPane(titleArtwork);
+        titleBanner.setMinHeight(58);
         VBox panel = new VBox(
                 10,
+                titleBanner,
                 sectionTitle("PARTIDA"),
                 turnIndicator,
                 sectionTitle("MOVIMIENTOS"),
@@ -106,6 +122,8 @@ public final class SidePanel implements IGameListener {
         panel.setMinWidth(250);
         panel.setPrefWidth(320);
         panel.getStyleClass().add("side-panel");
+        titleBanner.prefWidthProperty().bind(panel.widthProperty());
+        titleArtwork.fitWidthProperty().bind(panel.widthProperty().multiply(0.78));
         VBox.setVgrow(moves, Priority.ALWAYS);
         VBox.setVgrow(savedGames, Priority.ALWAYS);
         refresh();
