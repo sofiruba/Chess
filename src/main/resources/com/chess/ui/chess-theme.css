@@ -52,24 +52,27 @@
 }
 
 .game-header {
-    -fx-background-color: #d7eff0;
+    -fx-background-color: #fff3bd;
     -fx-border-color: #fbc02d;
     -fx-border-width: 0 0 4 0;
     -fx-alignment: center-left;
 }
 
 .game-brand {
+    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #fdfdd0;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
 
 .header-hint {
+    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #e4f2dc;
     -fx-font-size: 12px;
 }
 
 .game-button {
+    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
     -fx-cursor: hand;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
@@ -120,6 +123,7 @@
 }
 
 .section-title {
+    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #2e8a57;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
@@ -212,10 +216,11 @@
 .board-frame {
     -fx-background-color: rgba(253, 253, 208, 0.92);
     -fx-background-radius: 10;
-    -fx-border-color: #714a34;
-    -fx-border-width: 4;
-    -fx-border-radius: 10;
+    -fx-border-color: #8a4c26;
+    -fx-border-width: 5;
+    -fx-border-radius: 12;
     -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.58), 24, 0.28, 0, 12);
 }
 
 .chess-grid {

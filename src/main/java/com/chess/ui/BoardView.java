@@ -94,6 +94,11 @@ public final class BoardView implements IGameListener {
 
     private HBox fileLabels() {
         HBox labels = new HBox();
+        Region coordinateSpacer = new Region();
+        coordinateSpacer.setMinWidth(COORDINATE_SIZE);
+        coordinateSpacer.setPrefWidth(COORDINATE_SIZE);
+        coordinateSpacer.setMaxWidth(COORDINATE_SIZE);
+        labels.getChildren().add(coordinateSpacer);
         for (int x = 0; x < game.boardSize(); x++) {
             Label label = new Label(String.valueOf((char) ('a' + x)));
             label.getStyleClass().add("coordinate-label");
@@ -154,7 +159,7 @@ public final class BoardView implements IGameListener {
         double availableHeight = area.getHeight() - COORDINATE_SIZE - 32;
         double nextSize = Math.min(MAX_SQUARE_SIZE,
                 Math.min(availableWidth / game.boardSize(), availableHeight / game.boardSize()));
-        if (nextSize < 20 || Math.abs(nextSize - squareSize) < 0.5) {
+        if (nextSize < 20) {
             return;
         }
         squareSize = nextSize;
@@ -179,7 +184,7 @@ public final class BoardView implements IGameListener {
         });
         double boardSize = squareSize * game.boardSize();
         squares.setPrefSize(boardSize, boardSize);
-        view.setPrefSize(boardSize + COORDINATE_SIZE, boardSize + COORDINATE_SIZE);
+        view.setPrefSize(boardSize + COORDINATE_SIZE + 18, boardSize + COORDINATE_SIZE + 18);
         view.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
     }
 

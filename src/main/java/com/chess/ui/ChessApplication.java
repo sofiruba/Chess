@@ -68,6 +68,7 @@ public final class ChessApplication {
         root.setPrefSize(1100, 760);
         root.setMinSize(600, 500);
         loadUiFont("/com/chess/ui/assets/titles1.ttf", 28);
+        loadUiFont("/com/chess/ui/assets/titles2.ttf", 18);
         loadUiFont("/com/chess/ui/assets/text1.otf", 16);
         var stylesheet = getClass().getResource("chess-theme.css");
         if (stylesheet == null) {
