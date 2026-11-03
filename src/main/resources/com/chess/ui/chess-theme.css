@@ -178,6 +178,42 @@
     -fx-padding: 3;
 }
 
+.game-history-panel {
+    -fx-background-color: rgba(253, 253, 208, 0.96);
+    -fx-background-radius: 18;
+    -fx-border-color: #2e8a57;
+    -fx-border-radius: 18;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.2), 12, 0.12, 0, 4);
+    -fx-padding: 12;
+    -fx-min-width: 210;
+    -fx-pref-width: 250;
+    -fx-max-width: 280;
+}
+
+.history-tabs {
+    -fx-tab-min-width: 92;
+    -fx-tab-max-width: 140;
+}
+
+.history-tabs > .tab-header-area > .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.history-tabs .tab {
+    -fx-background-color: #e9f2d9;
+    -fx-background-radius: 9 9 0 0;
+}
+
+.history-tabs .tab:selected {
+    -fx-background-color: #fdfdd0;
+}
+
+.history-tabs .tab-label {
+    -fx-text-fill: #2e8a57;
+    -fx-font-weight: bold;
+}
+
 .game-list .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #263b2c;

@@ -48,8 +48,11 @@ public final class ChessApplication {
     private IGameService game;
     private BoardView boardView;
     private SidePanel sidePanel;
+    private StackPane gameBoardSlot;
+    private HBox gameCenter;
     private Position selected;
     private List<Position> legalMoves = List.of();
+    private boolean gameScreenVisible;
 
     public ChessApplication(
             IGameArchive archive,
@@ -66,6 +69,7 @@ public final class ChessApplication {
         root.getStyleClass().add("app-root");
         root.setPrefSize(1100, 760);
         root.setMinSize(600, 500);
+        root.widthProperty().addListener((observable, oldValue, newValue) -> updateGameLayout());
         loadUiFont("/com/chess/ui/assets/titles1.ttf", 28);
         loadUiFont("/com/chess/ui/assets/titles2.ttf", 18);
         loadUiFont("/com/chess/ui/assets/text1.otf", 16);
@@ -80,6 +84,7 @@ public final class ChessApplication {
 
     private void showHome() {
         stopHomeAnimations();
+        gameScreenVisible = false;
         root.setTop(null);
         root.setRight(null);
         root.setBottom(null);
@@ -379,9 +384,17 @@ public final class ChessApplication {
 
     private void showGame() {
         stopHomeAnimations();
-        root.setCenter(boardView.createView());
-        root.setRight(sidePanel.createView());
+        gameScreenVisible = true;
+        VBox sidePanelView = sidePanel.createView();
+        gameBoardSlot = new StackPane(boardView.createView());
+        gameBoardSlot.setMinSize(0, 0);
+        HBox.setHgrow(gameBoardSlot, javafx.scene.layout.Priority.ALWAYS);
+        gameCenter = new HBox(14, gameBoardSlot, sidePanel.moveHistoryView());
+        gameCenter.setMinSize(0, 0);
+        root.setCenter(gameCenter);
+        root.setRight(sidePanelView);
         root.setTop(gameHeader());
+        updateGameLayout();
 
         Button undo = new Button("Deshacer");
         undo.setOnAction(event -> undo());
@@ -395,6 +408,16 @@ public final class ChessApplication {
         root.setBottom(actions);
         BorderPane.setMargin(root.getCenter(), new Insets(20, 10, 10, 20));
         BorderPane.setMargin(root.getRight(), new Insets(20, 24, 14, 14));
+    }
+
+    private void updateGameLayout() {
+        if (!gameScreenVisible || sidePanel == null) {
+            return;
+        }
+        boolean compact = root.getWidth() < 1320;
+        sidePanel.setCompactLayout(compact);
+        sidePanel.moveHistoryView().setVisible(!compact);
+        sidePanel.moveHistoryView().setManaged(!compact);
     }
 
     private HBox gameHeader() {
