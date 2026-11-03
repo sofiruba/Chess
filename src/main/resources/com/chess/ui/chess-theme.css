@@ -59,20 +59,20 @@
 }
 
 .game-brand {
-    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #fdfdd0;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
 
 .header-hint {
-    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #e4f2dc;
     -fx-font-size: 12px;
 }
 
 .game-button {
-    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-cursor: hand;
     -fx-font-size: 15px;
     -fx-font-weight: bold;
@@ -104,13 +104,13 @@
 }
 
 .home-button {
-    -fx-background-color: #4169e1;
-    -fx-border-color: #2e4fae;
+    -fx-background-color: #cd212a;
+    -fx-border-color: #8d171d;
     -fx-text-fill: white;
 }
 
 .home-button:hover {
-    -fx-background-color: #5c7ff0;
+    -fx-background-color: #e6383d;
 }
 
 .side-panel {
@@ -123,7 +123,7 @@
 }
 
 .section-title {
-    -fx-font-family: "ArcadeClassic", "Mollen Personal Use", sans-serif;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #2e8a57;
     -fx-font-size: 12px;
     -fx-font-weight: bold;

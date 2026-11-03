@@ -13,20 +13,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
 
 public final class BoardView implements IGameListener {
     private static final double MAX_SQUARE_SIZE = 64;
     private static final double COORDINATE_SIZE = 24;
+    private static final double FRAME_INSETS = 22;
     private final IGameQueries game;
     private final PieceSymbols symbols;
     private final PieceArtwork artwork = new PieceArtwork();
     private final Consumer<Position> squareClickHandler;
     private final GridPane squares = new GridPane();
+    private final GridPane boardLayout = new GridPane();
     private final List<Button> squareButtons = new ArrayList<>();
     private final List<Label> fileLabels = new ArrayList<>();
     private final List<Label> rankLabels = new ArrayList<>();
@@ -41,18 +44,37 @@ public final class BoardView implements IGameListener {
     }
 
     public BorderPane createView() {
-        BorderPane view = new BorderPane(squares);
-        view.setMinSize(0, 0);
-        view.getStyleClass().add("board-frame");
-        view.setTop(fileLabels());
-        view.setLeft(rankLabels());
+        BorderPane frame = new BorderPane(boardLayout);
+        frame.setMinSize(0, 0);
+        frame.getStyleClass().add("board-frame");
+        boardLayout.setAlignment(Pos.CENTER);
+        boardLayout.setHgap(0);
+        boardLayout.setVgap(0);
+        boardLayout.getColumnConstraints().add(new ColumnConstraints(COORDINATE_SIZE));
+        boardLayout.getRowConstraints().add(new RowConstraints(COORDINATE_SIZE));
+        for (int index = 0; index < game.boardSize(); index++) {
+            ColumnConstraints column = new ColumnConstraints(squareSize);
+            column.setMinWidth(squareSize);
+            column.setMaxWidth(squareSize);
+            boardLayout.getColumnConstraints().add(column);
+            RowConstraints row = new RowConstraints(squareSize);
+            row.setMinHeight(squareSize);
+            row.setMaxHeight(squareSize);
+            boardLayout.getRowConstraints().add(row);
+        }
+        addCoordinates();
+        GridPane.setColumnIndex(squares, 1);
+        GridPane.setRowIndex(squares, 1);
+        GridPane.setColumnSpan(squares, game.boardSize());
+        GridPane.setRowSpan(squares, game.boardSize());
+        boardLayout.add(squares, 1, 1);
         render();
 
-        StackPane area = new StackPane(view);
+        StackPane area = new StackPane(frame);
         area.getStyleClass().add("game-board-area");
         area.setMinSize(0, 0);
-        area.widthProperty().addListener((observable, oldValue, newValue) -> resizeBoard(view, area));
-        area.heightProperty().addListener((observable, oldValue, newValue) -> resizeBoard(view, area));
+        area.widthProperty().addListener((observable, oldValue, newValue) -> resizeBoard(frame, area));
+        area.heightProperty().addListener((observable, oldValue, newValue) -> resizeBoard(frame, area));
         return new BorderPane(area);
     }
 
@@ -92,33 +114,26 @@ public final class BoardView implements IGameListener {
         render();
     }
 
-    private HBox fileLabels() {
-        HBox labels = new HBox();
-        Region coordinateSpacer = new Region();
-        coordinateSpacer.setMinWidth(COORDINATE_SIZE);
-        coordinateSpacer.setPrefWidth(COORDINATE_SIZE);
-        coordinateSpacer.setMaxWidth(COORDINATE_SIZE);
-        labels.getChildren().add(coordinateSpacer);
+    private void addCoordinates() {
         for (int x = 0; x < game.boardSize(); x++) {
             Label label = new Label(String.valueOf((char) ('a' + x)));
             label.getStyleClass().add("coordinate-label");
+            label.setMinSize(squareSize, COORDINATE_SIZE);
+            label.setPrefSize(squareSize, COORDINATE_SIZE);
+            label.setMaxSize(squareSize, COORDINATE_SIZE);
             fileLabels.add(label);
-            labels.getChildren().add(label);
+            boardLayout.add(label, x + 1, 0);
         }
-        labels.getStyleClass().add("file-coordinates");
-        return labels;
-    }
-
-    private VBox rankLabels() {
-        VBox labels = new VBox();
-        for (int rank = game.boardSize(); rank >= 1; rank--) {
+        for (int row = 0; row < game.boardSize(); row++) {
+            int rank = game.boardSize() - row;
             Label label = new Label(String.valueOf(rank));
             label.getStyleClass().add("coordinate-label");
+            label.setMinSize(COORDINATE_SIZE, squareSize);
+            label.setPrefSize(COORDINATE_SIZE, squareSize);
+            label.setMaxSize(COORDINATE_SIZE, squareSize);
             rankLabels.add(label);
-            labels.getChildren().add(label);
+            boardLayout.add(label, 0, row + 1);
         }
-        labels.getStyleClass().add("rank-coordinates");
-        return labels;
     }
 
     private void addSquare(Position position) {
@@ -154,12 +169,12 @@ public final class BoardView implements IGameListener {
         squares.add(square, position.x(), game.boardSize() - 1 - position.y());
     }
 
-    private void resizeBoard(BorderPane view, StackPane area) {
-        double availableWidth = area.getWidth() - COORDINATE_SIZE - 32;
-        double availableHeight = area.getHeight() - COORDINATE_SIZE - 32;
+    private void resizeBoard(BorderPane frame, StackPane area) {
+        double availableWidth = area.getWidth() - COORDINATE_SIZE - FRAME_INSETS - 32;
+        double availableHeight = area.getHeight() - COORDINATE_SIZE - FRAME_INSETS - 32;
         double nextSize = Math.min(MAX_SQUARE_SIZE,
                 Math.min(availableWidth / game.boardSize(), availableHeight / game.boardSize()));
-        if (nextSize < 20) {
+        if (nextSize <= 0) {
             return;
         }
         squareSize = nextSize;
@@ -182,10 +197,25 @@ public final class BoardView implements IGameListener {
             label.setPrefSize(COORDINATE_SIZE, squareSize);
             label.setMaxSize(COORDINATE_SIZE, squareSize);
         });
+        boardLayout.getColumnConstraints().get(0).setPrefWidth(COORDINATE_SIZE);
+        boardLayout.getColumnConstraints().stream().skip(1).forEach(column -> {
+            column.setMinWidth(squareSize);
+            column.setPrefWidth(squareSize);
+            column.setMaxWidth(squareSize);
+        });
+        boardLayout.getRowConstraints().get(0).setPrefHeight(COORDINATE_SIZE);
+        boardLayout.getRowConstraints().stream().skip(1).forEach(row -> {
+            row.setMinHeight(squareSize);
+            row.setPrefHeight(squareSize);
+            row.setMaxHeight(squareSize);
+        });
         double boardSize = squareSize * game.boardSize();
         squares.setPrefSize(boardSize, boardSize);
-        view.setPrefSize(boardSize + COORDINATE_SIZE + 18, boardSize + COORDINATE_SIZE + 18);
-        view.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        boardLayout.setPrefSize(boardSize + COORDINATE_SIZE, boardSize + COORDINATE_SIZE);
+        frame.setPrefSize(
+                boardSize + COORDINATE_SIZE + FRAME_INSETS,
+                boardSize + COORDINATE_SIZE + FRAME_INSETS);
+        frame.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
     }
 
     private static String squareColorClass(Position position) {
