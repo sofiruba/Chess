@@ -332,6 +332,51 @@
     -fx-background-color: #fff3bd;
 }
 
+.rules-book {
+    -fx-alignment: center;
+    -fx-spacing: 12;
+    -fx-padding: 18;
+    -fx-background-color: #f0e2bd;
+}
+
+.rules-book > .label {
+    -fx-alignment: center;
+    -fx-max-width: infinity;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #2e8a57;
+}
+
+.rules-book-pages {
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+.rules-page {
+    -fx-background-color: #fffdf2;
+    -fx-border-color: #a77a3b;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.32), 14, 0.18, 0, 5);
+}
+
+.rules-page-left {
+    -fx-background-radius: 12 0 0 12;
+    -fx-border-radius: 12 0 0 12;
+}
+
+.rules-page-right {
+    -fx-background-radius: 0 12 12 0;
+    -fx-border-radius: 0 12 12 0;
+}
+
+.rules-book-spine {
+    -fx-background-color: #8a4c26;
+    -fx-min-width: 8;
+    -fx-pref-width: 8;
+    -fx-max-width: 8;
+}
+
 .coordinate-label {
     -fx-alignment: center;
     -fx-text-fill: #2e8a57;

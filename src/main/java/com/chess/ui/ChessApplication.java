@@ -12,15 +12,24 @@ import com.chess.domain.port.GameRecord;
 import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameFactory;
 import com.chess.domain.port.IGameService;
+import com.chess.domain.port.SavedGames;
 
 import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleRole;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -29,12 +38,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Stage;
 import javafx.scene.transform.Rotate;
 import javafx.scene.text.Font;
+import javafx.util.StringConverter;
 import javafx.util.Duration;
 
 public final class ChessApplication {
@@ -53,6 +66,7 @@ public final class ChessApplication {
     private Position selected;
     private List<Position> legalMoves = List.of();
     private boolean gameScreenVisible;
+    private Stage rulesStage;
 
     public ChessApplication(
             IGameArchive archive,
@@ -363,9 +377,48 @@ public final class ChessApplication {
     }
 
     private void openSavedGames() {
-        startNewGame();
-        showGame();
-        sidePanel.showMessage("Selecciona una partida guardada para continuar.");
+        SavedGames savedGames;
+        try {
+            savedGames = archive.findAll();
+        } catch (IllegalStateException exception) {
+            showArchiveNotice(Alert.AlertType.ERROR, "No se pudieron leer las partidas guardadas.");
+            return;
+        }
+        if (savedGames.records().isEmpty()) {
+            String message = savedGames.unreadableRows() == 0
+                    ? "Todavía no hay partidas guardadas."
+                    : "No hay partidas guardadas disponibles. "
+                            + savedGames.unreadableRows() + " no se pudieron leer.";
+            showArchiveNotice(Alert.AlertType.INFORMATION, message);
+            return;
+        }
+
+        ComboBox<GameRecord> games = new ComboBox<>();
+        games.getItems().setAll(savedGames.records());
+        games.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(GameRecord record) {
+                return record == null ? "" : describeSavedGame(record);
+            }
+
+            @Override
+            public GameRecord fromString(String value) {
+                return null;
+            }
+        });
+        games.getSelectionModel().selectFirst();
+        games.setMaxWidth(Double.MAX_VALUE);
+
+        Dialog<GameRecord> dialog = new Dialog<>();
+        dialog.setTitle("Cargar partida");
+        dialog.setHeaderText("Elegí una partida guardada");
+        dialog.getDialogPane().setContent(new VBox(10, new Label("Partidas disponibles:"), games));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.setResultConverter(button -> button == ButtonType.OK ? games.getValue() : null);
+        if (root.getScene() != null && root.getScene().getWindow() != null) {
+            dialog.initOwner(root.getScene().getWindow());
+        }
+        dialog.showAndWait().ifPresent(this::loadGame);
     }
 
     private void startNewGame() {
@@ -411,6 +464,7 @@ public final class ChessApplication {
         Button information = new Button("i");
         information.setAccessibleText("Información");
         information.setTooltip(new Tooltip("Información"));
+        information.setOnAction(event -> showRulesBook());
         information.getStyleClass().addAll("game-button", "text-button", "information-button");
         HBox actions = new HBox(10, home, undo, redo, information);
         actions.setAlignment(Pos.CENTER_LEFT);
@@ -435,13 +489,109 @@ public final class ChessApplication {
         try {
             loaded = gameFactory.create(record.moveCodes());
         } catch (IllegalArgumentException exception) {
-            sidePanel.showMessage("La partida guardada está dañada y no se puede cargar.");
+            String message = "La partida guardada está dañada y no se puede cargar.";
+            if (gameScreenVisible && sidePanel != null) {
+                sidePanel.showMessage(message);
+            } else {
+                showArchiveNotice(Alert.AlertType.ERROR, message);
+            }
             return;
         }
         installGame(loaded);
         savedGameTracker.markSaved(loaded.moveCodes());
         showGame();
         sidePanel.showMessage("Partida cargada");
+    }
+
+    private void showRulesBook() {
+        if (rulesStage != null && rulesStage.isShowing()) {
+            rulesStage.toFront();
+            return;
+        }
+
+        Image leftPageImage = loadUiImage("/com/chess/ui/assets/chess-rules1.png");
+        Image rightPageImage = loadUiImage("/com/chess/ui/assets/chess-rules2.png");
+        StackPane left = rulesPage(leftPageImage, "Reglas del ajedrez, página 1");
+        StackPane right = rulesPage(rightPageImage, "Reglas del ajedrez, página 2");
+        left.getStyleClass().addAll("rules-page", "rules-page-left");
+        right.getStyleClass().addAll("rules-page", "rules-page-right");
+        left.setMinSize(0, 0);
+        right.setMinSize(0, 0);
+        left.setPrefSize(440, 590);
+        right.setPrefSize(440, 590);
+        HBox.setHgrow(left, Priority.ALWAYS);
+        HBox.setHgrow(right, Priority.ALWAYS);
+        Region spine = new Region();
+        spine.getStyleClass().add("rules-book-spine");
+        HBox pages = new HBox(left, spine, right);
+        pages.getStyleClass().add("rules-book-pages");
+        VBox book = new VBox(12, new Label("REGLAS DEL JUEGO"), pages);
+        book.getStyleClass().add("rules-book");
+        VBox.setVgrow(pages, Priority.ALWAYS);
+
+        Stage stage = new Stage();
+        stage.setTitle("Reglas del ajedrez");
+        if (root.getScene() != null && root.getScene().getWindow() != null) {
+            stage.initOwner(root.getScene().getWindow());
+        }
+        Scene scene = new Scene(book, 920, 680);
+        scene.setCamera(new PerspectiveCamera());
+        if (root.getStylesheets().isEmpty()) {
+            throw new IllegalStateException("Missing chess UI stylesheet.");
+        }
+        scene.getStylesheets().addAll(root.getStylesheets());
+        stage.setScene(scene);
+        stage.setMinWidth(640);
+        stage.setMinHeight(500);
+        stage.setOnCloseRequest(event -> rulesStage = null);
+        rulesStage = stage;
+        stage.show();
+
+        RotateTransition leftOpen = new RotateTransition(Duration.millis(430), left);
+        leftOpen.setAxis(Rotate.Y_AXIS);
+        leftOpen.setFromAngle(-82);
+        leftOpen.setToAngle(0);
+        leftOpen.setInterpolator(Interpolator.EASE_OUT);
+        RotateTransition rightOpen = new RotateTransition(Duration.millis(430), right);
+        rightOpen.setAxis(Rotate.Y_AXIS);
+        rightOpen.setFromAngle(82);
+        rightOpen.setToAngle(0);
+        rightOpen.setInterpolator(Interpolator.EASE_OUT);
+        new ParallelTransition(leftOpen, rightOpen).play();
+    }
+
+    private static StackPane rulesPage(Image image, String description) {
+        StackPane container = new StackPane();
+        ImageView page = new ImageView(image);
+        page.setPreserveRatio(true);
+        page.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
+        page.setAccessibleText(description);
+        page.fitWidthProperty().bind(container.widthProperty().subtract(20));
+        page.fitHeightProperty().bind(container.heightProperty().subtract(20));
+        container.getChildren().add(page);
+        return container;
+    }
+
+    private void showArchiveNotice(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type, message, ButtonType.OK);
+        alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Partidas guardadas");
+        alert.setHeaderText(null);
+        if (root.getScene() != null && root.getScene().getWindow() != null) {
+            alert.initOwner(root.getScene().getWindow());
+        }
+        alert.showAndWait();
+    }
+
+    private static String describeSavedGame(GameRecord record) {
+        String result = switch (record.result()) {
+            case WHITE_WINS -> "Ganan héroes";
+            case BLACK_WINS -> "Ganan villanos";
+            case DRAW -> "Tablas";
+            case IN_PROGRESS -> "En curso";
+        };
+        return java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                .withZone(java.time.ZoneId.systemDefault())
+                .format(record.playedAt()) + " — " + result;
     }
 
     private void click(Position position) {
