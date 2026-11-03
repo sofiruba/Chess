@@ -178,6 +178,14 @@
     -fx-alignment: center-left;
 }
 
+.captured-divider {
+    -fx-background-color: #2e8a57;
+    -fx-min-height: 24;
+    -fx-pref-height: 24;
+    -fx-max-height: 24;
+    -fx-background-radius: 1;
+}
+
 .side-panel > .button {
     -fx-max-width: infinity;
     -fx-pref-width: 100%;
@@ -281,27 +289,47 @@
 }
 
 .game-board-area {
-    -fx-background-image: url("assets/background1.png");
-    -fx-background-repeat: no-repeat;
-    -fx-background-size: cover;
-    -fx-background-position: center center;
+    -fx-background-color: #fdfdd0;
     -fx-padding: 16;
 }
 
 .board-frame {
-    -fx-background-color: rgba(253, 253, 208, 0.92);
-    -fx-background-radius: 10;
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 14;
     -fx-border-color: #8a4c26;
-    -fx-border-width: 5;
-    -fx-border-radius: 12;
-    -fx-padding: 6;
-    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.58), 24, 0.28, 0, 12);
+    -fx-border-width: 4;
+    -fx-border-radius: 14;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.42), 18, 0.22, 0, 8);
 }
 
 .chess-grid {
     -fx-background-color: #714a34;
     -fx-border-color: #714a34;
-    -fx-border-width: 3;
+    -fx-border-width: 2;
+}
+
+.information-button {
+    -fx-background-color: #fdfdd0;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #5b4110;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-content-display: center;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+}
+
+.information-button:hover {
+    -fx-background-color: #fff3bd;
 }
 
 .coordinate-label {

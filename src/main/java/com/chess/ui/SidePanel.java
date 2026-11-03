@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -373,8 +374,14 @@ public final class SidePanel implements IGameListener {
         teamIcon.setFitHeight(30);
         teamIcon.setPreserveRatio(true);
         teamIcon.setAccessibleText(accessibleText);
-        HBox row = new HBox(8, teamIcon, pieces);
+        Region divider = new Region();
+        divider.getStyleClass().add("captured-divider");
+        divider.setMinWidth(2);
+        divider.setPrefWidth(2);
+        divider.setMaxWidth(2);
+        HBox row = new HBox(8, teamIcon, divider, pieces);
         row.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(divider, Priority.NEVER);
         HBox.setHgrow(pieces, Priority.ALWAYS);
         return row;
     }
