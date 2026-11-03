@@ -290,6 +290,10 @@
 
 .game-board-area {
     -fx-background-color: #fdfdd0;
+    -fx-background-image: url("assets/background1.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
     -fx-padding: 16;
 }
 
@@ -375,6 +379,69 @@
     -fx-min-width: 8;
     -fx-pref-width: 8;
     -fx-max-width: 8;
+}
+
+.saved-game-window {
+    -fx-spacing: 12;
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 20;
+    -fx-border-color: #2e8a57;
+    -fx-border-width: 3;
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.24), 16, 0.16, 0, 6);
+    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+}
+
+.saved-game-title {
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 19px;
+    -fx-text-fill: #2e8a57;
+}
+
+.saved-game-prompt {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-combo {
+    -fx-background-color: #fffdf2;
+    -fx-border-color: #2e8a57;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 5 8;
+    -fx-font-size: 14px;
+}
+
+.saved-game-combo .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-combo .list-cell:filled:selected,
+.saved-game-combo .list-cell:filled:hover {
+    -fx-background-color: #2e8a57;
+    -fx-text-fill: #fdfdd0;
+}
+
+.saved-game-confirm-button {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+    -fx-text-fill: #fdfdd0;
+}
+
+.saved-game-confirm-button:hover {
+    -fx-background-color: #3b9c68;
+}
+
+.saved-game-cancel-button {
+    -fx-background-color: #fbc02d;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-cancel-button:hover {
+    -fx-background-color: #ffd65a;
 }
 
 .coordinate-label {

@@ -29,7 +29,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -44,6 +43,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.transform.Rotate;
 import javafx.scene.text.Font;
@@ -409,16 +409,45 @@ public final class ChessApplication {
         games.getSelectionModel().selectFirst();
         games.setMaxWidth(Double.MAX_VALUE);
 
-        Dialog<GameRecord> dialog = new Dialog<>();
-        dialog.setTitle("Cargar partida");
-        dialog.setHeaderText("Elegí una partida guardada");
-        dialog.getDialogPane().setContent(new VBox(10, new Label("Partidas disponibles:"), games));
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.setResultConverter(button -> button == ButtonType.OK ? games.getValue() : null);
-        if (root.getScene() != null && root.getScene().getWindow() != null) {
-            dialog.initOwner(root.getScene().getWindow());
+        if (root.getStylesheets().isEmpty()) {
+            throw new IllegalStateException("Missing chess UI stylesheet.");
         }
-        dialog.showAndWait().ifPresent(this::loadGame);
+        Label title = new Label("CARGAR PARTIDA");
+        title.getStyleClass().add("saved-game-title");
+        Label prompt = new Label("Elegí una partida guardada para continuar");
+        prompt.getStyleClass().add("saved-game-prompt");
+        games.getStyleClass().add("saved-game-combo");
+        Button cancel = new Button("CANCELAR");
+        cancel.getStyleClass().addAll("game-button", "text-button", "saved-game-cancel-button");
+        Button load = new Button("CARGAR");
+        load.getStyleClass().addAll("game-button", "text-button", "saved-game-confirm-button");
+        HBox actions = new HBox(10, cancel, load);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+        VBox selector = new VBox(16, title, prompt, games, actions);
+        selector.getStyleClass().add("saved-game-window");
+        selector.setPrefWidth(480);
+        selector.setPadding(new Insets(24));
+
+        Stage selectorStage = new Stage();
+        selectorStage.setTitle("Cargar partida");
+        selectorStage.initModality(Modality.WINDOW_MODAL);
+        if (root.getScene() != null && root.getScene().getWindow() != null) {
+            selectorStage.initOwner(root.getScene().getWindow());
+        }
+        Scene selectorScene = new Scene(selector);
+        selectorScene.getStylesheets().addAll(root.getStylesheets());
+        selectorStage.setScene(selectorScene);
+        selectorStage.setMinWidth(440);
+        selectorStage.setMinHeight(230);
+        cancel.setOnAction(event -> selectorStage.close());
+        load.setOnAction(event -> {
+            GameRecord record = games.getValue();
+            selectorStage.close();
+            if (record != null) {
+                loadGame(record);
+            }
+        });
+        selectorStage.show();
     }
 
     private void startNewGame() {
