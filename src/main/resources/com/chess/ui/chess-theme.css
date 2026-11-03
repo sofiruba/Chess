@@ -3,9 +3,500 @@
     -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
 }
 
-.home-screen {
+    .home-screen {
     -fx-background-color: #cd212a;
-    -fx-background-image: url("assets/background.png");
+    -fx-background-image: url("assets/background.png");.app-root {
+    -fx-background-color: linear-gradient(to bottom right, #fdfdd0, #e9f2d9);
+    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+}
+    .home-screen {
+        -fx-background-color: #cd212a;
+        -fx-background-image: url("assets/background.png");
+        -fx-background-repeat: no-repeat;        /* Evita que se repita en mosaico */
+        -fx-background-size: cover;             /* Escala la imagen para cubrir toda la pantalla sin deformar proporciones */
+        -fx-background-position: center center;   /* Centra la imagen perfectamente en cualquier resolución */
+    }
+
+    .home-content {
+        -fx-background-color: transparent;
+    }
+
+    .preview-board {
+        -fx-effect: dropshadow(gaussian, rgba(24, 21, 12, 0.5), 14, 0.22, 0, 8);
+    }
+
+    .home-actions {
+        -fx-padding: 8 0 0 0;
+    }
+
+    .home-action-button {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-font-size: 16px;
+        -fx-padding: 13 18;
+    }
+
+    .red-button {
+        -fx-background-color: #cd212a;
+        -fx-border-color: #781719;
+        -fx-text-fill: white;
+        -fx-effect: dropshadow(gaussian, rgba(44, 18, 12, 0.42), 8, 0.12, 0, 4);
+    }
+
+    .red-button:hover {
+        -fx-background-color: #e33a3e;
+    }
+
+    .blue-button {
+        -fx-background-color: #4169e1;
+        -fx-border-color: #273f93;
+        -fx-text-fill: white;
+        -fx-effect: dropshadow(gaussian, rgba(25, 30, 75, 0.4), 8, 0.12, 0, 4);
+    }
+
+    .blue-button:hover {
+        -fx-background-color: #5e80ee;
+    }
+
+    .game-brand {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-text-fill: #fdfdd0;
+        -fx-font-size: 24px;
+        -fx-font-weight: bold;
+    }
+
+    .header-hint {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-text-fill: #e4f2dc;
+        -fx-font-size: 12px;
+    }
+
+    .game-button {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-cursor: hand;
+        -fx-font-size: 15px;
+        -fx-font-weight: bold;
+        -fx-padding: 11 18;
+        -fx-background-radius: 13;
+        -fx-border-radius: 13;
+        -fx-border-width: 3;
+    }
+
+    .game-button.text-button {
+        -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+    }
+
+    .primary-button {
+        -fx-background-color: #cd212a;
+        -fx-border-color: #8d171d;
+        -fx-text-fill: white;
+        -fx-effect: dropshadow(gaussian, rgba(82, 20, 17, 0.24), 7, 0.1, 0, 3);
+    }
+
+    .primary-button:hover {
+        -fx-background-color: #e6383d;
+    }
+
+    .secondary-button {
+        -fx-background-color: #fbc02d;
+        -fx-border-color: #b88300;
+        -fx-text-fill: #5b4110;
+    }
+
+    .secondary-button:hover {
+        -fx-background-color: #ffd65a;
+    }
+
+    .home-button {
+        -fx-background-color: #cd212a;
+        -fx-border-color: #8d171d;
+        -fx-text-fill: white;
+    }
+
+    .home-button:hover {
+        -fx-background-color: #e6383d;
+    }
+
+    .side-panel {
+        -fx-background-color: #fdfdd0;
+        -fx-background-radius: 20;
+        -fx-border-color: #2e8a57;
+        -fx-border-width: 3;
+        -fx-border-radius: 18;
+        -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.18), 12, 0.12, 0, 4);
+    }
+
+    .section-title {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-text-fill: #2e8a57;
+        -fx-font-size: 12px;
+        -fx-font-weight: bold;
+    }
+
+    .game-status {
+        -fx-background-color: #fff3bd;
+        -fx-background-radius: 10;
+        -fx-text-fill: #5b4110;
+        -fx-font-size: 14px;
+        -fx-font-weight: bold;
+        -fx-padding: 9 11;
+    }
+
+    .turn-indicator {
+        -fx-padding: 8 0;
+        -fx-min-height: 78;
+        -fx-max-width: infinity;
+    }
+
+    .turn-plate.heroes-turn {
+        -fx-background-color: #2e8a57;
+        -fx-border-color: #1d603b;
+    }
+
+    .turn-plate.villains-turn {
+        -fx-background-color: #cd212a;
+        -fx-border-color: #8d171d;
+    }
+
+    .turn-plate {
+        -fx-alignment: center-left;
+        -fx-background-radius: 14;
+        -fx-border-radius: 14;
+        -fx-border-width: 2;
+        -fx-min-height: 72;
+        -fx-padding: 12 76 12 14;
+        -fx-max-width: infinity;
+    }
+
+    .turn-indicator .label {
+        -fx-text-fill: #fdfdd0;
+        -fx-font-size: 15px;
+        -fx-font-weight: bold;
+    }
+
+    .captured-pieces {
+        -fx-spacing: 4;
+        -fx-min-height: 68;
+        -fx-alignment: center-left;
+    }
+
+    .captured-pieces > .hbox {
+        -fx-min-height: 32;
+        -fx-alignment: center-left;
+    }
+
+    .captured-divider {
+        -fx-background-color: #2e8a57;
+        -fx-min-height: 24;
+        -fx-pref-height: 24;
+        -fx-max-height: 24;
+        -fx-background-radius: 1;
+    }
+
+    .side-panel > .button {
+        -fx-max-width: infinity;
+        -fx-pref-width: 100%;
+        -fx-alignment: center;
+    }
+
+    .game-list {
+        -fx-background-color: white;
+        -fx-border-color: #d3dfbd;
+        -fx-border-radius: 10;
+        -fx-background-radius: 10;
+        -fx-control-inner-background: white;
+        -fx-padding: 3;
+    }
+
+    .game-history-panel {
+        -fx-background-color: rgba(253, 253, 208, 0.96);
+        -fx-background-radius: 18;
+        -fx-border-color: #2e8a57;
+        -fx-border-radius: 18;
+        -fx-border-width: 3;
+        -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.2), 12, 0.12, 0, 4);
+        -fx-padding: 12;
+        -fx-min-width: 210;
+        -fx-pref-width: 250;
+        -fx-max-width: 280;
+    }
+
+    .history-tabs {
+        -fx-tab-min-width: 92;
+        -fx-tab-max-width: 140;
+    }
+
+    .history-tabs > .tab-header-area > .tab-header-background {
+        -fx-background-color: transparent;
+    }
+
+    .history-tabs .tab {
+        -fx-background-color: #e9f2d9;
+        -fx-background-radius: 9 9 0 0;
+    }
+
+    .history-tabs .tab:selected {
+        -fx-background-color: #fdfdd0;
+    }
+
+    .history-tabs .tab-label {
+        -fx-text-fill: #2e8a57;
+        -fx-font-weight: bold;
+    }
+
+    .game-list .list-cell {
+        -fx-background-color: transparent;
+        -fx-text-fill: #263b2c;
+        -fx-padding: 7 9;
+    }
+
+    .game-list .list-cell:filled {
+        -fx-cell-size: 42px;
+    }
+
+    .move-notation {
+        -fx-text-fill: #263b2c;
+        -fx-font-size: 14px;
+        -fx-font-weight: bold;
+    }
+
+    .game-list .list-cell:filled:selected {
+        -fx-background-color: #4169e1;
+        -fx-text-fill: white;
+        -fx-background-radius: 7;
+    }
+
+    .error-notice {
+        -fx-text-fill: #cd212a;
+        -fx-font-weight: bold;
+    }
+
+    .new-game-button {
+        -fx-background-color: #2e8a57;
+        -fx-border-color: #1d603b;
+        -fx-text-fill: #16482d;
+    }
+
+    .new-game-button:hover {
+        -fx-background-color: #3b9c68;
+    }
+
+    .save-game-button {
+        -fx-background-color: #fbc02d;
+        -fx-border-color: #b88300;
+        -fx-text-fill: #5b4110;
+    }
+
+    .save-game-button:hover {
+        -fx-background-color: #ffd65a;
+    }
+
+    .save-game-button:disabled {
+        -fx-opacity: 0.58;
+    }
+
+    .game-board-area {
+        -fx-background-color: #fdfdd0;
+        -fx-background-image: url("assets/background1.png");
+        -fx-background-repeat: no-repeat;
+        -fx-background-size: cover;
+        -fx-background-position: center center;
+        -fx-padding: 16;
+    }
+
+    .board-frame {
+        -fx-background-color: #fdfdd0;
+        -fx-background-radius: 14;
+        -fx-border-color: #8a4c26;
+        -fx-border-width: 4;
+        -fx-border-radius: 14;
+        -fx-padding: 8;
+        -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.42), 18, 0.22, 0, 8);
+    }
+
+    .chess-grid {
+        -fx-background-color: #714a34;
+        -fx-border-color: #714a34;
+        -fx-border-width: 2;
+    }
+
+    .information-button {
+        -fx-background-color: #fdfdd0;
+        -fx-border-color: #b88300;
+        -fx-text-fill: #5b4110;
+        -fx-font-size: 19px;
+        -fx-font-weight: bold;
+        -fx-content-display: center;
+        -fx-alignment: center;
+        -fx-padding: 0;
+        -fx-min-width: 40;
+        -fx-min-height: 40;
+        -fx-pref-width: 40;
+        -fx-pref-height: 40;
+        -fx-max-width: 40;
+        -fx-max-height: 40;
+        -fx-background-radius: 50%;
+        -fx-border-radius: 50%;
+    }
+
+    .information-button:hover {
+        -fx-background-color: #fff3bd;
+    }
+
+    .rules-book {
+        -fx-alignment: center;
+        -fx-spacing: 12;
+        -fx-padding: 18;
+        -fx-background-color: #f0e2bd;
+    }
+
+    .rules-book > .label {
+        -fx-alignment: center;
+        -fx-max-width: infinity;
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-font-size: 15px;
+        -fx-text-fill: #2e8a57;
+    }
+
+    .rules-book-pages {
+        -fx-alignment: center;
+        -fx-background-color: transparent;
+    }
+
+    .rules-page {
+        -fx-background-color: #fffdf2;
+        -fx-border-color: #a77a3b;
+        -fx-border-width: 1;
+        -fx-padding: 8;
+        -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.32), 14, 0.18, 0, 5);
+    }
+
+    .rules-page-left {
+        -fx-background-radius: 12 0 0 12;
+        -fx-border-radius: 12 0 0 12;
+    }
+
+    .rules-page-right {
+        -fx-background-radius: 0 12 12 0;
+        -fx-border-radius: 0 12 12 0;
+    }
+
+    .rules-book-spine {
+        -fx-background-color: #8a4c26;
+        -fx-min-width: 8;
+        -fx-pref-width: 8;
+        -fx-max-width: 8;
+    }
+
+    .saved-game-window {
+        -fx-spacing: 12;
+        -fx-background-color: #fdfdd0;
+        -fx-background-radius: 20;
+        -fx-border-color: #2e8a57;
+        -fx-border-width: 3;
+        -fx-border-radius: 18;
+        -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.24), 16, 0.16, 0, 6);
+        -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+    }
+
+    .saved-game-title {
+        -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+        -fx-font-size: 19px;
+        -fx-text-fill: #2e8a57;
+    }
+
+    .saved-game-prompt {
+        -fx-font-size: 14px;
+        -fx-text-fill: #5b4110;
+    }
+
+    .saved-game-combo {
+        -fx-background-color: #fffdf2;
+        -fx-border-color: #2e8a57;
+        -fx-border-width: 2;
+        -fx-border-radius: 10;
+        -fx-background-radius: 10;
+        -fx-padding: 5 8;
+        -fx-font-size: 14px;
+    }
+
+    .saved-game-combo .list-cell {
+        -fx-background-color: transparent;
+        -fx-text-fill: #5b4110;
+    }
+
+    .saved-game-combo .list-cell:filled:selected,
+    .saved-game-combo .list-cell:filled:hover {
+        -fx-background-color: #2e8a57;
+        -fx-text-fill: #fdfdd0;
+    }
+
+    .saved-game-confirm-button {
+        -fx-background-color: #2e8a57;
+        -fx-border-color: #1d603b;
+        -fx-text-fill: #fdfdd0;
+    }
+
+    .saved-game-confirm-button:hover {
+        -fx-background-color: #3b9c68;
+    }
+
+    .saved-game-cancel-button {
+        -fx-background-color: #fbc02d;
+        -fx-border-color: #b88300;
+        -fx-text-fill: #5b4110;
+    }
+
+    .saved-game-cancel-button:hover {
+        -fx-background-color: #ffd65a;
+    }
+
+    .coordinate-label {
+        -fx-alignment: center;
+        -fx-text-fill: #2e8a57;
+        -fx-font-size: 14px;
+        -fx-font-weight: bold;
+    }
+
+    .board-square {
+        -fx-padding: 0;
+        -fx-background-radius: 0;
+        -fx-border-radius: 0;
+        -fx-border-color: rgba(26, 66, 39, 0.14);
+        -fx-border-width: 0.5;
+        -fx-content-display: center;
+        -fx-focus-traversable: false;
+    }
+
+    .cream-square {
+        -fx-background-color: #fdfdd0;
+    }
+
+    .meadow-square {
+        -fx-background-color: #2e8a57;
+    }
+
+    .board-square:hover {
+        -fx-effect: innershadow(gaussian, rgba(255, 255, 255, 0.6), 12, 0.12, 0, 0);
+    }
+
+    .board-square.selected-square {
+        -fx-background-color: #e9b949;
+        -fx-border-color: #8a4c26;
+        -fx-border-width: 3;
+    }
+
+    .board-square.legal-square {
+        -fx-background-color: #a8cd8d;
+        -fx-border-color: #5c8c42;
+        -fx-border-width: 3;
+    }
+
+    .board-square.check-square {
+        -fx-background-color: #d98c6a;
+        -fx-border-color: #8a4c26;
+        -fx-border-width: 3;
+    }
+
     -fx-background-repeat: no-repeat;        /* Evita que se repita en mosaico */
     -fx-background-size: cover;             /* Escala la imagen para cubrir toda la pantalla sin deformar proporciones */
     -fx-background-position: center center;   /* Centra la imagen perfectamente en cualquier resolución */
