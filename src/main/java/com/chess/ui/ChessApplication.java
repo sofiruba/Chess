@@ -28,7 +28,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -393,16 +392,19 @@ public final class ChessApplication {
         gameCenter.setMinSize(0, 0);
         root.setCenter(gameCenter);
         root.setRight(sidePanelView);
-        root.setTop(gameHeader());
+        root.setTop(null);
         updateGameLayout();
 
+        Button home = new Button("Inicio");
+        home.setOnAction(event -> showHome());
+        home.getStyleClass().addAll("game-button", "home-button", "text-button");
         Button undo = new Button("Deshacer");
         undo.setOnAction(event -> undo());
         undo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "undo-button");
         Button redo = new Button("Rehacer");
         redo.setOnAction(event -> redo());
         redo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "redo-button");
-        HBox actions = new HBox(10, undo, redo);
+        HBox actions = new HBox(10, home, undo, redo);
         actions.setAlignment(Pos.CENTER_LEFT);
         actions.setPadding(new Insets(14, 24, 18, 30));
         root.setBottom(actions);
@@ -418,20 +420,6 @@ public final class ChessApplication {
         sidePanel.setCompactLayout(compact);
         sidePanel.moveHistoryView().setVisible(!compact);
         sidePanel.moveHistoryView().setManaged(!compact);
-    }
-
-    private HBox gameHeader() {
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        Button home = new Button("Inicio");
-        home.setOnAction(event -> showHome());
-        home.getStyleClass().addAll("game-button", "home-button", "text-button");
-
-        HBox header = new HBox(spacer, home);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(6, 24, 6, 24));
-        header.getStyleClass().add("game-header");
-        return header;
     }
 
     private void loadGame(GameRecord record) {
