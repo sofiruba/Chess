@@ -396,12 +396,15 @@ public final class ChessApplication {
         updateGameLayout();
 
         Button home = new Button("Inicio");
+        home.setText("INICIO");
         home.setOnAction(event -> showHome());
         home.getStyleClass().addAll("game-button", "home-button", "text-button");
         Button undo = new Button("Deshacer");
+        undo.setText("DESHACER");
         undo.setOnAction(event -> undo());
         undo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "undo-button");
         Button redo = new Button("Rehacer");
+        redo.setText("REHACER");
         redo.setOnAction(event -> redo());
         redo.getStyleClass().addAll("game-button", "secondary-button", "text-button", "redo-button");
         HBox actions = new HBox(10, home, undo, redo);

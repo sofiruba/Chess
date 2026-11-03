@@ -59,12 +59,14 @@ public final class SidePanel implements IGameListener {
     private final TabPane historyTabs = new TabPane();
     private final Tab movesTab = new Tab("Movimientos");
     private final Tab savedGamesTab = new Tab("Guardadas");
+    private final Label savedGamesTitle = sectionTitle("PARTIDAS GUARDADAS");
     private final VBox moveHistoryPanel = new VBox(8);
     private final StackPane historySlot = new StackPane();
     private final Image heroesArtwork = loadArtwork("/com/chess/ui/assets/heroes.png", 34, 34);
     private final Image villainsArtwork = loadArtwork("/com/chess/ui/assets/villains.png", 34, 34);
     private VBox savedGamesContent;
-    private boolean compactLayout = true;
+    private boolean compactLayout;
+    private boolean layoutInitialized;
 
     public SidePanel(
             IGameArchive archive,
@@ -127,11 +129,12 @@ public final class SidePanel implements IGameListener {
     public VBox createView() {
         Button load = new Button("Cargar");
         load.setOnAction(event -> loadSelected());
+        load.setText("CARGAR");
         load.getStyleClass().addAll("game-button", "primary-button", "text-button");
         load.setMaxWidth(Double.MAX_VALUE);
         captured.getStyleClass().add("captured-pieces");
         savedGamesContent = new VBox(8,
-                sectionTitle("PARTIDAS GUARDADAS"),
+                savedGamesTitle,
                 savedGames,
                 unreadableNotice,
                 load);
@@ -143,7 +146,7 @@ public final class SidePanel implements IGameListener {
         historyTabs.getTabs().setAll(movesTab, savedGamesTab);
 
         StackPane titleBanner = new StackPane(titleArtwork);
-        titleBanner.setMinHeight(58);
+        titleBanner.setMinHeight(76);
         VBox panel = new VBox(
                 10,
                 titleBanner,
@@ -160,7 +163,8 @@ public final class SidePanel implements IGameListener {
         panel.setFillWidth(true);
         panel.getStyleClass().add("side-panel");
         titleBanner.prefWidthProperty().bind(panel.widthProperty());
-        titleArtwork.fitWidthProperty().bind(panel.widthProperty().subtract(48));
+        titleArtwork.fitWidthProperty().bind(panel.widthProperty().subtract(32));
+        titleArtwork.setFitHeight(72);
         VBox.setVgrow(historySlot, Priority.ALWAYS);
         historySlot.getChildren().setAll(historyTabs);
         refresh();
@@ -173,18 +177,23 @@ public final class SidePanel implements IGameListener {
     }
 
     public void setCompactLayout(boolean compact) {
-        if (compactLayout == compact) {
+        if (layoutInitialized && compactLayout == compact) {
             return;
         }
+        layoutInitialized = true;
         compactLayout = compact;
         historySlot.getChildren().clear();
         if (compact) {
+            savedGamesContent.getChildren().remove(savedGamesTitle);
             moveHistoryPanel.getChildren().remove(moves);
             movesTab.setContent(moves);
             savedGamesTab.setContent(savedGamesContent);
             historyTabs.getTabs().setAll(movesTab, savedGamesTab);
             historySlot.getChildren().setAll(historyTabs);
         } else {
+            if (!savedGamesContent.getChildren().contains(savedGamesTitle)) {
+                savedGamesContent.getChildren().add(0, savedGamesTitle);
+            }
             movesTab.setContent(null);
             savedGamesTab.setContent(null);
             historyTabs.getTabs().setAll(savedGamesTab);
@@ -258,6 +267,8 @@ public final class SidePanel implements IGameListener {
         };
         turnArtwork.setImage(heroes ? heroesArtwork : villainsArtwork);
         turnArtwork.setAccessibleText(heroes ? "Héroes" : "Villanos");
+        turnPlate.getStyleClass().removeAll("heroes-turn", "villains-turn");
+        turnPlate.getStyleClass().add(heroes ? "heroes-turn" : "villains-turn");
     }
 
     private void save() {

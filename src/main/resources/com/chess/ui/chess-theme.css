@@ -93,7 +93,7 @@
 .secondary-button {
     -fx-background-color: #fbc02d;
     -fx-border-color: #b88300;
-    -fx-text-fill: #3a2a08;
+    -fx-text-fill: #5b4110;
 }
 
 .secondary-button:hover {
@@ -141,11 +141,19 @@
     -fx-max-width: infinity;
 }
 
+.turn-plate.heroes-turn {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+}
+
+.turn-plate.villains-turn {
+    -fx-background-color: #cd212a;
+    -fx-border-color: #8d171d;
+}
+
 .turn-plate {
     -fx-alignment: center-left;
-    -fx-background-color: #2e8a57;
     -fx-background-radius: 14;
-    -fx-border-color: #1d603b;
     -fx-border-radius: 14;
     -fx-border-width: 2;
     -fx-min-height: 72;
@@ -249,13 +257,13 @@
 }
 
 .new-game-button {
-    -fx-background-color: #a8cd8d;
-    -fx-border-color: #5c8c42;
-    -fx-text-fill: #1d603b;
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+    -fx-text-fill: #16482d;
 }
 
 .new-game-button:hover {
-    -fx-background-color: #b7d99e;
+    -fx-background-color: #3b9c68;
 }
 
 .save-game-button {
