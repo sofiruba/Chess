@@ -7,6 +7,7 @@ import com.chess.domain.model.GameResult;
 import com.chess.domain.model.Piece;
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
+import com.chess.domain.model.PowerType;
 
 /**
  * Vista de solo lectura de una partida. Quien la recibe no puede modificarla.
@@ -32,4 +33,23 @@ public interface IGameQueries {
     List<String> moveNotation();
     List<String> moveCodes();
     List<MoveHistoryEntry> moveHistory();
+
+    /** Las casillas con cajas misteriosas sin abrir. Su contenido no se revela hasta que una pieza las abre. */
+    List<Position> mysteryBoxes();
+
+    /** El poder que lleva la pieza de esa casilla, o null si está vacía o la pieza no lleva ninguno. */
+    PowerType powerAt(Position position);
+
+    /** Los poderes que tienen guardados las piezas de un color. Ambos jugadores pueden ver los del otro. */
+    List<HeldPower> heldPowers(Color color);
+
+    boolean isFrozen(Position position);
+
+    boolean isImmune(Position position);
+
+    /** Objetivos legales del poder de la pieza en {@code holder}; vacío si no puede usar ninguno ahora. */
+    List<Position> powerTargets(Position holder);
+
+    /** El contenido inicial de las cajas, necesario para reproducir la partida (vacío si no hay cajas). */
+    String setupCode();
 }

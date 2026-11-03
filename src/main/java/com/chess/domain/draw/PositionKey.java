@@ -13,9 +13,16 @@ import com.chess.domain.rule.CastlingRights;
 /**
  * Lo que hace que dos posiciones sean "iguales" para la regla de repetición: ubicación de las piezas, lado al que
  * le toca mover, derechos de enroque y casilla al paso. Supuesto: la casilla al paso cuenta cuando la última jugada
- * fue un avance doble de peón, aunque ningún peón enemigo esté en posición de capturar.
+ * fue un avance doble de peón, aunque ningún peón enemigo esté en posición de capturar. {@code powers} resume las
+ * cajas y los poderes (vacío en el ajedrez clásico): dos posiciones con las mismas piezas pero distintos poderes no
+ * son la misma.
  */
-public record PositionKey(String placement, Color turn, CastlingRights castlingRights, Position enPassantSquare) {
+public record PositionKey(
+        String placement,
+        Color turn,
+        CastlingRights castlingRights,
+        Position enPassantSquare,
+        String powers) {
 
     private static final String EMPTY_SQUARE = "-";
     private static final char SEPARATOR = ',';
@@ -24,23 +31,41 @@ public record PositionKey(String placement, Color turn, CastlingRights castlingR
         Objects.requireNonNull(placement, "placement must not be null");
         Objects.requireNonNull(turn, "turn must not be null");
         Objects.requireNonNull(castlingRights, "castlingRights must not be null");
+        Objects.requireNonNull(powers, "powers must not be null");
     }
 
     /**
      * @param lastMove la jugada que llevó a esta posición, o null si es la posición inicial
      */
     public static PositionKey of(Board board, Color turn, CastlingRights castlingRights, IMoveInfo lastMove) {
+        return of(board, turn, castlingRights, lastMove, "");
+    }
+
+    /**
+     * @param powers resumen de las cajas y los poderes en esta posición
+     */
+    public static PositionKey of(
+            Board board,
+            Color turn,
+            CastlingRights castlingRights,
+            IMoveInfo lastMove,
+            String powers) {
         Objects.requireNonNull(board, "board must not be null");
         return new PositionKey(
                 placementOf(board),
                 turn,
                 castlingRights,
-                enPassantSquareAfter(lastMove, castlingRights.roles()));
+                enPassantSquareAfter(lastMove, castlingRights.roles()),
+                powers);
     }
 
     public static PositionKey initial(Board board, Color turn, CastlingRights castlingRights) {
+        return initial(board, turn, castlingRights, "");
+    }
+
+    public static PositionKey initial(Board board, Color turn, CastlingRights castlingRights, String powers) {
         Objects.requireNonNull(board, "board must not be null");
-        return new PositionKey(placementOf(board), turn, castlingRights, null);
+        return new PositionKey(placementOf(board), turn, castlingRights, null, powers);
     }
 
     private static String placementOf(Board board) {

@@ -5,16 +5,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.chess.domain.draw.IDrawRule;
 import com.chess.domain.model.IMoveStrategy;
 import com.chess.domain.model.PieceRoles;
 import com.chess.domain.model.PieceType;
+import com.chess.domain.model.Position;
 import com.chess.domain.movement.DiagonalMoveStrategy;
 import com.chess.domain.movement.LShapeMoveStrategy;
 import com.chess.domain.movement.LinearMoveStrategy;
 import com.chess.domain.movement.OneStepMoveStrategy;
 import com.chess.domain.movement.PawnMoveStrategy;
+import com.chess.domain.power.IPower;
 import com.chess.domain.rule.IMoveRule;
 
 /**
@@ -29,6 +32,8 @@ import com.chess.domain.rule.IMoveRule;
  * @param roles las piezas que las reglas tratan como rey, torre, peón, alfil y caballo
  * @param additionalMoveRules reglas de movimiento que se suman a enroque, captura al paso y promoción
  * @param additionalDrawRules reglas de tablas que se suman a material insuficiente, repetición y 50 jugadas
+ * @param mysteryBoxes casillas donde aparecen las cajas misteriosas al empezar; vacío en el ajedrez clásico
+ * @param additionalPowers poderes que se suman a flor de hielo, pluma, estrella y caparazón
  */
 public record GameSetup(
         Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
@@ -36,7 +41,9 @@ public record GameSetup(
         List<PieceType> promotionTypes,
         PieceRoles roles,
         List<IMoveRule> additionalMoveRules,
-        List<IDrawRule> additionalDrawRules) {
+        List<IDrawRule> additionalDrawRules,
+        List<Position> mysteryBoxes,
+        List<IPower> additionalPowers) {
 
     public GameSetup {
         Objects.requireNonNull(pieceDefinitions, "pieceDefinitions must not be null");
@@ -50,8 +57,38 @@ public record GameSetup(
         promotionTypes = List.copyOf(promotionTypes);
         additionalMoveRules = List.copyOf(additionalMoveRules);
         additionalDrawRules = List.copyOf(additionalDrawRules);
+        mysteryBoxes = List.copyOf(Objects.requireNonNull(mysteryBoxes, "mysteryBoxes must not be null"));
+        additionalPowers = List.copyOf(Objects.requireNonNull(additionalPowers, "additionalPowers must not be null"));
+        if (Set.copyOf(mysteryBoxes).size() != mysteryBoxes.size()) {
+            throw new IllegalArgumentException("Two mystery boxes share a square");
+        }
     }
 
+    /** Una configuración sin cajas misteriosas. */
+    public GameSetup(
+            Map<PieceType, List<IMoveStrategy>> pieceDefinitions,
+            List<PieceType> backRank,
+            List<PieceType> promotionTypes,
+            PieceRoles roles,
+            List<IMoveRule> additionalMoveRules,
+            List<IDrawRule> additionalDrawRules) {
+        this(pieceDefinitions, backRank, promotionTypes, roles, additionalMoveRules, additionalDrawRules,
+                List.of(), List.of());
+    }
+
+    /**
+     * La variante del trabajo: ajedrez estándar con cuatro cajas misteriosas en a5, c5, f4 y h4. Las cajas son
+     * simétricas por una rotación de 180 grados, por lo que ningún jugador empieza con ventaja.
+     */
+    public static GameSetup mysteryBoxEdition() {
+        return standard().withMysteryBoxes(standardMysteryBoxes());
+    }
+
+    public static List<Position> standardMysteryBoxes() {
+        return List.of(new Position(0, 4), new Position(2, 4), new Position(5, 3), new Position(7, 3));
+    }
+
+    /** El ajedrez clásico, sin cajas misteriosas. */
     public static GameSetup standard() {
         PieceRoles roles = PieceRoles.standard();
         return new GameSetup(
@@ -59,6 +96,8 @@ public record GameSetup(
                 standardBackRank(roles),
                 standardPromotionTypes(roles),
                 roles,
+                List.of(),
+                List.of(),
                 List.of(),
                 List.of());
     }
@@ -95,29 +134,42 @@ public record GameSetup(
     }
 
     public GameSetup withPieceDefinitions(Map<PieceType, List<IMoveStrategy>> newDefinitions) {
-        return new GameSetup(newDefinitions, backRank, promotionTypes, roles, additionalMoveRules, additionalDrawRules);
+        return new GameSetup(newDefinitions, backRank, promotionTypes, roles, additionalMoveRules, additionalDrawRules,
+                mysteryBoxes, additionalPowers);
     }
 
     public GameSetup withBackRank(List<PieceType> newBackRank) {
         return new GameSetup(pieceDefinitions, newBackRank, promotionTypes, roles, additionalMoveRules,
-                additionalDrawRules);
+                additionalDrawRules, mysteryBoxes, additionalPowers);
     }
 
     public GameSetup withPromotionTypes(List<PieceType> newPromotionTypes) {
         return new GameSetup(pieceDefinitions, backRank, newPromotionTypes, roles, additionalMoveRules,
-                additionalDrawRules);
+                additionalDrawRules, mysteryBoxes, additionalPowers);
     }
 
     public GameSetup withRoles(PieceRoles newRoles) {
         return new GameSetup(pieceDefinitions, backRank, promotionTypes, newRoles, additionalMoveRules,
-                additionalDrawRules);
+                additionalDrawRules, mysteryBoxes, additionalPowers);
     }
 
     public GameSetup withAdditionalMoveRules(List<IMoveRule> newRules) {
-        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, newRules, additionalDrawRules);
+        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, newRules, additionalDrawRules,
+                mysteryBoxes, additionalPowers);
     }
 
     public GameSetup withAdditionalDrawRules(List<IDrawRule> newRules) {
-        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, additionalMoveRules, newRules);
+        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, additionalMoveRules, newRules,
+                mysteryBoxes, additionalPowers);
+    }
+
+    public GameSetup withMysteryBoxes(List<Position> newBoxes) {
+        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, additionalMoveRules,
+                additionalDrawRules, newBoxes, additionalPowers);
+    }
+
+    public GameSetup withAdditionalPowers(List<IPower> newPowers) {
+        return new GameSetup(pieceDefinitions, backRank, promotionTypes, roles, additionalMoveRules,
+                additionalDrawRules, mysteryBoxes, newPowers);
     }
 }

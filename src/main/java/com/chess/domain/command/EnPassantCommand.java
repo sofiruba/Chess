@@ -1,5 +1,6 @@
 package com.chess.domain.command;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.chess.domain.model.Board;
@@ -65,6 +66,11 @@ public final class EnPassantCommand implements ICommand {
     @Override
     public Piece capturedPiece() {
         return capturedPiece;
+    }
+
+    @Override
+    public List<CapturedPiece> capturedPieces() {
+        return capturedPiece == null ? List.of() : List.of(new CapturedPiece(capturedPiece, capturedPawnPosition));
     }
 
     @Override

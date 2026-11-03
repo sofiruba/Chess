@@ -6,6 +6,7 @@ import com.chess.domain.command.ICommand;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
 import com.chess.domain.model.Position;
+import com.chess.domain.power.PowerContext;
 import com.chess.domain.rule.MoveRuleContext;
 
 /**
@@ -36,4 +37,10 @@ public interface IGameState {
      * Destinos legales de la pieza en {@code from}. Nunca null; vacío cuando la partida terminó.
      */
     List<Position> legalMoves(MoveRuleContext context, Position from);
+
+    /**
+     * Objetivos legales del poder de la pieza en {@code holder}. Nunca null; vacío cuando la partida terminó o la
+     * pieza no puede usar un poder. Un uso de poder se ejecuta con {@link #handleMove(ICommand)}, como una jugada.
+     */
+    List<Position> powerTargets(PowerContext context, Position holder);
 }

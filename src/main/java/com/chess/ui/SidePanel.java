@@ -2,12 +2,15 @@ package com.chess.ui;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
+import com.chess.domain.model.Position;
 import com.chess.domain.port.GameRecord;
+import com.chess.domain.port.HeldPower;
 import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameListener;
 import com.chess.domain.port.IGameQueries;
@@ -25,6 +28,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -38,6 +42,7 @@ public final class SidePanel implements IGameListener {
     private final IGameArchive archive;
     private final IGameQueries game;
     private final PieceSymbols symbols;
+    private final PowerNames powerNames;
     private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
     private final Runnable newGameHandler;
@@ -48,6 +53,7 @@ public final class SidePanel implements IGameListener {
     private final StackPane turnIndicator = new StackPane(turnPlate, turnArtwork);
     private final ImageView titleArtwork = new ImageView(loadArtwork("/com/chess/ui/assets/chess-title1.png"));
     private final HBox captured = new HBox(4);
+    private final VBox powers = new VBox(6);
     private final Label unreadableNotice = new Label();
     private final Button saveButton = new Button("Guardar partida");
     private final Button newGameButton = new Button("Nueva partida");
@@ -67,12 +73,14 @@ public final class SidePanel implements IGameListener {
             IGameArchive archive,
             IGameQueries game,
             PieceSymbols symbols,
+            PowerNames powerNames,
             SavedGameTracker savedGameTracker,
             Consumer<GameRecord> loadHandler,
             Runnable newGameHandler) {
         this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.game = Objects.requireNonNull(game, "game must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
+        this.powerNames = Objects.requireNonNull(powerNames, "powerNames must not be null");
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
         this.newGameHandler = Objects.requireNonNull(newGameHandler, "newGameHandler must not be null");
@@ -117,6 +125,7 @@ public final class SidePanel implements IGameListener {
         load.setOnAction(event -> loadSelected());
         load.getStyleClass().addAll("game-button", "primary-button", "text-button");
         captured.getStyleClass().add("captured-pieces");
+        powers.getStyleClass().add("powers-list");
         savedGamesContent = new VBox(8,
                 sectionTitle("PARTIDAS GUARDADAS"),
                 savedGames,
@@ -140,6 +149,8 @@ public final class SidePanel implements IGameListener {
                 saveButton,
                 sectionTitle("CAPTURADAS"),
                 captured,
+                sectionTitle("PODERES"),
+                powers,
                 historySlot);
         panel.setPadding(new Insets(12));
         panel.setMinWidth(250);
@@ -194,11 +205,68 @@ public final class SidePanel implements IGameListener {
                     captured.getChildren().add(imageView);
                 },
                 () -> captured.getChildren().add(new Label(symbols.symbolFor(piece)))));
+        refreshPowers();
         updateSaveButton();
+    }
+
+    /** Los poderes de ambos equipos: los dos jugadores ven siempre lo que tiene el otro. */
+    private void refreshPowers() {
+        powers.getChildren().setAll(
+                teamPowers("Héroes", Color.WHITE),
+                teamPowers("Villanos", Color.BLACK));
+        int boxes = game.mysteryBoxes().size();
+        if (boxes > 0) {
+            Label remaining = new Label(boxes == 1 ? "Queda 1 caja sin abrir" : "Quedan " + boxes + " cajas sin abrir");
+            remaining.getStyleClass().add("powers-note");
+            powers.getChildren().add(remaining);
+        }
+    }
+
+    private HBox teamPowers(String team, Color color) {
+        Label name = new Label(team);
+        name.getStyleClass().add("powers-team");
+        name.setMinWidth(66);
+        FlowPane chips = new FlowPane(4, 4);
+        HBox.setHgrow(chips, Priority.ALWAYS);
+        List<HeldPower> held = game.heldPowers(color);
+        if (held.isEmpty()) {
+            Label none = new Label("Sin poderes");
+            none.getStyleClass().add("powers-note");
+            chips.getChildren().add(none);
+        }
+        for (HeldPower power : held) {
+            chips.getChildren().add(powerChip(power));
+        }
+        HBox row = new HBox(6, name, chips);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private HBox powerChip(HeldPower held) {
+        Label badge = new Label(powerNames.badge(held.power()));
+        badge.getStyleClass().addAll("power-badge", powerNames.styleClass(held.power()));
+        badge.setMinSize(18, 18);
+        badge.setPrefSize(18, 18);
+        badge.setMaxSize(18, 18);
+        Label text = new Label(powerNames.name(held.power()) + " " + squareName(held.position()));
+        HBox chip = new HBox(4, badge, text);
+        chip.setAlignment(Pos.CENTER_LEFT);
+        chip.getStyleClass().add("power-chip");
+        chip.setAccessibleText(symbols.symbolFor(held.piece()) + " " + text.getText());
+        return chip;
+    }
+
+    private static String squareName(Position position) {
+        return String.valueOf((char) ('a' + position.x())) + (position.y() + 1);
     }
 
     @Override
     public void moveMade() {
+        refresh();
+    }
+
+    @Override
+    public void powerUsed() {
         refresh();
     }
 

@@ -52,6 +52,7 @@ public record DrawCounters(
     }
 
     private boolean isIrreversible(IMoveInfo move) {
-        return move.movingPiece().type() == roles.pawn() || move.capturedPiece() != null;
+        boolean pawnMoved = move.movedPieces().stream().anyMatch(moved -> moved.piece().type() == roles.pawn());
+        return pawnMoved || !move.capturedPieces().isEmpty();
     }
 }

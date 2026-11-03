@@ -31,9 +31,10 @@ public record CastlingRights(
         for (IMoveInfo.MovedPiece moved : move.movedPieces()) {
             updated = updated.afterPieceMoved(moved.piece(), moved.from());
         }
-        Piece captured = move.capturedPiece();
-        if (captured != null && isHomeRook(captured, move.to())) {
-            updated = updated.withoutRook(captured.color(), move.to().x());
+        for (IMoveInfo.CapturedPiece captured : move.capturedPieces()) {
+            if (isHomeRook(captured.piece(), captured.position())) {
+                updated = updated.withoutRook(captured.piece().color(), captured.position().x());
+            }
         }
         return updated;
     }

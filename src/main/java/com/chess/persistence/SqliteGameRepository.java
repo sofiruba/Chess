@@ -32,9 +32,12 @@ public final class SqliteGameRepository implements IGameRepository {
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "played_at TEXT NOT NULL, "
             + "result TEXT NOT NULL, "
-            + "moves TEXT NOT NULL)";
-    private static final String INSERT = "INSERT INTO games (played_at, result, moves) VALUES (?, ?, ?)";
-    private static final String SELECT_ALL = "SELECT id, played_at, result, moves FROM games ORDER BY id DESC";
+            + "moves TEXT NOT NULL, "
+            + "setup TEXT NOT NULL DEFAULT '')";
+    private static final String ADD_SETUP_COLUMN = "ALTER TABLE games ADD COLUMN setup TEXT NOT NULL DEFAULT ''";
+    private static final String INSERT = "INSERT INTO games (played_at, result, moves, setup) VALUES (?, ?, ?, ?)";
+    private static final String SELECT_ALL =
+            "SELECT id, played_at, result, moves, setup FROM games ORDER BY id DESC";
 
     private final String url;
 
@@ -75,8 +78,18 @@ public final class SqliteGameRepository implements IGameRepository {
         try (Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate(CREATE_TABLE);
+            addSetupColumnIfMissing(connection, statement);
         } catch (SQLException exception) {
             throw new IllegalStateException("Cannot initialize the database", exception);
+        }
+    }
+
+    /** Las bases creadas antes de las cajas misteriosas no tienen la columna; sus partidas quedan sin cajas. */
+    private void addSetupColumnIfMissing(Connection connection, Statement statement) throws SQLException {
+        try (ResultSet columns = connection.getMetaData().getColumns(null, null, "games", "setup")) {
+            if (!columns.next()) {
+                statement.executeUpdate(ADD_SETUP_COLUMN);
+            }
         }
     }
 
@@ -84,6 +97,7 @@ public final class SqliteGameRepository implements IGameRepository {
         statement.setString(1, record.playedAt().toString());
         statement.setString(2, record.result().name());
         statement.setString(3, String.join(MOVE_SEPARATOR, record.moveCodes()));
+        statement.setString(4, record.setupCode());
     }
 
     private GameRecord withGeneratedId(PreparedStatement statement, GameRecord record) throws SQLException {
@@ -91,7 +105,8 @@ public final class SqliteGameRepository implements IGameRepository {
             if (!keys.next()) {
                 throw new IllegalStateException("The database did not return the id of the saved game");
             }
-            return new GameRecord(keys.getLong(1), record.playedAt(), record.result(), record.moveCodes());
+            return new GameRecord(
+                    keys.getLong(1), record.playedAt(), record.result(), record.moveCodes(), record.setupCode());
         }
     }
 
@@ -115,10 +130,15 @@ public final class SqliteGameRepository implements IGameRepository {
                     row.getLong("id"),
                     Instant.parse(row.getString("played_at")),
                     GameResult.valueOf(row.getString("result")),
-                    splitMoves(row.getString("moves"))));
+                    splitMoves(row.getString("moves")),
+                    setupOf(row.getString("setup"))));
         } catch (IllegalArgumentException | DateTimeException exception) {
             return Optional.empty();
         }
+    }
+
+    private String setupOf(String setup) {
+        return setup == null ? "" : setup.trim();
     }
 
     private List<String> splitMoves(String moves) {

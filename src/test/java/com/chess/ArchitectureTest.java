@@ -20,7 +20,8 @@ final class ArchitectureTest {
         "com.chess.domain.rule..",
         "com.chess.domain.draw..",
         "com.chess.domain.state..",
-        "com.chess.domain.game.."
+        "com.chess.domain.game..",
+        "com.chess.domain.power.."
     };
 
     private static JavaClasses production;

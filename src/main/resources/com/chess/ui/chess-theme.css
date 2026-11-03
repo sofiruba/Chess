@@ -321,3 +321,117 @@
     -fx-border-color: #8a4c26;
     -fx-border-width: 3;
 }
+
+/* ---------- Cajas misteriosas y poderes ---------- */
+
+/* El bloque "?" de Mario: la única pieza llamativa nueva del tablero. */
+.mystery-box {
+    -fx-alignment: center;
+    -fx-background-color: #8a4c26, #f6b81c;
+    -fx-background-insets: 0, 3;
+    -fx-background-radius: 5, 3;
+    -fx-text-fill: #fff6d6;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(90, 50, 10, 0.45), 4, 0.3, 0, 2);
+}
+
+.board-square.box-square {
+    -fx-border-color: #b88300;
+    -fx-border-width: 2;
+}
+
+.power-badge {
+    -fx-alignment: center;
+    -fx-background-radius: 99;
+    -fx-border-radius: 99;
+    -fx-border-width: 1.5;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+}
+
+.power-ice {
+    -fx-background-color: #3b9bd9;
+}
+
+.power-feather {
+    -fx-background-color: #7a5bc4;
+}
+
+.power-star {
+    -fx-background-color: #f2a900;
+}
+
+.power-shell {
+    -fx-background-color: #2e8a57;
+}
+
+.power-generic {
+    -fx-background-color: #6b6b6b;
+}
+
+.board-square.frozen-square {
+    -fx-background-color: #cfeefe;
+    -fx-border-color: #3b9bd9;
+    -fx-border-width: 3;
+}
+
+.board-square.immune-square {
+    -fx-border-color: #f2a900;
+    -fx-border-width: 3;
+    -fx-effect: innershadow(gaussian, rgba(255, 210, 60, 0.9), 16, 0.4, 0, 0);
+}
+
+.board-square.power-target-square {
+    -fx-background-color: #d9c8f5;
+    -fx-border-color: #7a5bc4;
+    -fx-border-width: 3;
+}
+
+.power-button {
+    -fx-background-color: #7a5bc4;
+    -fx-border-color: #4e3690;
+    -fx-text-fill: white;
+}
+
+.power-button:hover {
+    -fx-background-color: #8c6fd4;
+}
+
+.power-button:disabled {
+    -fx-opacity: 0.45;
+}
+
+.powers-list {
+    -fx-padding: 2 0 4 0;
+}
+
+.powers-team {
+    -fx-text-fill: #2e8a57;
+    -fx-font-weight: bold;
+}
+
+.power-chip {
+    -fx-background-color: white;
+    -fx-background-radius: 99;
+    -fx-border-color: #d3dfbd;
+    -fx-border-radius: 99;
+    -fx-padding: 2 8 2 3;
+}
+
+.power-chip .label {
+    -fx-text-fill: #3a2a08;
+    -fx-font-size: 12px;
+}
+
+.powers-note {
+    -fx-text-fill: #7a6a3a;
+    -fx-font-size: 12px;
+}
+
+.power-chip .power-badge {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}

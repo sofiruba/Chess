@@ -7,6 +7,7 @@ import com.chess.domain.command.ICommand;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
 import com.chess.domain.model.Position;
+import com.chess.domain.power.PowerContext;
 import com.chess.domain.rule.MoveRuleContext;
 
 /**
@@ -54,6 +55,11 @@ public final class FinishedState implements IGameState {
 
     @Override
     public List<Position> legalMoves(MoveRuleContext context, Position from) {
+        return List.of();
+    }
+
+    @Override
+    public List<Position> powerTargets(PowerContext context, Position holder) {
         return List.of();
     }
 }

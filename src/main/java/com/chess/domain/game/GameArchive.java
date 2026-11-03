@@ -26,7 +26,8 @@ public final class GameArchive implements IGameArchive {
     @Override
     public GameRecord save(IGameQueries game) {
         Objects.requireNonNull(game, "game must not be null");
-        return repository.save(GameRecord.unsaved(clock.instant(), game.result(), game.moveCodes()));
+        return repository.save(
+                GameRecord.unsaved(clock.instant(), game.result(), game.moveCodes(), game.setupCode()));
     }
 
     @Override
