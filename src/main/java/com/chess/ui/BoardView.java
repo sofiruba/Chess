@@ -23,8 +23,8 @@ import javafx.geometry.Pos;
 
 public final class BoardView implements IGameListener {
     private static final double MAX_SQUARE_SIZE = 64;
-    private static final double COORDINATE_SIZE = 24;
-    private static final double FRAME_INSETS = 22;
+    private static final double COORDINATE_SIZE = 28;
+    private static final double FRAME_INSETS = 24;
     private final IGameQueries game;
     private final PieceSymbols symbols;
     private final PowerNames powerNames;

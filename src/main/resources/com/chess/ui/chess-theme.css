@@ -51,13 +51,6 @@
     -fx-background-color: #5e80ee;
 }
 
-.game-header {
-    -fx-background-color: #fff3bd;
-    -fx-border-color: #fbc02d;
-    -fx-border-width: 0 0 4 0;
-    -fx-alignment: center-left;
-}
-
 .game-brand {
     -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #fdfdd0;
@@ -100,7 +93,7 @@
 .secondary-button {
     -fx-background-color: #fbc02d;
     -fx-border-color: #b88300;
-    -fx-text-fill: #3a2a08;
+    -fx-text-fill: #5b4110;
 }
 
 .secondary-button:hover {
@@ -143,19 +136,29 @@
 }
 
 .turn-indicator {
-    -fx-padding: 8 8 8 12;
+    -fx-padding: 8 0;
     -fx-min-height: 78;
+    -fx-max-width: infinity;
+}
+
+.turn-plate.heroes-turn {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+}
+
+.turn-plate.villains-turn {
+    -fx-background-color: #cd212a;
+    -fx-border-color: #8d171d;
 }
 
 .turn-plate {
     -fx-alignment: center-left;
-    -fx-background-color: #2e8a57;
     -fx-background-radius: 14;
-    -fx-border-color: #1d603b;
     -fx-border-radius: 14;
     -fx-border-width: 2;
     -fx-min-height: 72;
     -fx-padding: 12 76 12 14;
+    -fx-max-width: infinity;
 }
 
 .turn-indicator .label {
@@ -165,8 +168,28 @@
 }
 
 .captured-pieces {
-    -fx-min-height: 34;
+    -fx-spacing: 4;
+    -fx-min-height: 68;
     -fx-alignment: center-left;
+}
+
+.captured-pieces > .hbox {
+    -fx-min-height: 32;
+    -fx-alignment: center-left;
+}
+
+.captured-divider {
+    -fx-background-color: #2e8a57;
+    -fx-min-height: 24;
+    -fx-pref-height: 24;
+    -fx-max-height: 24;
+    -fx-background-radius: 1;
+}
+
+.side-panel > .button {
+    -fx-max-width: infinity;
+    -fx-pref-width: 100%;
+    -fx-alignment: center;
 }
 
 .game-list {
@@ -244,14 +267,29 @@
 .new-game-button {
     -fx-background-color: #2e8a57;
     -fx-border-color: #1d603b;
-    -fx-text-fill: #fdfdd0;
+    -fx-text-fill: #16482d;
 }
 
 .new-game-button:hover {
     -fx-background-color: #3b9c68;
 }
 
+.save-game-button {
+    -fx-background-color: #fbc02d;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #5b4110;
+}
+
+.save-game-button:hover {
+    -fx-background-color: #ffd65a;
+}
+
+.save-game-button:disabled {
+    -fx-opacity: 0.58;
+}
+
 .game-board-area {
+    -fx-background-color: #fdfdd0;
     -fx-background-image: url("assets/background1.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
@@ -260,19 +298,150 @@
 }
 
 .board-frame {
-    -fx-background-color: rgba(253, 253, 208, 0.92);
-    -fx-background-radius: 10;
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 14;
     -fx-border-color: #8a4c26;
-    -fx-border-width: 5;
-    -fx-border-radius: 12;
-    -fx-padding: 6;
-    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.58), 24, 0.28, 0, 12);
+    -fx-border-width: 4;
+    -fx-border-radius: 14;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.42), 18, 0.22, 0, 8);
 }
 
 .chess-grid {
     -fx-background-color: #714a34;
     -fx-border-color: #714a34;
+    -fx-border-width: 2;
+}
+
+.information-button {
+    -fx-background-color: #fdfdd0;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #5b4110;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-content-display: center;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+}
+
+.information-button:hover {
+    -fx-background-color: #fff3bd;
+}
+
+.rules-book {
+    -fx-alignment: center;
+    -fx-spacing: 12;
+    -fx-padding: 18;
+    -fx-background-color: #f0e2bd;
+}
+
+.rules-book > .label {
+    -fx-alignment: center;
+    -fx-max-width: infinity;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #2e8a57;
+}
+
+.rules-book-pages {
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+.rules-page {
+    -fx-background-color: #fffdf2;
+    -fx-border-color: #a77a3b;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(38, 43, 35, 0.32), 14, 0.18, 0, 5);
+}
+
+.rules-page-left {
+    -fx-background-radius: 12 0 0 12;
+    -fx-border-radius: 12 0 0 12;
+}
+
+.rules-page-right {
+    -fx-background-radius: 0 12 12 0;
+    -fx-border-radius: 0 12 12 0;
+}
+
+.rules-book-spine {
+    -fx-background-color: #8a4c26;
+    -fx-min-width: 8;
+    -fx-pref-width: 8;
+    -fx-max-width: 8;
+}
+
+.saved-game-window {
+    -fx-spacing: 12;
+    -fx-background-color: #fdfdd0;
+    -fx-background-radius: 20;
+    -fx-border-color: #2e8a57;
     -fx-border-width: 3;
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.24), 16, 0.16, 0, 6);
+    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+}
+
+.saved-game-title {
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 19px;
+    -fx-text-fill: #2e8a57;
+}
+
+.saved-game-prompt {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-combo {
+    -fx-background-color: #fffdf2;
+    -fx-border-color: #2e8a57;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 5 8;
+    -fx-font-size: 14px;
+}
+
+.saved-game-combo .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-combo .list-cell:filled:selected,
+.saved-game-combo .list-cell:filled:hover {
+    -fx-background-color: #2e8a57;
+    -fx-text-fill: #fdfdd0;
+}
+
+.saved-game-confirm-button {
+    -fx-background-color: #2e8a57;
+    -fx-border-color: #1d603b;
+    -fx-text-fill: #fdfdd0;
+}
+
+.saved-game-confirm-button:hover {
+    -fx-background-color: #3b9c68;
+}
+
+.saved-game-cancel-button {
+    -fx-background-color: #fbc02d;
+    -fx-border-color: #b88300;
+    -fx-text-fill: #5b4110;
+}
+
+.saved-game-cancel-button:hover {
+    -fx-background-color: #ffd65a;
 }
 
 .coordinate-label {
