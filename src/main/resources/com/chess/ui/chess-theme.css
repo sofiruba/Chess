@@ -493,16 +493,27 @@
 
 /* ---------- Cajas misteriosas y poderes ---------- */
 
-/* El bloque "?" de Mario: la única pieza llamativa nueva del tablero. */
+/* El bloque "?" de Mario: el signo se dibuja en PowerVisuals, acá solo va el bloque. */
 .mystery-box {
-    -fx-alignment: center;
-    -fx-background-color: #8a4c26, #f6b81c;
-    -fx-background-insets: 0, 3;
-    -fx-background-radius: 5, 3;
-    -fx-text-fill: #fff6d6;
-    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
-    -fx-font-weight: bold;
+    -fx-background-color: #8a4c26, #f6b81c, linear-gradient(to bottom, #ffd25a, #f0a516);
+    -fx-background-insets: 0, 2, 4;
+    -fx-background-radius: 5, 4, 3;
     -fx-effect: dropshadow(gaussian, rgba(90, 50, 10, 0.45), 4, 0.3, 0, 2);
+}
+
+/* Pieza congelada: un bloque de hielo translúcido encima de la pieza. */
+.ice-block {
+    -fx-background-color: linear-gradient(to bottom right, rgba(232, 249, 255, 0.40), rgba(126, 204, 242, 0.22));
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.9);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(47, 134, 198, 0.55), 8, 0.2, 0, 0);
+}
+
+.ice-shine {
+    -fx-background-color: rgba(255, 255, 255, 0.6);
+    -fx-background-radius: 4;
 }
 
 .board-square.box-square {

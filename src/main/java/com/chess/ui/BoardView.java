@@ -28,6 +28,7 @@ public final class BoardView implements IGameListener {
     private final IGameQueries game;
     private final PieceSymbols symbols;
     private final PowerNames powerNames;
+    private final PowerVisuals powerVisuals = new PowerVisuals();
     private final PieceArtwork artwork = new PieceArtwork();
     private final Consumer<Position> squareClickHandler;
     private final GridPane squares = new GridPane();
@@ -106,6 +107,7 @@ public final class BoardView implements IGameListener {
     }
 
     public void render() {
+        powerVisuals.stopAnimations();
         squares.getChildren().clear();
         squareButtons.clear();
         squares.getStyleClass().setAll("chess-grid");
@@ -199,18 +201,11 @@ public final class BoardView implements IGameListener {
         content.setMouseTransparent(true);
         if (piece == null) {
             if (hasBox) {
-                Label box = new Label("?");
-                box.getStyleClass().add("mystery-box");
-                double side = squareSize * 0.72;
-                box.setMinSize(side, side);
-                box.setPrefSize(side, side);
-                box.setMaxSize(side, side);
-                box.setStyle("-fx-font-size: " + Math.round(squareSize * 0.46) + "px;");
-                content.getChildren().add(box);
+                content.getChildren().add(powerVisuals.mysteryBox(squareSize * 0.72));
             }
             return content;
         }
-        content.getChildren().add(artwork.imageFor(piece)
+        javafx.scene.Node pieceView = artwork.imageFor(piece)
                 .<javafx.scene.Node>map(image -> {
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(squareSize - 6);
@@ -218,7 +213,14 @@ public final class BoardView implements IGameListener {
                     imageView.setPreserveRatio(true);
                     return imageView;
                 })
-                .orElseGet(() -> new Label(symbols.symbolFor(piece))));
+                .orElseGet(() -> new Label(symbols.symbolFor(piece)));
+        content.getChildren().add(pieceView);
+        if (game.isFrozen(position)) {
+            powerVisuals.freeze(pieceView);
+            content.getChildren().add(powerVisuals.iceBlock(squareSize));
+        } else if (game.isImmune(position)) {
+            powerVisuals.starPower(pieceView);
+        }
         PowerType power = game.powerAt(position);
         if (power != null) {
             Label badge = new Label(powerNames.badge(power));
