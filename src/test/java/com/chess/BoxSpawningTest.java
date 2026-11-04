@@ -215,6 +215,30 @@ final class BoxSpawningTest {
     }
 
     @Test
+    void eachNewBoxDrawsItsOwnPower() {
+        Board board = new Board(8);
+        List<PowerType> powers = List.of(PowerType.ICE_FLOWER, PowerType.FEATHER, PowerType.STAR, PowerType.SHELL);
+        int sameSide = 0;
+        int mirroredSame = 0;
+        int waves = 2000;
+        for (long seed = 0; seed < waves; seed++) {
+            MirroredBoxSpawner spawner = new MirroredBoxSpawner(5, 2, 4, powers, seed);
+            Map<Position, PowerType> spawned =
+                    spawner.spawn(PowerState.initial(Map.of(), board, spawner), board, 5);
+            List<Position> whiteSide = spawned.keySet().stream().filter(box -> box.y() < 4).toList();
+            if (spawned.get(whiteSide.get(0)) == spawned.get(whiteSide.get(1))) {
+                sameSide++;
+            }
+            Position mirror = new Position(7 - whiteSide.get(0).x(), 7 - whiteSide.get(0).y());
+            if (spawned.get(whiteSide.get(0)) == spawned.get(mirror)) {
+                mirroredSame++;
+            }
+        }
+        assertTrue(sameSide > waves * 0.20 && sameSide < waves * 0.30, "same side: " + sameSide);
+        assertTrue(mirroredSame > waves * 0.20 && mirroredSame < waves * 0.30, "mirror: " + mirroredSame);
+    }
+
+    @Test
     void whenNoPairOfSquaresIsFreeNoBoxAppears() {
         Board board = TestGames.board("kK", "..");
         MirroredBoxSpawner spawner = new MirroredBoxSpawner(5, 2, List.of(PowerType.STAR), 1);

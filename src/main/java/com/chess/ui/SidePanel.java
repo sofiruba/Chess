@@ -18,6 +18,7 @@ import com.chess.domain.port.IGameQueries;
 import com.chess.domain.port.MoveHistoryEntry;
 import com.chess.domain.port.SavedGames;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -53,6 +54,12 @@ public final class SidePanel implements IGameListener {
     private final ImageView turnArtwork = new ImageView();
     private final HBox turnPlate = new HBox(status);
     private final StackPane turnIndicator = new StackPane(turnPlate, turnArtwork);
+    /** El logo completo ("Super Chess Bros."), sin el margen transparente que lo rodea en la imagen. */
+    private static final Rectangle2D TITLE_AREA = new Rectangle2D(0, 352, 1620, 940);
+    private static final double TITLE_MAX_HEIGHT = 128;
+    /** En ventanas bajas el logo se achica para dejarle lugar a la lista de movimientos y partidas. */
+    private static final double TITLE_SHARE_OF_PANEL = 0.13;
+
     private final ImageView titleArtwork = new ImageView(loadArtwork("/com/chess/ui/assets/chess-title1.png"));
     private final VBox captured = new VBox(4);
     private final HBox heroesCaptured = new HBox(4);
@@ -71,6 +78,9 @@ public final class SidePanel implements IGameListener {
     private final StackPane historySlot = new StackPane();
     private final Image heroesArtwork = loadArtwork("/com/chess/ui/assets/heroes.png", 34, 34);
     private final Image villainsArtwork = loadArtwork("/com/chess/ui/assets/villains.png", 34, 34);
+    /** La cara del turno se muestra a 92 px: se carga al doble para que se vea nítida, también con escalado. */
+    private final Image heroesTurnArtwork = loadArtwork("/com/chess/ui/assets/heroes.png", 184, 184);
+    private final Image villainsTurnArtwork = loadArtwork("/com/chess/ui/assets/villains.png", 184, 184);
     private VBox savedGamesContent;
     private boolean compactLayout;
     private boolean layoutInitialized;
@@ -113,10 +123,10 @@ public final class SidePanel implements IGameListener {
         turnArtwork.setAccessibleText("Héroes");
         StackPane.setAlignment(turnArtwork, Pos.CENTER_RIGHT);
         StackPane.setMargin(turnArtwork, new Insets(-9, -8, -9, 0));
-        titleArtwork.setViewport(new Rectangle2D(0, 680, 1620, 250));
+        titleArtwork.setViewport(TITLE_AREA);
         titleArtwork.setPreserveRatio(true);
-        titleArtwork.setFitHeight(58);
-        titleArtwork.setAccessibleText("Chess Quest");
+        titleArtwork.setSmooth(true);
+        titleArtwork.setAccessibleText("Super Chess Bros.");
         status.setWrapText(true);
         HBox.setHgrow(status, Priority.ALWAYS);
         turnPlate.setMaxWidth(Double.MAX_VALUE);
@@ -156,7 +166,6 @@ public final class SidePanel implements IGameListener {
         historyTabs.getTabs().setAll(movesTab, savedGamesTab);
 
         StackPane titleBanner = new StackPane(titleArtwork);
-        titleBanner.setMinHeight(76);
         VBox panel = new VBox(
                 10,
                 titleBanner,
@@ -176,7 +185,8 @@ public final class SidePanel implements IGameListener {
         panel.getStyleClass().add("side-panel");
         titleBanner.prefWidthProperty().bind(panel.widthProperty());
         titleArtwork.fitWidthProperty().bind(panel.widthProperty().subtract(32));
-        titleArtwork.setFitHeight(72);
+        titleArtwork.fitHeightProperty().bind(Bindings.min(
+                TITLE_MAX_HEIGHT, panel.heightProperty().multiply(TITLE_SHARE_OF_PANEL)));
         VBox.setVgrow(historySlot, Priority.ALWAYS);
         historySlot.getChildren().setAll(historyTabs);
         refresh();
@@ -242,30 +252,27 @@ public final class SidePanel implements IGameListener {
         powers.getChildren().setAll(
                 teamPowers("Héroes", Color.WHITE),
                 teamPowers("Villanos", Color.BLACK));
-        int boxes = game.mysteryBoxes().size();
-        if (boxes > 0) {
-            Label remaining = new Label(boxes == 1 ? "Queda 1 caja sin abrir" : "Quedan " + boxes + " cajas sin abrir");
-            remaining.getStyleClass().add("powers-note");
-            powers.getChildren().add(remaining);
-        }
-        Label next = nextBoxesNote(boxes);
-        if (next != null) {
-            next.getStyleClass().add("powers-note");
-            powers.getChildren().add(next);
+        String boxesNote = boxesNote();
+        if (boxesNote != null) {
+            Label note = new Label(boxesNote);
+            note.getStyleClass().add("powers-note");
+            powers.getChildren().add(note);
         }
     }
 
-    /** Cuándo aparecen cajas nuevas, o por qué no van a aparecer; null si la partida no tiene cajas nuevas. */
-    private Label nextBoxesNote(int boxesOnBoard) {
+    /** Una sola línea con las cajas sin abrir y cuándo salen más; null si la partida no tiene cajas. */
+    private String boxesNote() {
+        int boxes = game.mysteryBoxes().size();
         int turns = game.turnsUntilNewBoxes();
+        String unopened = boxes == 1 ? "1 caja sin abrir" : boxes + " cajas sin abrir";
         if (turns <= 0) {
-            return null;
+            return boxes == 0 ? null : unopened;
         }
-        int max = game.maxMysteryBoxes();
-        if (boxesOnBoard + 2 > max) {
-            return new Label("Para que salgan más, hay que abrir alguna");
+        if (boxes + 2 > game.maxMysteryBoxes()) {
+            return unopened + "; no salen más por ahora";
         }
-        return new Label(turns == 1 ? "Cajas nuevas el próximo turno" : "Cajas nuevas en " + turns + " turnos");
+        String next = turns == 1 ? "nuevas el próximo turno" : "nuevas en " + turns + " turnos";
+        return boxes == 0 ? "Cajas " + next : unopened + ", " + next;
     }
 
     private HBox teamPowers(String team, Color color) {
@@ -352,7 +359,7 @@ public final class SidePanel implements IGameListener {
             case BLACK_WINS -> false;
             case DRAW, IN_PROGRESS -> game.turn() == Color.WHITE;
         };
-        turnArtwork.setImage(heroes ? heroesArtwork : villainsArtwork);
+        turnArtwork.setImage(heroes ? heroesTurnArtwork : villainsTurnArtwork);
         turnArtwork.setAccessibleText(heroes ? "Héroes" : "Villanos");
         turnPlate.getStyleClass().removeAll("heroes-turn", "villains-turn");
         turnPlate.getStyleClass().add(heroes ? "heroes-turn" : "villains-turn");
