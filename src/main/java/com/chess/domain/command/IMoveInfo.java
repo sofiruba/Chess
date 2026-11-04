@@ -43,6 +43,16 @@ public interface IMoveInfo {
         return List.of(new MovedPiece(movingPiece(), from()));
     }
 
+    /**
+     * Todas las piezas que la jugada sacó del tablero y dónde estaban. Por defecto es la captura en el destino; las
+     * jugadas que capturan en otra casilla (al paso) o varias piezas a la vez (la estrella del rey) lo redefinen.
+     * Solo es válida después de ejecutar la jugada.
+     */
+    default List<CapturedPiece> capturedPieces() {
+        Piece captured = capturedPiece();
+        return captured == null ? List.of() : List.of(new CapturedPiece(captured, to()));
+    }
+
     default Optional<Position> enPassantSquare(PieceRoles roles) {
         if (!isPawnDoubleStep(roles)) {
             return Optional.empty();
@@ -55,5 +65,8 @@ public interface IMoveInfo {
     }
 
     record MovedPiece(Piece piece, Position from) {
+    }
+
+    record CapturedPiece(Piece piece, Position position) {
     }
 }

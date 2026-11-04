@@ -7,6 +7,8 @@ import com.chess.domain.command.ICommand;
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
 import com.chess.domain.model.Position;
+import com.chess.domain.power.IPowerRules;
+import com.chess.domain.power.PowerContext;
 import com.chess.domain.rule.IMoveGenerator;
 import com.chess.domain.rule.MoveRuleContext;
 
@@ -18,11 +20,21 @@ public final class TurnState implements IGameState {
     private final Color player;
     private final ITurnStateFactory stateFactory;
     private final IMoveGenerator moveGenerator;
+    private final IPowerRules powerRules;
 
     public TurnState(Color player, ITurnStateFactory stateFactory, IMoveGenerator moveGenerator) {
+        this(player, stateFactory, moveGenerator, IPowerRules.NONE);
+    }
+
+    public TurnState(
+            Color player,
+            ITurnStateFactory stateFactory,
+            IMoveGenerator moveGenerator,
+            IPowerRules powerRules) {
         this.player = Objects.requireNonNull(player, "player must not be null");
         this.stateFactory = Objects.requireNonNull(stateFactory, "stateFactory must not be null");
         this.moveGenerator = Objects.requireNonNull(moveGenerator, "moveGenerator must not be null");
+        this.powerRules = Objects.requireNonNull(powerRules, "powerRules must not be null");
     }
 
     @Override
@@ -53,5 +65,10 @@ public final class TurnState implements IGameState {
     @Override
     public List<Position> legalMoves(MoveRuleContext context, Position from) {
         return moveGenerator.legalMoves(context, player, from);
+    }
+
+    @Override
+    public List<Position> powerTargets(PowerContext context, Position holder) {
+        return powerRules.targets(context, player, holder);
     }
 }

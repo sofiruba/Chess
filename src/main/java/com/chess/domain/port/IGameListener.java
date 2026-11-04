@@ -11,6 +11,10 @@ public interface IGameListener {
     default void moveMade() {
     }
 
+    /** Se usó un poder. Como ocupa el turno, deshacer y rehacer lo tratan igual que a una jugada. */
+    default void powerUsed() {
+    }
+
     /** Se deshizo la última jugada. */
     default void moveUndone() {
     }
@@ -19,7 +23,8 @@ public interface IGameListener {
     default void moveRedone() {
     }
 
-    /** La partida terminó (jaque mate o tablas). Se notifica después de {@link #moveMade()} o {@link #moveRedone()}. */
+    /** La partida terminó (jaque mate o tablas). Se notifica después de {@link #moveMade()}, {@link #powerUsed()} o
+     * {@link #moveRedone()}. */
     default void gameFinished() {
     }
 }

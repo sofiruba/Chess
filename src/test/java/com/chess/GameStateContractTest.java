@@ -32,4 +32,9 @@ abstract class GameStateContractTest {
     void itNeverReturnsNullLegalMoves() {
         assertNotNull(state().legalMoves(null, null));
     }
+
+    @Test
+    void itNeverReturnsNullPowerTargets() {
+        assertNotNull(state().powerTargets(null, null));
+    }
 }

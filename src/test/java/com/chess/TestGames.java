@@ -46,6 +46,18 @@ public final class TestGames {
         return factory.create(board(rows), turn);
     }
 
+    /**
+     * Una posición de la variante con cajas misteriosas.
+     *
+     * @param setupCode contenido de las cajas, como "c5=i,a1=t"; una pieza que empieza sobre una caja ya tiene su
+     *     poder
+     */
+    public static IGameService withBoxes(String setupCode, Color turn, String... rows) {
+        StandardGameFactory factory =
+                new StandardGameFactory(new DefaultMoveCommandFactory(), GameSetup.mysteryBoxEdition());
+        return factory.create(board(rows), turn, setupCode);
+    }
+
     public static Board board(String... rows) {
         Board board = new Board(rows.length);
         for (int row = 0; row < rows.length; row++) {

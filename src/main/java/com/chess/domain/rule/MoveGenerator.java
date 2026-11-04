@@ -29,11 +29,11 @@ public final class MoveGenerator implements IMoveGenerator {
     @Override
     public List<Position> legalMoves(MoveRuleContext context, Color player, Position from) {
         Piece piece = context.board().pieceAt(from);
-        if (piece == null || piece.color() != player) {
+        if (piece == null || piece.color() != player || !context.pieceStatus().canAct(piece)) {
             return List.of();
         }
         return candidateMoves(context, piece, from).stream()
-                .filter(to -> keepsKingSafe(context, new MoveRequest(from, to, null), player))
+                .filter(to -> isAllowed(context, new MoveRequest(from, to, null), player))
                 .toList();
     }
 
@@ -67,13 +67,23 @@ public final class MoveGenerator implements IMoveGenerator {
         return candidates.stream().distinct().toList();
     }
 
-    private boolean keepsKingSafe(MoveRuleContext context, MoveRequest request, Color color) {
+    /**
+     * Una jugada está permitida si no deja al propio rey en jaque y no captura una pieza protegida. Se ejecuta y se
+     * deshace en el tablero real, por lo que también cubre capturas indirectas como la captura al paso.
+     */
+    private boolean isAllowed(MoveRuleContext context, MoveRequest request, Color color) {
         ICommand command = createCommand(context, request);
         command.execute();
         try {
-            return !checkDetector.isInCheck(context.board(), color);
+            return capturesOnlyUnprotectedPieces(context, command)
+                    && !checkDetector.isInCheck(context.board(), color);
         } finally {
             command.undo();
         }
+    }
+
+    private boolean capturesOnlyUnprotectedPieces(MoveRuleContext context, ICommand command) {
+        return command.capturedPieces().stream()
+                .allMatch(captured -> context.pieceStatus().canBeCaptured(captured.piece()));
     }
 }

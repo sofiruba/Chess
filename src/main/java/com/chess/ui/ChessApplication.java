@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import com.chess.domain.model.PieceType;
 import com.chess.domain.model.Position;
+import com.chess.domain.model.PowerType;
 import com.chess.domain.port.GameRecord;
 import com.chess.domain.port.IGameArchive;
 import com.chess.domain.port.IGameFactory;
@@ -55,6 +56,8 @@ public final class ChessApplication {
     private final IGameFactory gameFactory;
     private final PieceSymbols symbols;
     private final IPromotionChooser promotionChooser;
+    private final PowerNames powerNames;
+    private final Button powerButton = new Button("USAR PODER");
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
     private final BorderPane root = new BorderPane();
     private final List<Animation> homeAnimations = new ArrayList<>();
@@ -65,6 +68,8 @@ public final class ChessApplication {
     private HBox gameCenter;
     private Position selected;
     private List<Position> legalMoves = List.of();
+    private List<Position> powerTargets = List.of();
+    private boolean aimingPower;
     private boolean gameScreenVisible;
     private Stage rulesStage;
 
@@ -72,11 +77,17 @@ public final class ChessApplication {
             IGameArchive archive,
             IGameFactory gameFactory,
             PieceSymbols symbols,
-            IPromotionChooser promotionChooser) {
+            IPromotionChooser promotionChooser,
+            PowerNames powerNames) {
         this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.gameFactory = Objects.requireNonNull(gameFactory, "gameFactory must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
         this.promotionChooser = Objects.requireNonNull(promotionChooser, "promotionChooser must not be null");
+        this.powerNames = Objects.requireNonNull(powerNames, "powerNames must not be null");
+        powerButton.setAccessibleText("Usar poder");
+        powerButton.setOnAction(event -> aimPower());
+        powerButton.getStyleClass().addAll("game-button", "text-button", "power-button");
+        powerButton.setDisable(true);
     }
 
     public Pane createView() {
@@ -458,8 +469,12 @@ public final class ChessApplication {
         game = newGame;
         selected = null;
         legalMoves = List.of();
-        boardView = new BoardView(game, symbols, this::click);
-        sidePanel = new SidePanel(archive, game, symbols, savedGameTracker, this::loadGame, this::resetGame);
+        powerTargets = List.of();
+        aimingPower = false;
+        powerButton.setDisable(true);
+        boardView = new BoardView(game, symbols, powerNames, this::click);
+        sidePanel = new SidePanel(
+                archive, game, symbols, powerNames, savedGameTracker, this::loadGame, this::resetGame);
         game.addListener(boardView);
         game.addListener(sidePanel);
     }
@@ -495,7 +510,7 @@ public final class ChessApplication {
         information.setTooltip(new Tooltip("Información"));
         information.setOnAction(event -> showRulesBook());
         information.getStyleClass().addAll("game-button", "text-button", "information-button");
-        HBox actions = new HBox(10, home, undo, redo, information);
+        HBox actions = new HBox(10, home, undo, redo, powerButton, information);
         actions.setAlignment(Pos.CENTER_LEFT);
         actions.setPadding(new Insets(14, 24, 18, 30));
         root.setBottom(actions);
@@ -516,7 +531,7 @@ public final class ChessApplication {
     private void loadGame(GameRecord record) {
         IGameService loaded;
         try {
-            loaded = gameFactory.create(record.moveCodes());
+            loaded = gameFactory.createWithSetup(record.setupCode(), record.moveCodes());
         } catch (IllegalArgumentException exception) {
             String message = "La partida guardada está dañada y no se puede cargar.";
             if (gameScreenVisible && sidePanel != null) {
@@ -624,10 +639,16 @@ public final class ChessApplication {
     }
 
     private void click(Position position) {
+        if (aimingPower) {
+            usePowerOn(position);
+            return;
+        }
         String message = null;
         if (selected == null) {
             if (!select(position)) {
                 message = "Click inválido: selecciona una pieza propia.";
+            } else {
+                message = selectionHint(position);
             }
         } else if (legalMoves.contains(position)) {
             try {
@@ -638,6 +659,7 @@ public final class ChessApplication {
             }
         } else if (game.belongsToActivePlayer(position)) {
             select(position);
+            message = selectionHint(position);
         } else {
             message = "Destino inválido: la pieza no puede moverse allí.";
             clearSelection();
@@ -655,8 +677,51 @@ public final class ChessApplication {
         }
         selected = position;
         legalMoves = game.legalMoves(position);
+        powerTargets = game.powerTargets(position);
+        aimingPower = false;
+        powerButton.setDisable(powerTargets.isEmpty());
         boardView.showSelection(selected, legalMoves);
         return true;
+    }
+
+    /** Qué puede hacer la pieza recién elegida con su poder, o null si no hay nada que avisar. */
+    private String selectionHint(Position position) {
+        if (game.isFrozen(position)) {
+            return "Pieza congelada: no juega este turno.";
+        }
+        PowerType power = game.powerAt(position);
+        if (power == null) {
+            return null;
+        }
+        if (powerTargets.isEmpty()) {
+            return powerNames.name(power) + ": ahora no se puede usar.";
+        }
+        return "Tiene " + powerNames.name(power) + ". Tocá «Usar poder».";
+    }
+
+    private void aimPower() {
+        if (selected == null || powerTargets.isEmpty()) {
+            return;
+        }
+        aimingPower = true;
+        boardView.showPowerTargets(selected, powerTargets);
+        sidePanel.showMessage(powerNames.instruction(game.powerAt(selected)));
+    }
+
+    private void usePowerOn(Position target) {
+        if (!powerTargets.contains(target)) {
+            clearSelection();
+            sidePanel.showMessage("Poder cancelado: no era un objetivo.");
+            return;
+        }
+        try {
+            game.usePower(selected, target);
+            clearSelection();
+            sidePanel.refresh();
+        } catch (IllegalArgumentException exception) {
+            clearSelection();
+            sidePanel.showMessage(exception.getMessage());
+        }
     }
 
     private void playSelectedMove(Position destination) {
@@ -690,6 +755,9 @@ public final class ChessApplication {
     private void clearSelection() {
         selected = null;
         legalMoves = List.of();
+        powerTargets = List.of();
+        aimingPower = false;
+        powerButton.setDisable(true);
         boardView.clearSelection();
     }
 }

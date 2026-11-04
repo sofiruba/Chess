@@ -4,19 +4,26 @@ import java.util.Objects;
 
 import com.chess.domain.model.Color;
 import com.chess.domain.model.GameResult;
+import com.chess.domain.power.IPowerRules;
 import com.chess.domain.rule.IMoveGenerator;
 
 public final class TurnStateFactory implements ITurnStateFactory {
 
     private final IMoveGenerator moveGenerator;
+    private final IPowerRules powerRules;
 
     public TurnStateFactory(IMoveGenerator moveGenerator) {
+        this(moveGenerator, IPowerRules.NONE);
+    }
+
+    public TurnStateFactory(IMoveGenerator moveGenerator, IPowerRules powerRules) {
         this.moveGenerator = Objects.requireNonNull(moveGenerator, "moveGenerator must not be null");
+        this.powerRules = Objects.requireNonNull(powerRules, "powerRules must not be null");
     }
 
     @Override
     public IGameState forColor(Color color) {
-        return new TurnState(color, this, moveGenerator);
+        return new TurnState(color, this, moveGenerator, powerRules);
     }
 
     @Override

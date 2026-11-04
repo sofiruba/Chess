@@ -27,12 +27,13 @@ final class GameInterfacesTest {
         assertFalse(names.contains("playMoveCode"));
         assertFalse(names.contains("undoLastMove"));
         assertFalse(names.contains("redoLastMove"));
+        assertFalse(names.contains("usePower"));
     }
 
     @Test
     void actionsAreOnlyTheOnesThatChangeTheGame() {
         assertEquals(
-                Set.of("playMove", "playMoveCode", "undoLastMove", "redoLastMove"),
+                Set.of("playMove", "playMoveCode", "undoLastMove", "redoLastMove", "usePower"),
                 methodNames(IGameActions.class));
     }
 
