@@ -3,6 +3,7 @@ package com.chess.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalLong;
 import java.util.Random;
 import java.util.random.RandomGenerator;
 
@@ -24,9 +25,12 @@ import com.chess.domain.port.IGameFactory;
 import com.chess.domain.port.IGameService;
 import com.chess.domain.power.BoxLayout;
 import com.chess.domain.power.FeatherPower;
+import com.chess.domain.power.IBoxSpawner;
 import com.chess.domain.power.IPower;
 import com.chess.domain.power.IceFlowerPower;
+import com.chess.domain.power.MirroredBoxSpawner;
 import com.chess.domain.power.PowerRules;
+import com.chess.domain.power.PowerSetup;
 import com.chess.domain.power.PowerState;
 import com.chess.domain.power.ShellPower;
 import com.chess.domain.power.StarPower;
@@ -105,9 +109,10 @@ public final class StandardGameFactory implements IGameFactory {
     public IGameService create(Board board, Color firstPlayer, String setupCode) {
         Objects.requireNonNull(board, "board must not be null");
         Objects.requireNonNull(setupCode, "setupCode must not be null");
-        BoxLayout boxes = boxLayout(setupCode);
+        PowerSetup powerSetup = powerSetup(setupCode);
+        BoxLayout boxes = powerSetup.boxes();
         requireBoxesInside(board, boxes);
-        PowerState powers = PowerState.initial(boxes.contents(), board);
+        PowerState powers = PowerState.initial(boxes.contents(), board, spawner(powerSetup));
         GameSnapshot initial = GameSnapshot.initial(
                 board, stateFactory.forColor(firstPlayer), setup.roles(), powers);
         return new Game(
@@ -118,14 +123,38 @@ public final class StandardGameFactory implements IGameFactory {
                 moveGenerator,
                 new MoveCodeParser(setup.promotionTypes()),
                 powerRules,
-                boxes.code());
+                powerSetup.code());
     }
 
-    private BoxLayout boxLayout(String setupCode) {
+    /**
+     * Un código vacío sortea todo: el contenido de las cajas iniciales y, si aparecen cajas nuevas, su semilla. Un
+     * código guardado sin semilla (de antes de que aparecieran cajas nuevas) usa la semilla 0.
+     */
+    private PowerSetup powerSetup(String setupCode) {
         if (setupCode.isBlank()) {
-            return BoxLayout.random(setup.mysteryBoxes(), powerRules.types(), random);
+            BoxLayout boxes = BoxLayout.random(setup.mysteryBoxes(), powerRules.types(), random);
+            return new PowerSetup(boxes, setup.boxSpawning().enabled()
+                    ? OptionalLong.of(random.nextLong())
+                    : OptionalLong.empty());
         }
-        return BoxLayout.parse(setupCode, powerRules.types());
+        PowerSetup parsed = PowerSetup.parse(setupCode, powerRules.types());
+        if (setup.boxSpawning().enabled() && parsed.seed().isEmpty()) {
+            return new PowerSetup(parsed.boxes(), OptionalLong.of(0));
+        }
+        return parsed;
+    }
+
+    private IBoxSpawner spawner(PowerSetup powerSetup) {
+        BoxSpawning spawning = setup.boxSpawning();
+        if (!spawning.enabled()) {
+            return IBoxSpawner.NONE;
+        }
+        return new MirroredBoxSpawner(
+                spawning.everyTurns(),
+                spawning.boxesPerSide(),
+                spawning.maxOnBoard(),
+                powerRules.types(),
+                powerSetup.seed().orElse(0));
     }
 
     private static void requireBoxesInside(Board board, BoxLayout boxes) {

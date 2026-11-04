@@ -210,6 +210,16 @@ public final class Game implements IGameService {
     }
 
     @Override
+    public int turnsUntilNewBoxes() {
+        return isFinished() ? -1 : powers().turnsUntilNewBoxes();
+    }
+
+    @Override
+    public int maxMysteryBoxes() {
+        return powers().maxBoxesOnBoard();
+    }
+
+    @Override
     public PowerType powerAt(Position position) {
         Piece piece = board.pieceAt(position);
         return piece == null ? null : powers().powerOf(piece);

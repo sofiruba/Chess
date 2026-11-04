@@ -31,6 +31,7 @@ import com.chess.domain.rule.IPieceStatus;
  *   <li>Cada pieza lleva como máximo un poder. Al terminar cada jugada, toda pieza sin poder que esté sobre una caja
  *   la abre y se queda con su poder; una pieza que ya tiene uno deja la caja donde está.</li>
  *   <li>Si una pieza sale del tablero (capturada, eliminada o promocionada), su poder se pierde.</li>
+ *   <li>Al terminar cada turno, el {@link IBoxSpawner} puede agregar cajas nuevas en casillas libres.</li>
  * </ul>
  * Las piezas se identifican por identidad, igual que en el resto del dominio.
  */
@@ -38,7 +39,9 @@ public record PowerState(
         Map<Position, PowerType> boxes,
         Map<Piece, PowerType> held,
         Set<Piece> frozen,
-        Set<Piece> immune) implements IPieceStatus {
+        Set<Piece> immune,
+        int turnsPlayed,
+        IBoxSpawner spawner) implements IPieceStatus {
 
     private static final Comparator<Position> SQUARE_ORDER =
             Comparator.comparingInt(Position::x).thenComparingInt(Position::y);
@@ -48,17 +51,26 @@ public record PowerState(
         held = Map.copyOf(Objects.requireNonNull(held, "held must not be null"));
         frozen = Set.copyOf(Objects.requireNonNull(frozen, "frozen must not be null"));
         immune = Set.copyOf(Objects.requireNonNull(immune, "immune must not be null"));
+        Objects.requireNonNull(spawner, "spawner must not be null");
+        if (turnsPlayed < 0) {
+            throw new IllegalArgumentException("turnsPlayed must not be negative");
+        }
     }
 
     /** Sin cajas ni poderes: el ajedrez clásico. */
     public static PowerState none() {
-        return new PowerState(Map.of(), Map.of(), Set.of(), Set.of());
+        return new PowerState(Map.of(), Map.of(), Set.of(), Set.of(), 0, IBoxSpawner.NONE);
+    }
+
+    /** Las cajas al empezar, sin cajas nuevas durante la partida. */
+    public static PowerState initial(Map<Position, PowerType> boxes, Board board) {
+        return initial(boxes, board, IBoxSpawner.NONE);
     }
 
     /** Las cajas al empezar. Si alguna pieza ya está sobre una caja, la abre en ese momento. */
-    public static PowerState initial(Map<Position, PowerType> boxes, Board board) {
+    public static PowerState initial(Map<Position, PowerType> boxes, Board board, IBoxSpawner spawner) {
         Objects.requireNonNull(board, "board must not be null");
-        return new PowerState(boxes, Map.of(), Set.of(), Set.of()).withPickups(board);
+        return new PowerState(boxes, Map.of(), Set.of(), Set.of(), 0, spawner).withPickups(board);
     }
 
     /**
@@ -72,7 +84,17 @@ public record PowerState(
         if (move instanceof IPowerCommand powerUse) {
             next = powerUse.applyEffect(next.withoutPowerOf(powerUse.holder()));
         }
-        return next.withoutPiecesOffBoard(board).withPickups(board);
+        return next.withoutPiecesOffBoard(board).withPickups(board).afterTurn(board);
+    }
+
+    /** Cuántos turnos faltan para que aparezcan cajas nuevas, o -1 si en esta partida no aparecen. */
+    public int turnsUntilNewBoxes() {
+        return spawner.turnsUntilNext(turnsPlayed);
+    }
+
+    /** El máximo de cajas simultáneas para que aparezcan nuevas (0 si en esta partida no aparecen). */
+    public int maxBoxesOnBoard() {
+        return spawner.maxOnBoard();
     }
 
     @Override
@@ -106,13 +128,13 @@ public record PowerState(
     public PowerState withFrozen(Piece piece) {
         Set<Piece> updated = new HashSet<>(frozen);
         updated.add(Objects.requireNonNull(piece, "piece must not be null"));
-        return new PowerState(boxes, held, updated, immune);
+        return new PowerState(boxes, held, updated, immune, turnsPlayed, spawner);
     }
 
     public PowerState withImmune(Piece piece) {
         Set<Piece> updated = new HashSet<>(immune);
         updated.add(Objects.requireNonNull(piece, "piece must not be null"));
-        return new PowerState(boxes, held, frozen, updated);
+        return new PowerState(boxes, held, frozen, updated, turnsPlayed, spawner);
     }
 
     /**
@@ -153,13 +175,13 @@ public record PowerState(
         stillFrozen.removeIf(piece -> piece.color() == mover);
         Set<Piece> stillImmune = new HashSet<>(immune);
         stillImmune.removeIf(piece -> piece.color() != mover);
-        return new PowerState(boxes, held, stillFrozen, stillImmune);
+        return new PowerState(boxes, held, stillFrozen, stillImmune, turnsPlayed, spawner);
     }
 
     private PowerState withoutPowerOf(Piece holder) {
         Map<Piece, PowerType> updated = new HashMap<>(held);
         updated.remove(holder);
-        return new PowerState(boxes, updated, frozen, immune);
+        return new PowerState(boxes, updated, frozen, immune, turnsPlayed, spawner);
     }
 
     private PowerState withoutPiecesOffBoard(Board board) {
@@ -176,7 +198,23 @@ public record PowerState(
         keptFrozen.retainAll(onBoard);
         Set<Piece> keptImmune = new HashSet<>(immune);
         keptImmune.retainAll(onBoard);
-        return new PowerState(boxes, keptPowers, keptFrozen, keptImmune);
+        return new PowerState(boxes, keptPowers, keptFrozen, keptImmune, turnsPlayed, spawner);
+    }
+
+    /** Cuenta el turno que terminó y agrega las cajas nuevas que correspondan. */
+    private PowerState afterTurn(Board board) {
+        PowerState counted = new PowerState(boxes, held, frozen, immune, turnsPlayed + 1, spawner);
+        Map<Position, PowerType> spawned = spawner.spawn(counted, board, counted.turnsPlayed());
+        if (spawned.isEmpty()) {
+            return counted;
+        }
+        Map<Position, PowerType> allBoxes = new HashMap<>(boxes);
+        for (Map.Entry<Position, PowerType> box : spawned.entrySet()) {
+            if (board.pieceAt(box.getKey()) != null || allBoxes.put(box.getKey(), box.getValue()) != null) {
+                throw new IllegalStateException("A new mystery box must appear on a free square: " + box.getKey());
+            }
+        }
+        return new PowerState(allBoxes, held, frozen, immune, counted.turnsPlayed(), spawner);
     }
 
     private PowerState withPickups(Board board) {
@@ -188,6 +226,6 @@ public record PowerState(
                 updatedPowers.put(piece, remainingBoxes.remove(box));
             }
         }
-        return new PowerState(remainingBoxes, updatedPowers, frozen, immune);
+        return new PowerState(remainingBoxes, updatedPowers, frozen, immune, turnsPlayed, spawner);
     }
 }

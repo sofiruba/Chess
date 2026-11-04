@@ -248,6 +248,24 @@ public final class SidePanel implements IGameListener {
             remaining.getStyleClass().add("powers-note");
             powers.getChildren().add(remaining);
         }
+        Label next = nextBoxesNote(boxes);
+        if (next != null) {
+            next.getStyleClass().add("powers-note");
+            powers.getChildren().add(next);
+        }
+    }
+
+    /** Cuándo aparecen cajas nuevas, o por qué no van a aparecer; null si la partida no tiene cajas nuevas. */
+    private Label nextBoxesNote(int boxesOnBoard) {
+        int turns = game.turnsUntilNewBoxes();
+        if (turns <= 0) {
+            return null;
+        }
+        int max = game.maxMysteryBoxes();
+        if (boxesOnBoard + 2 > max) {
+            return new Label("Para que salgan más, hay que abrir alguna");
+        }
+        return new Label(turns == 1 ? "Cajas nuevas el próximo turno" : "Cajas nuevas en " + turns + " turnos");
     }
 
     private HBox teamPowers(String team, Color color) {

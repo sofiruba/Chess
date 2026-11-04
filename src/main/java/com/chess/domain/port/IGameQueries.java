@@ -37,6 +37,15 @@ public interface IGameQueries {
     /** Las casillas con cajas misteriosas sin abrir. Su contenido no se revela hasta que una pieza las abre. */
     List<Position> mysteryBoxes();
 
+    /** Cuántos turnos faltan para que aparezcan cajas nuevas, o -1 si en esta partida no aparecen. */
+    int turnsUntilNewBoxes();
+
+    /**
+     * Cuántas cajas puede haber como máximo al mismo tiempo. Mientras el tablero tenga esa cantidad sin abrir, no
+     * aparecen nuevas. Es 0 si en esta partida no aparecen cajas nuevas.
+     */
+    int maxMysteryBoxes();
+
     /** El poder que lleva la pieza de esa casilla, o null si está vacía o la pieza no lleva ninguno. */
     PowerType powerAt(Position position);
 
