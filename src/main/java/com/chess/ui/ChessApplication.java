@@ -58,6 +58,7 @@ public final class ChessApplication {
     private final IPromotionChooser promotionChooser;
     private final PowerNames powerNames;
     private final Button powerButton = new Button("USAR PODER");
+    private final Button soundButton = new Button("SONIDO: SÍ");
     private final ISoundPlayer soundPlayer = new ClipSoundPlayer();
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
     private final BorderPane root = new BorderPane();
@@ -89,6 +90,10 @@ public final class ChessApplication {
         powerButton.setOnAction(event -> aimPower());
         powerButton.getStyleClass().addAll("game-button", "text-button", "power-button");
         powerButton.setDisable(true);
+        soundButton.setAccessibleText("Silenciar sonidos");
+        soundButton.setTooltip(new Tooltip("Activar o desactivar efectos de sonido"));
+        soundButton.setOnAction(event -> toggleSound());
+        soundButton.getStyleClass().addAll("game-button", "text-button", "sound-button");
     }
 
     public Pane createView() {
@@ -522,7 +527,7 @@ public final class ChessApplication {
         information.setTooltip(new Tooltip("Información"));
         information.setOnAction(event -> showRulesBook());
         information.getStyleClass().addAll("game-button", "text-button", "information-button");
-        HBox actions = new HBox(10, home, undo, redo, powerButton, information);
+        HBox actions = new HBox(10, home, undo, redo, powerButton, information, soundButton);
         actions.setAlignment(Pos.CENTER_LEFT);
         actions.setPadding(new Insets(14, 24, 18, 30));
         root.setBottom(actions);
@@ -776,5 +781,17 @@ public final class ChessApplication {
         aimingPower = false;
         powerButton.setDisable(true);
         boardView.clearSelection();
+    }
+
+    private void toggleSound() {
+        soundPlayer.setEnabled(!soundPlayer.isEnabled());
+
+        if (soundPlayer.isEnabled()) {
+            soundPlayer.play(SoundEffect.MENU);
+        }
+
+        soundButton.setText(soundPlayer.isEnabled() ? "SONIDO: SÍ" : "SONIDO: NO");
+
+        soundButton.setAccessibleText(soundPlayer.isEnabled() ? "Silenciar sonidos" : "Activar sonidos");
     }
 }
