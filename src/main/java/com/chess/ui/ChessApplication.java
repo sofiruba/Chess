@@ -648,6 +648,7 @@ public final class ChessApplication {
         String message = null;
         if (selected == null) {
             if (!select(position)) {
+                soundPlayer.play(SoundEffect.ERROR);
                 message = "Click inválido: selecciona una pieza propia.";
             } else {
                 message = selectionHint(position);
@@ -656,6 +657,7 @@ public final class ChessApplication {
             try {
                 playSelectedMove(position);
             } catch (IllegalArgumentException exception) {
+                soundPlayer.play(SoundEffect.ERROR);
                 message = exception.getMessage();
                 clearSelection();
             }
@@ -663,6 +665,7 @@ public final class ChessApplication {
             select(position);
             message = selectionHint(position);
         } else {
+            soundPlayer.play(SoundEffect.ERROR);
             message = "Destino inválido: la pieza no puede moverse allí.";
             clearSelection();
         }
@@ -683,6 +686,7 @@ public final class ChessApplication {
         aimingPower = false;
         powerButton.setDisable(powerTargets.isEmpty());
         boardView.showSelection(selected, legalMoves);
+        soundPlayer.play(SoundEffect.SELECT);
         return true;
     }
 
