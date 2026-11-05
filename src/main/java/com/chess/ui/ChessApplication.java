@@ -481,7 +481,7 @@ public final class ChessApplication {
         powerButton.setDisable(true);
         boardView = new BoardView(game, symbols, powerNames, this::click);
         sidePanel = new SidePanel(
-                archive, game, symbols, powerNames, savedGameTracker, this::loadGame, this::resetGame);
+                archive, game, symbols, powerNames, savedGameTracker, this::loadGame, this::resetGame, soundPlayer);
         game.addListener(boardView);
         game.addListener(sidePanel);
         game.addListener(new GameSoundListener(game, soundPlayer));

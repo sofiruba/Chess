@@ -49,6 +49,7 @@ public final class SidePanel implements IGameListener {
     private final SavedGameTracker savedGameTracker;
     private final Consumer<GameRecord> loadHandler;
     private final Runnable newGameHandler;
+    private final ISoundPlayer soundPlayer;
     private final PieceArtwork artwork = new PieceArtwork();
     private final Label status = new Label();
     private final ImageView turnArtwork = new ImageView();
@@ -92,7 +93,8 @@ public final class SidePanel implements IGameListener {
             PowerNames powerNames,
             SavedGameTracker savedGameTracker,
             Consumer<GameRecord> loadHandler,
-            Runnable newGameHandler) {
+            Runnable newGameHandler,
+            ISoundPlayer soundPlayer) {
         this.archive = Objects.requireNonNull(archive, "archive must not be null");
         this.game = Objects.requireNonNull(game, "game must not be null");
         this.symbols = Objects.requireNonNull(symbols, "symbols must not be null");
@@ -100,6 +102,7 @@ public final class SidePanel implements IGameListener {
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
         this.newGameHandler = Objects.requireNonNull(newGameHandler, "newGameHandler must not be null");
+        this.soundPlayer = Objects.requireNonNull(soundPlayer, "soundPlayer must not be null"); //dependency injection
         saveButton.setOnAction(event -> save());
         newGameButton.setOnAction(event -> newGameHandler.run());
         unreadableNotice.getStyleClass().add("error-notice");
@@ -370,9 +373,11 @@ public final class SidePanel implements IGameListener {
         try {
             saved = archive.save(game);
         } catch (IllegalStateException exception) {
+            soundPlayer.play(SoundEffect.ERROR);
             status.setText("No se pudo guardar la partida.");
             return;
         }
+        soundPlayer.play(SoundEffect.SAVE);
         savedGameTracker.markSaved(saved.moveCodes());
         updateSaveButton();
         refreshSavedGames();
