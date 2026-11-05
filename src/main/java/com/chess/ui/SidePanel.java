@@ -50,6 +50,7 @@ public final class SidePanel implements IGameListener {
     private final Consumer<GameRecord> loadHandler;
     private final Runnable newGameHandler;
     private final ISoundPlayer soundPlayer;
+    private boolean updatingNavigation;
     private final PieceArtwork artwork = new PieceArtwork();
     private final Label status = new Label();
     private final ImageView turnArtwork = new ImageView();
@@ -107,6 +108,21 @@ public final class SidePanel implements IGameListener {
         newGameButton.setOnAction(event -> {
             soundPlayer.play(SoundEffect.MENU);
             newGameHandler.run();
+        });
+        moves.getSelectionModel().selectedItemProperty().addListener((observable, previous, next) -> {
+            if (!updatingNavigation && next != null && next != previous) {
+                soundPlayer.play(SoundEffect.NAVIGATE);
+            }
+        });
+        savedGames.getSelectionModel().selectedItemProperty().addListener((observable, previous, next) -> {
+            if (!updatingNavigation && next != null && next != previous) {
+                soundPlayer.play(SoundEffect.NAVIGATE);
+            }
+        });
+        historyTabs.getSelectionModel().selectedItemProperty().addListener((observable, previous, next) -> {
+            if (!updatingNavigation && previous != null && next != null && next != previous) {
+                soundPlayer.play(SoundEffect.NAVIGATE);
+            }
         });
         unreadableNotice.getStyleClass().add("error-notice");
         moves.setCellFactory(list -> new MoveCell());
@@ -167,9 +183,15 @@ public final class SidePanel implements IGameListener {
         savedGamesContent.setMinHeight(0);
         VBox.setVgrow(savedGames, Priority.ALWAYS);
 
-        movesTab.setContent(moves);
-        savedGamesTab.setContent(savedGamesContent);
-        historyTabs.getTabs().setAll(movesTab, savedGamesTab);
+        updatingNavigation = true;
+        try {
+            movesTab.setContent(moves);
+            savedGamesTab.setContent(savedGamesContent);
+            historyTabs.getTabs().setAll(movesTab, savedGamesTab);
+        } finally {
+            updatingNavigation = false;
+        }
+        
 
         StackPane titleBanner = new StackPane(titleArtwork);
         VBox panel = new VBox(
@@ -211,28 +233,41 @@ public final class SidePanel implements IGameListener {
         layoutInitialized = true;
         compactLayout = compact;
         historySlot.getChildren().clear();
-        if (compact) {
-            savedGamesContent.getChildren().remove(savedGamesTitle);
-            moveHistoryPanel.getChildren().remove(moves);
-            movesTab.setContent(moves);
-            savedGamesTab.setContent(savedGamesContent);
-            historyTabs.getTabs().setAll(movesTab, savedGamesTab);
-            historySlot.getChildren().setAll(historyTabs);
-        } else {
-            if (!savedGamesContent.getChildren().contains(savedGamesTitle)) {
-                savedGamesContent.getChildren().add(0, savedGamesTitle);
+        updatingNavigation = true;
+        try {
+            if (compact) {
+                savedGamesContent.getChildren().remove(savedGamesTitle);
+                moveHistoryPanel.getChildren().remove(moves);
+                movesTab.setContent(moves);
+                savedGamesTab.setContent(savedGamesContent);
+                historyTabs.getTabs().setAll(movesTab, savedGamesTab);
+                historySlot.getChildren().setAll(historyTabs);
+            } else {
+                if (!savedGamesContent.getChildren().contains(savedGamesTitle)) {
+                    savedGamesContent.getChildren().add(0, savedGamesTitle);
+                }
+                movesTab.setContent(null);
+                savedGamesTab.setContent(null);
+                historyTabs.getTabs().setAll(savedGamesTab);
+                historySlot.getChildren().setAll(savedGamesContent);
+                moveHistoryPanel.getChildren().setAll(sectionTitle("MOVIMIENTOS"), moves);
             }
-            movesTab.setContent(null);
-            savedGamesTab.setContent(null);
-            historyTabs.getTabs().setAll(savedGamesTab);
-            historySlot.getChildren().setAll(savedGamesContent);
-            moveHistoryPanel.getChildren().setAll(sectionTitle("MOVIMIENTOS"), moves);
+        } finally {
+            updatingNavigation = false;
         }
     }
 
+
     public void refresh() {
         status.setText(statusText());
-        moves.getItems().setAll(game.moveHistory());
+
+        updatingNavigation = true;
+        try {
+            moves.getItems().setAll(game.moveHistory());
+        } finally {
+            updatingNavigation = false;
+        }
+
         refreshTurnArtwork();
         heroesCaptured.getChildren().clear();
         villainsCaptured.getChildren().clear();
@@ -403,6 +438,7 @@ public final class SidePanel implements IGameListener {
     }
 
     private void refreshSavedGames() {
+        updatingNavigation = true;
         try {
             SavedGames saved = archive.findAll();
             savedGames.getItems().setAll(saved.records());
@@ -411,6 +447,8 @@ public final class SidePanel implements IGameListener {
             savedGames.getItems().clear();
             showUnreadableNotice(0);
             status.setText("No se pudieron leer las partidas guardadas.");
+        } finally {
+            updatingNavigation = false;
         }
     }
 
