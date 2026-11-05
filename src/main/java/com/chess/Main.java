@@ -33,6 +33,7 @@ public final class Main extends Application {
                 PowerNames.standard());
         stage.setTitle("Ajedrez");
         stage.setScene(new Scene(application.createView()));
+        stage.setOnCloseRequest(event -> application.close());
         stage.show();
     }
 

@@ -794,4 +794,9 @@ public final class ChessApplication {
 
         soundButton.setAccessibleText(soundPlayer.isEnabled() ? "Silenciar sonidos" : "Activar sonidos");
     }
+
+    public void close() {
+        stopHomeAnimations();
+        soundPlayer.close();
+    }
 }
