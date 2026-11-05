@@ -104,7 +104,10 @@ public final class SidePanel implements IGameListener {
         this.newGameHandler = Objects.requireNonNull(newGameHandler, "newGameHandler must not be null");
         this.soundPlayer = Objects.requireNonNull(soundPlayer, "soundPlayer must not be null"); //dependency injection
         saveButton.setOnAction(event -> save());
-        newGameButton.setOnAction(event -> newGameHandler.run());
+        newGameButton.setOnAction(event -> {
+            soundPlayer.play(SoundEffect.MENU);
+            newGameHandler.run();
+        });
         unreadableNotice.getStyleClass().add("error-notice");
         moves.setCellFactory(list -> new MoveCell());
         savedGames.setCellFactory(list -> new SavedGameCell());
@@ -391,9 +394,11 @@ public final class SidePanel implements IGameListener {
     private void loadSelected() {
         GameRecord selected = savedGames.getSelectionModel().getSelectedItem();
         if (selected == null) {
+            soundPlayer.play(SoundEffect.ERROR);
             status.setText("Elegí una partida guardada para cargar.");
             return;
         }
+        soundPlayer.play(SoundEffect.MENU);
         loadHandler.accept(selected);
     }
 
