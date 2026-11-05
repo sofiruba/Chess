@@ -16,9 +16,9 @@ This feature adds 16 sound effects to Chess, providing audio feedback for game e
 | 4. finish.wav: Game ending (checkmate or draw) |
 | 5. move.wav: Normal piece movement |
 | 6. power.wav: Using a special power |
-| 7. promotion: Pawn promotion |
-| 8. undo: Undoing a move |
-| 9. redo: Redoing a previously undone move |
+| 7. promotion.wav: Pawn promotion |
+| 8. undo.wav: Undoing a move |
+| 9. redo.wav: Redoing a previously undone move |
 
 ### User Interface
 
@@ -89,4 +89,4 @@ Audio files are located in:
 
 `src/main/resources/com/chess/ui/assets/sounds/`
 
-The implementation uses Java's built-in audio API and does not requiere additional Maven dependencies.
+The implementation uses Java's built-in audio API and does not require additional Maven dependencies.
