@@ -140,7 +140,10 @@ public final class ChessApplication {
         });
         fresh.getStyleClass().addAll("game-button", "home-action-button", "red-button");
         Button load = new Button("Cargar partida");
-        load.setOnAction(event -> openSavedGames());
+        load.setOnAction(event -> {
+            soundPlayer.play(SoundEffect.MENU);
+            openSavedGames();
+        });
         load.getStyleClass().addAll("game-button", "home-action-button", "blue-button");
         for (Button button : List.of(fresh, load)) {
             button.prefWidthProperty().bind(Bindings.max(
