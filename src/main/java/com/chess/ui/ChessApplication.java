@@ -134,7 +134,10 @@ public final class ChessApplication {
         board.getStyleClass().add("preview-board");
 
         Button fresh = new Button("Nueva partida");
-        fresh.setOnAction(event -> resetGame());
+        fresh.setOnAction(event -> {
+            soundPlayer.play(SoundEffect.MENU);
+            resetGame();
+        });
         fresh.getStyleClass().addAll("game-button", "home-action-button", "red-button");
         Button load = new Button("Cargar partida");
         load.setOnAction(event -> openSavedGames());
@@ -497,7 +500,11 @@ public final class ChessApplication {
 
         Button home = new Button("Inicio");
         home.setText("INICIO");
-        home.setOnAction(event -> showHome());
+        home.setOnAction(event -> {
+            soundPlayer.play(SoundEffect.HOME);
+            showHome();
+        });
+
         home.getStyleClass().addAll("game-button", "home-button", "text-button");
         Button undo = new Button("Deshacer");
         undo.setText("DESHACER");
@@ -554,6 +561,7 @@ public final class ChessApplication {
             rulesStage.toFront();
             return;
         }
+        soundPlayer.play(SoundEffect.RULES);
 
         Image leftPageImage = loadUiImage("/com/chess/ui/assets/chess-rules1.png");
         Image rightPageImage = loadUiImage("/com/chess/ui/assets/chess-rules2.png");
