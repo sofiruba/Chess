@@ -58,6 +58,7 @@ public final class ChessApplication {
     private final IPromotionChooser promotionChooser;
     private final PowerNames powerNames;
     private final Button powerButton = new Button("USAR PODER");
+    private final ISoundPlayer soundPlayer = new ClipSoundPlayer();
     private final SavedGameTracker savedGameTracker = new SavedGameTracker();
     private final BorderPane root = new BorderPane();
     private final List<Animation> homeAnimations = new ArrayList<>();
@@ -477,6 +478,7 @@ public final class ChessApplication {
                 archive, game, symbols, powerNames, savedGameTracker, this::loadGame, this::resetGame);
         game.addListener(boardView);
         game.addListener(sidePanel);
+        game.addListener(new GameSoundListener(game, soundPlayer));
     }
 
     private void showGame() {
