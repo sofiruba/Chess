@@ -368,3 +368,8 @@ El objetivo del trabajo no es solamente implementar un ajedrez funcional. Tambi�
 - las decisiones arquitectónicas pueden verificarse con pruebas.
 
 De esta manera, Super Chess Bros. funciona como una aplicación jugable y, al mismo tiempo, como una demostración práctica de arquitectura hexagonal, patrones de diseño, principios SOLID y testabilidad.
+
+## Documentación del núcleo
+
+- [Justificación de la arquitectura](docs/ARCHITECTURE_JUSTIFICATION.md)
+- [Diagrama UML del dominio](docs/chess-domain.puml)

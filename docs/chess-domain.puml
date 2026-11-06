@@ -1,0 +1,153 @@
+@startuml
+title Núcleo de dominio de Super Chess Bros.
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "com.chess.domain.model" {
+  class Board
+  class Piece
+  class Position <<record>>
+  enum Color
+  class PieceType
+  class PowerType
+  interface IMoveStrategy
+  interface IPieceFactory
+}
+
+package "com.chess.domain.movement" {
+  class LinearMoveStrategy
+  class DiagonalMoveStrategy
+  class LShapeMoveStrategy
+  class OneStepMoveStrategy
+  class PawnMoveStrategy
+  class RayScanner
+}
+
+package "com.chess.domain.rule" {
+  class MoveGenerator
+  class MoveCodeParser
+  class CheckDetector
+  class CastlingRule
+  class EnPassantRule
+  class PromotionRule
+  interface IMoveRule
+  interface ICheckDetector
+  interface IMoveGenerator
+}
+
+package "com.chess.domain.command" {
+  interface ICommand
+  class MoveCommand
+  class CastlingCommand
+  class EnPassantCommand
+  class PromotionCommand
+  interface IMoveInfo
+}
+
+package "com.chess.domain.game" {
+  class Game
+  class GameSnapshot
+  class GameTimeline
+  interface IGameTimeline
+}
+
+package "com.chess.domain.state" {
+  interface IGameState
+  class TurnState
+  class FinishedState
+  class DefaultGameEndEvaluator
+  interface IGameEndEvaluator
+}
+
+package "com.chess.domain.power" {
+  interface IPower
+  interface IPowerCommand
+  class PowerRules
+  class PowerState
+  class FeatherPower
+  class IceFlowerPower
+  class StarPower
+  class ShellPower
+  class FeatherCommand
+  class FreezeCommand
+  class ImmunityCommand
+  class ShellCommand
+  class StarBlastCommand
+}
+
+package "com.chess.domain.port" {
+  interface IGameService
+  interface IGameActions
+  interface IGameQueries
+  interface IGameObservable
+  interface IGameListener
+  interface IGameRepository
+  interface IGameFactory
+}
+
+Piece --> Color
+Piece --> PieceType
+Piece --> IMoveStrategy
+Board o-- Piece
+Board --> Position
+IMoveStrategy --> Board
+
+LinearMoveStrategy ..|> IMoveStrategy
+DiagonalMoveStrategy ..|> IMoveStrategy
+LShapeMoveStrategy ..|> IMoveStrategy
+OneStepMoveStrategy ..|> IMoveStrategy
+PawnMoveStrategy ..|> IMoveStrategy
+LinearMoveStrategy --> RayScanner
+DiagonalMoveStrategy --> RayScanner
+
+MoveGenerator ..|> IMoveGenerator
+CheckDetector ..|> ICheckDetector
+MoveGenerator --> IMoveRule
+CastlingRule ..|> IMoveRule
+EnPassantRule ..|> IMoveRule
+PromotionRule ..|> IMoveRule
+MoveCodeParser --> Position
+
+MoveCommand ..|> ICommand
+CastlingCommand ..|> ICommand
+EnPassantCommand ..|> ICommand
+PromotionCommand ..|> ICommand
+ICommand --> IMoveInfo
+ICommand --> Board
+
+Game ..|> IGameService
+IGameService ..|> IGameActions
+IGameService ..|> IGameQueries
+Game --> Board
+Game --> ICheckDetector
+Game --> IMoveGenerator
+Game --> GameTimeline
+Game --> IGameEndEvaluator
+Game --> PowerRules
+Game --> IGameListener
+GameTimeline ..|> IGameTimeline
+GameTimeline --> GameSnapshot
+GameSnapshot --> IGameState
+
+TurnState ..|> IGameState
+FinishedState ..|> IGameState
+DefaultGameEndEvaluator ..|> IGameEndEvaluator
+
+FeatherPower ..|> IPower
+IceFlowerPower ..|> IPower
+StarPower ..|> IPower
+ShellPower ..|> IPower
+FeatherCommand ..|> IPowerCommand
+FreezeCommand ..|> IPowerCommand
+ImmunityCommand ..|> IPowerCommand
+ShellCommand ..|> IPowerCommand
+StarBlastCommand ..|> IPowerCommand
+PowerRules --> PowerState
+PowerRules --> IPower
+
+IGameObservable ..|> IGameService
+IGameService --> IGameListener
+IGameRepository --> GameSnapshot
+IGameFactory --> IGameService
+@enduml
