@@ -6,9 +6,9 @@
 .home-screen {
     -fx-background-color: #cd212a;
     -fx-background-image: url("assets/background.png");
-    -fx-background-repeat: no-repeat;        /* Evita que se repita en mosaico */
-    -fx-background-size: cover;             /* Escala la imagen para cubrir toda la pantalla sin deformar proporciones */
-    -fx-background-position: center center;   /* Centra la imagen perfectamente en cualquier resolución */
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
 }
 
 .home-content {
@@ -67,16 +67,17 @@
 .game-button {
     -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-cursor: hand;
-    -fx-font-size: 15px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-padding: 11 18;
+    -fx-padding: 10 12;
+    -fx-min-height: 48px;
     -fx-background-radius: 13;
     -fx-border-radius: 13;
     -fx-border-width: 3;
 }
 
 .game-button.text-button {
-    -fx-font-family: "Mollen Personal Use", "Arial", sans-serif;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
 }
 
 .primary-button {
@@ -117,12 +118,15 @@
     -fx-border-width: 3;
     -fx-border-radius: 18;
     -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.18), 12, 0.12, 0, 4);
+    -fx-min-height: 0;
+    -fx-max-height: infinity;
 }
 
 .section-title {
     -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
     -fx-text-fill: #2e8a57;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
+    -fx-padding: 3 0 1 0;
     -fx-font-weight: bold;
 }
 
@@ -136,8 +140,11 @@
 }
 
 .turn-indicator {
-    -fx-padding: 8 0;
-    -fx-min-height: 78;
+    -fx-min-height: 74px;
+    -fx-pref-height: 74px;
+    -fx-padding: 0;
+    -fx-alignment: center-left;
+    -fx-spacing: 6px;
     -fx-max-width: infinity;
 }
 
@@ -156,26 +163,91 @@
     -fx-background-radius: 14;
     -fx-border-radius: 14;
     -fx-border-width: 2;
-    -fx-min-height: 72;
-    -fx-padding: 12 76 12 14;
+    -fx-min-height: 66px;
+    -fx-pref-height: 66px;
+    -fx-padding: 8px 6px 8px 11px;
     -fx-max-width: infinity;
 }
 
 .turn-indicator .label {
     -fx-text-fill: #fdfdd0;
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 .captured-pieces {
+    -fx-spacing: 3px;
+    -fx-min-height: 78px;
+    -fx-pref-height: 78px;
+    -fx-max-height: 78px;
+    -fx-alignment: center-left;
+    -fx-padding: 2px 0;
+}
+
+.powers-team {
+    -fx-text-fill: #2e8a57;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.powers-note {
+    -fx-font-size: 12px;
+    -fx-text-fill: #806b36;
+    -fx-font-weight: bold;
+}
+
+.power-chip {
+    -fx-background-color: white;
+    -fx-background-radius: 99;
+    -fx-border-color: #d3dfbd;
+    -fx-border-width: 1;
+    -fx-border-radius: 99;
+    -fx-padding: 4 8 4 5;
+}
+
+.powers-list {
     -fx-spacing: 4;
-    -fx-min-height: 68;
+    -fx-padding: 0;
+}
+
+.power-chip .label {
+    -fx-text-fill: #3a2a08;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.power-chip .power-badge {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}
+
+.side-panel > .button {
+    -fx-min-height: 50px;
+    -fx-pref-height: 50px;
+    -fx-max-width: infinity;
+    -fx-pref-width: 100%;
+    -fx-alignment: center;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 11px;
+    -fx-padding: 8 8;
+    -fx-wrap-text: true;
+}
+.captured-pieces > .hbox {
+    -fx-min-height: 34px;
+    -fx-pref-height: 34px;
+    -fx-max-height: 34px;
+    -fx-spacing: 7px;
     -fx-alignment: center-left;
 }
 
-.captured-pieces > .hbox {
-    -fx-min-height: 32;
-    -fx-alignment: center-left;
+.captured-pieces > .hbox > .image-view {
+    -fx-fit-width: 32px;
+    -fx-fit-height: 32px;
+}
+
+.captured-pieces > .hbox > .hbox {
+    -fx-padding: 0 4px;
+    -fx-spacing: 5px;
 }
 
 .captured-divider {
@@ -186,32 +258,131 @@
     -fx-background-radius: 1;
 }
 
-.side-panel > .button {
-    -fx-max-width: infinity;
-    -fx-pref-width: 100%;
-    -fx-alignment: center;
+.compact-layout {
+    -fx-spacing: 2;
+    -fx-padding: 8;
+}
+
+.compact-layout .section-title {
+    -fx-font-size: 12px;
+    -fx-padding: 0;
+}
+
+.compact-layout .turn-indicator {
+    -fx-min-height: 68;
+    -fx-pref-height: 68;
+    -fx-padding: 2 0;
+}
+
+.compact-layout .turn-plate {
+    -fx-min-height: 60px;
+    -fx-pref-height: 60px;
+    -fx-padding: 8px 6px 8px 10px;
+}
+
+.compact-layout .turn-indicator .label {
+    -fx-font-size: 12px;
+}
+
+.compact-layout .game-button,
+.compact-layout > .button {
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 10px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-padding: 6 7;
+}
+
+.compact-layout .captured-pieces {
+    -fx-min-height: 68px;
+    -fx-pref-height: 68px;
+    -fx-max-height: 68px;
+}
+
+.compact-layout .captured-pieces > .hbox {
+    -fx-min-height: 30px;
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+}
+
+.compact-layout .captured-pieces > .hbox > .image-view {
+    -fx-fit-width: 28px;
+    -fx-fit-height: 28px;
+}
+
+.compact-layout .powers-list {
+    -fx-spacing: 3;
+}
+
+.compact-layout .power-chip {
+    -fx-padding: 3 7;
+}
+
+.compact-layout .power-chip .label,
+.compact-layout .powers-note {
+    -fx-font-size: 12px;
+}
+
+.game-actions {
+    -fx-hgap: 10;
+    -fx-vgap: 8;
+    -fx-alignment: center-left;
+}
+
+.game-actions .game-button {
+    -fx-min-width: 106px;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 11px;
+    -fx-padding: 8 9;
+}
+
+.game-actions .information-button {
+    -fx-min-width: 40px;
+}
+
+.game-actions .sound-button {
+    -fx-min-width: 108px;
+}
+
+.compact-game .game-actions .game-button {
+    -fx-min-width: 82px;
+    -fx-min-height: 36px;
+    -fx-font-family: "Karmatic Arcade", "Mollen Personal Use", sans-serif;
+    -fx-font-size: 10px;
+    -fx-padding: 6 8;
+}
+
+.compact-game .game-actions .information-button {
+    -fx-min-width: 36px;
+}
+
+.compact-game .game-actions .sound-button {
+    -fx-min-width: 94px;
 }
 
 .game-list {
-    -fx-background-color: white;
+    -fx-background-color: #fffdf2;
     -fx-border-color: #d3dfbd;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-control-inner-background: white;
-    -fx-padding: 3;
+    -fx-border-width: 2;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-control-inner-background: #fffdf2;
+    -fx-padding: 5;
 }
 
-.game-history-panel {
-    -fx-background-color: rgba(253, 253, 208, 0.96);
-    -fx-background-radius: 18;
-    -fx-border-color: #2e8a57;
-    -fx-border-radius: 18;
-    -fx-border-width: 3;
-    -fx-effect: dropshadow(gaussian, rgba(24, 65, 38, 0.2), 12, 0.12, 0, 4);
-    -fx-padding: 12;
-    -fx-min-width: 210;
-    -fx-pref-width: 250;
-    -fx-max-width: 280;
+.game-list .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.game-list .scroll-bar:vertical .track {
+    -fx-background-color: rgba(46, 138, 87, 0.12);
+    -fx-background-radius: 8;
+}
+
+.game-list .scroll-bar:vertical .thumb {
+    -fx-background-color: #2e8a57;
+    -fx-background-radius: 8;
 }
 
 .history-tabs {
@@ -240,23 +411,63 @@
 .game-list .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #263b2c;
-    -fx-padding: 7 9;
+    -fx-padding: 3 5;
 }
 
 .game-list .list-cell:filled {
-    -fx-cell-size: 42px;
+    -fx-cell-size: 54px;
+}
+
+.game-list .list-cell:filled:hover {
+    -fx-background-color: #e9f2d9;
+    -fx-background-radius: 10;
+}
+
+.move-row {
+    -fx-padding: 5 8;
+    -fx-background-color: #f7f9e9;
+    -fx-background-radius: 10;
+    -fx-border-color: #e2ebd2;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
 }
 
 .move-notation {
     -fx-text-fill: #263b2c;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.move-number {
+    -fx-min-width: 25;
+    -fx-pref-width: 25;
+    -fx-alignment: center;
+    -fx-text-fill: #2e8a57;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.move-side {
+    -fx-text-fill: #8a7250;
+    -fx-font-size: 9px;
     -fx-font-weight: bold;
 }
 
 .game-list .list-cell:filled:selected {
-    -fx-background-color: #4169e1;
+    -fx-background-color: #d9e8ff;
     -fx-text-fill: white;
-    -fx-background-radius: 7;
+    -fx-background-radius: 10;
+}
+
+.game-list .list-cell:filled:selected .move-row {
+    -fx-background-color: #4169e1;
+    -fx-border-color: #273f93;
+}
+
+.game-list .list-cell:filled:selected .move-notation,
+.game-list .list-cell:filled:selected .move-number,
+.game-list .list-cell:filled:selected .move-side {
+    -fx-text-fill: white;
 }
 
 .error-notice {
@@ -582,36 +793,4 @@
 
 .power-button:disabled {
     -fx-opacity: 0.45;
-}
-
-.powers-list {
-    -fx-padding: 2 0 4 0;
-}
-
-.powers-team {
-    -fx-text-fill: #2e8a57;
-    -fx-font-weight: bold;
-}
-
-.power-chip {
-    -fx-background-color: white;
-    -fx-background-radius: 99;
-    -fx-border-color: #d3dfbd;
-    -fx-border-radius: 99;
-    -fx-padding: 2 8 2 3;
-}
-
-.power-chip .label {
-    -fx-text-fill: #3a2a08;
-    -fx-font-size: 12px;
-}
-
-.powers-note {
-    -fx-text-fill: #7a6a3a;
-    -fx-font-size: 12px;
-}
-
-.power-chip .power-badge {
-    -fx-text-fill: white;
-    -fx-font-size: 11px;
 }

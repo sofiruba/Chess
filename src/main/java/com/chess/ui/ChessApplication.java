@@ -68,6 +68,7 @@ public final class ChessApplication {
     private SidePanel sidePanel;
     private StackPane gameBoardSlot;
     private HBox gameCenter;
+    private FlowPane gameActions;
     private Position selected;
     private List<Position> legalMoves = List.of();
     private List<Position> powerTargets = List.of();
@@ -101,6 +102,7 @@ public final class ChessApplication {
         root.setPrefSize(1100, 760);
         root.setMinSize(600, 500);
         root.widthProperty().addListener((observable, oldValue, newValue) -> updateGameLayout());
+        root.heightProperty().addListener((observable, oldValue, newValue) -> updateGameLayout());
         loadUiFont("/com/chess/ui/assets/titles1.ttf", 28);
         loadUiFont("/com/chess/ui/assets/titles2.ttf", 18);
         loadUiFont("/com/chess/ui/assets/text1.otf", 16);
@@ -499,7 +501,7 @@ public final class ChessApplication {
         gameBoardSlot = new StackPane(boardView.createView());
         gameBoardSlot.setMinSize(0, 0);
         HBox.setHgrow(gameBoardSlot, javafx.scene.layout.Priority.ALWAYS);
-        gameCenter = new HBox(14, gameBoardSlot, sidePanel.moveHistoryView());
+        gameCenter = new HBox(14, gameBoardSlot);
         gameCenter.setMinSize(0, 0);
         root.setCenter(gameCenter);
         root.setRight(sidePanelView);
@@ -527,10 +529,13 @@ public final class ChessApplication {
         information.setTooltip(new Tooltip("Información"));
         information.setOnAction(event -> showRulesBook());
         information.getStyleClass().addAll("game-button", "text-button", "information-button");
-        HBox actions = new HBox(10, home, undo, redo, powerButton, information, soundButton);
-        actions.setAlignment(Pos.CENTER_LEFT);
-        actions.setPadding(new Insets(14, 24, 18, 30));
-        root.setBottom(actions);
+        gameActions = new FlowPane(10, 8, home, undo, redo, powerButton, information, soundButton);
+        gameActions.setAlignment(Pos.CENTER_LEFT);
+        gameActions.setPadding(new Insets(10, 18, 12, 24));
+        gameActions.prefWrapLengthProperty().bind(root.widthProperty().subtract(42));
+        gameActions.setMaxWidth(Double.MAX_VALUE);
+        gameActions.getStyleClass().add("game-actions");
+        root.setBottom(gameActions);
         BorderPane.setMargin(root.getCenter(), new Insets(20, 10, 10, 20));
         BorderPane.setMargin(root.getRight(), new Insets(20, 24, 14, 14));
     }
@@ -539,10 +544,17 @@ public final class ChessApplication {
         if (!gameScreenVisible || sidePanel == null) {
             return;
         }
-        boolean compact = root.getWidth() < 1320;
+        double availableHeight = root.getHeight() - 150;
+        boolean compact = root.getWidth() < 1320 || availableHeight < 700;
         sidePanel.setCompactLayout(compact);
-        sidePanel.moveHistoryView().setVisible(!compact);
-        sidePanel.moveHistoryView().setManaged(!compact);
+        root.getStyleClass().remove("compact-game");
+        if (compact) {
+            root.getStyleClass().add("compact-game");
+        }
+        if (gameActions != null) {
+            gameActions.setHgap(compact ? 7 : 10);
+            gameActions.setVgap(compact ? 5 : 8);
+        }
     }
 
     private void loadGame(GameRecord record) {

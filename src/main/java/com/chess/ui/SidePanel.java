@@ -55,12 +55,10 @@ public final class SidePanel implements IGameListener {
     private final Label status = new Label();
     private final ImageView turnArtwork = new ImageView();
     private final HBox turnPlate = new HBox(status);
-    private final StackPane turnIndicator = new StackPane(turnPlate, turnArtwork);
-    /** El logo completo ("Super Chess Bros."), sin el margen transparente que lo rodea en la imagen. */
+    private final HBox turnIndicator = new HBox(turnPlate, turnArtwork);
     private static final Rectangle2D TITLE_AREA = new Rectangle2D(0, 352, 1620, 940);
-    private static final double TITLE_MAX_HEIGHT = 128;
-    /** En ventanas bajas el logo se achica para dejarle lugar a la lista de movimientos y partidas. */
-    private static final double TITLE_SHARE_OF_PANEL = 0.13;
+    private static final double TITLE_MAX_HEIGHT = 148;
+    private static final double TITLE_SHARE_OF_PANEL = 0.16;
 
     private final ImageView titleArtwork = new ImageView(loadArtwork("/com/chess/ui/assets/chess-title1.png"));
     private final VBox captured = new VBox(4);
@@ -76,16 +74,13 @@ public final class SidePanel implements IGameListener {
     private final Tab movesTab = new Tab("Movimientos");
     private final Tab savedGamesTab = new Tab("Guardadas");
     private final Label savedGamesTitle = sectionTitle("PARTIDAS GUARDADAS");
-    private final VBox moveHistoryPanel = new VBox(8);
     private final StackPane historySlot = new StackPane();
     private final Image heroesArtwork = loadArtwork("/com/chess/ui/assets/heroes.png", 34, 34);
     private final Image villainsArtwork = loadArtwork("/com/chess/ui/assets/villains.png", 34, 34);
-    /** La cara del turno se muestra a 92 px: se carga al doble para que se vea nítida, también con escalado. */
     private final Image heroesTurnArtwork = loadArtwork("/com/chess/ui/assets/heroes.png", 184, 184);
     private final Image villainsTurnArtwork = loadArtwork("/com/chess/ui/assets/villains.png", 184, 184);
     private VBox savedGamesContent;
-    private boolean compactLayout;
-    private boolean layoutInitialized;
+    private VBox panel;
 
     public SidePanel(
             IGameArchive archive,
@@ -103,7 +98,7 @@ public final class SidePanel implements IGameListener {
         this.savedGameTracker = Objects.requireNonNull(savedGameTracker, "savedGameTracker must not be null");
         this.loadHandler = Objects.requireNonNull(loadHandler, "loadHandler must not be null");
         this.newGameHandler = Objects.requireNonNull(newGameHandler, "newGameHandler must not be null");
-        this.soundPlayer = Objects.requireNonNull(soundPlayer, "soundPlayer must not be null"); //dependency injection
+        this.soundPlayer = Objects.requireNonNull(soundPlayer, "soundPlayer must not be null");
         saveButton.setOnAction(event -> save());
         newGameButton.setOnAction(event -> {
             soundPlayer.play(SoundEffect.MENU);
@@ -129,22 +124,26 @@ public final class SidePanel implements IGameListener {
         savedGames.setCellFactory(list -> new SavedGameCell());
         moves.getStyleClass().add("game-list");
         savedGames.getStyleClass().add("game-list");
-        moves.setPrefHeight(180);
-        savedGames.setPrefHeight(130);
+        moves.setPrefHeight(230);
         moves.setMinHeight(0);
+        savedGames.setPrefHeight(180);
         savedGames.setMinHeight(0);
-        saveButton.getStyleClass().addAll("game-button", "save-game-button");
-        newGameButton.getStyleClass().addAll("game-button", "primary-button", "new-game-button");
+        moves.setPlaceholder(new Label("Todavía no hay movimientos"));
+        savedGames.setPlaceholder(new Label("No hay partidas guardadas"));
+        saveButton.getStyleClass().addAll("game-button", "text-button", "save-game-button");
+        newGameButton.getStyleClass().addAll("game-button", "text-button", "primary-button", "new-game-button");
+        saveButton.setWrapText(true);
+        newGameButton.setWrapText(true);
         turnIndicator.getStyleClass().add("turn-indicator");
         turnPlate.getStyleClass().add("turn-plate");
         turnPlate.setAlignment(Pos.CENTER_LEFT);
-        turnArtwork.setFitWidth(92);
-        turnArtwork.setFitHeight(92);
+        turnArtwork.setFitWidth(68);
+        turnArtwork.setFitHeight(68);
         turnArtwork.setPreserveRatio(true);
         turnArtwork.setAccessibleRole(javafx.scene.AccessibleRole.IMAGE_VIEW);
         turnArtwork.setAccessibleText("Héroes");
-        StackPane.setAlignment(turnArtwork, Pos.CENTER_RIGHT);
-        StackPane.setMargin(turnArtwork, new Insets(-9, -8, -9, 0));
+        turnIndicator.setAlignment(Pos.CENTER_LEFT);
+        turnIndicator.setSpacing(6);
         titleArtwork.setViewport(TITLE_AREA);
         titleArtwork.setPreserveRatio(true);
         titleArtwork.setSmooth(true);
@@ -160,10 +159,14 @@ public final class SidePanel implements IGameListener {
         captured.getChildren().setAll(
                 capturedRow(heroesArtwork, "Piezas capturadas por héroes", heroesCaptured),
                 capturedRow(villainsArtwork, "Piezas capturadas por villanos", villainsCaptured));
+        captured.setPrefHeight(78);
+        captured.setMinHeight(78);
+        captured.setMaxHeight(78);
+        powers.setPrefHeight(96);
+        powers.setMinHeight(82);
         movesTab.setClosable(false);
         savedGamesTab.setClosable(false);
         historyTabs.getStyleClass().add("history-tabs");
-        moveHistoryPanel.getStyleClass().add("game-history-panel");
         VBox.setVgrow(moves, Priority.ALWAYS);
     }
 
@@ -194,8 +197,8 @@ public final class SidePanel implements IGameListener {
         
 
         StackPane titleBanner = new StackPane(titleArtwork);
-        VBox panel = new VBox(
-                10,
+        panel = new VBox(
+                7,
                 titleBanner,
                 sectionTitle("PARTIDA"),
                 turnIndicator,
@@ -206,9 +209,11 @@ public final class SidePanel implements IGameListener {
                 sectionTitle("PODERES"),
                 powers,
                 historySlot);
-        panel.setPadding(new Insets(12));
-        panel.setMinWidth(250);
-        panel.setPrefWidth(320);
+        panel.setPadding(new Insets(14));
+        panel.setMinWidth(280);
+        panel.setPrefWidth(360);
+        panel.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        panel.setMaxHeight(Double.MAX_VALUE);
         panel.setFillWidth(true);
         panel.getStyleClass().add("side-panel");
         titleBanner.prefWidthProperty().bind(panel.widthProperty());
@@ -216,42 +221,45 @@ public final class SidePanel implements IGameListener {
         titleArtwork.fitHeightProperty().bind(Bindings.min(
                 TITLE_MAX_HEIGHT, panel.heightProperty().multiply(TITLE_SHARE_OF_PANEL)));
         VBox.setVgrow(historySlot, Priority.ALWAYS);
+        historySlot.setMinHeight(0);
+        historySlot.setMaxHeight(Double.MAX_VALUE);
         historySlot.getChildren().setAll(historyTabs);
         refresh();
         refreshSavedGames();
         return panel;
     }
 
-    public VBox moveHistoryView() {
-        return moveHistoryPanel;
-    }
-
     public void setCompactLayout(boolean compact) {
-        if (layoutInitialized && compactLayout == compact) {
-            return;
+        moves.setMinHeight(0);
+        savedGames.setMinHeight(0);
+        moves.setPrefHeight(compact ? 180 : 240);
+        savedGames.setPrefHeight(compact ? 150 : 180);
+        captured.setPrefHeight(compact ? 68 : 78);
+        captured.setMinHeight(compact ? 68 : 78);
+        captured.setMaxHeight(compact ? 68 : 78);
+        powers.setPrefHeight(compact ? 78 : 96);
+        powers.setMinHeight(compact ? 70 : 82);
+        panel.getStyleClass().remove("compact-layout");
+        if (compact) {
+            panel.getStyleClass().add("compact-layout");
+            titleArtwork.fitHeightProperty().unbind();
+            titleArtwork.fitHeightProperty().bind(Bindings.min(
+                    86, panel.heightProperty().multiply(0.12)));
+            turnArtwork.setFitWidth(62);
+            turnArtwork.setFitHeight(62);
+        } else {
+            titleArtwork.fitHeightProperty().unbind();
+            titleArtwork.fitHeightProperty().bind(Bindings.min(
+                    TITLE_MAX_HEIGHT, panel.heightProperty().multiply(TITLE_SHARE_OF_PANEL)));
+            turnArtwork.setFitWidth(68);
+            turnArtwork.setFitHeight(68);
         }
-        layoutInitialized = true;
-        compactLayout = compact;
-        historySlot.getChildren().clear();
         updatingNavigation = true;
         try {
-            if (compact) {
-                savedGamesContent.getChildren().remove(savedGamesTitle);
-                moveHistoryPanel.getChildren().remove(moves);
-                movesTab.setContent(moves);
-                savedGamesTab.setContent(savedGamesContent);
-                historyTabs.getTabs().setAll(movesTab, savedGamesTab);
-                historySlot.getChildren().setAll(historyTabs);
-            } else {
-                if (!savedGamesContent.getChildren().contains(savedGamesTitle)) {
-                    savedGamesContent.getChildren().add(0, savedGamesTitle);
-                }
-                movesTab.setContent(null);
-                savedGamesTab.setContent(null);
-                historyTabs.getTabs().setAll(savedGamesTab);
-                historySlot.getChildren().setAll(savedGamesContent);
-                moveHistoryPanel.getChildren().setAll(sectionTitle("MOVIMIENTOS"), moves);
-            }
+            movesTab.setContent(moves);
+            savedGamesTab.setContent(savedGamesContent);
+            historyTabs.getTabs().setAll(movesTab, savedGamesTab);
+            historySlot.getChildren().setAll(historyTabs);
         } finally {
             updatingNavigation = false;
         }
@@ -288,7 +296,6 @@ public final class SidePanel implements IGameListener {
         updateSaveButton();
     }
 
-    /** Los poderes de ambos equipos: los dos jugadores ven siempre lo que tiene el otro. */
     private void refreshPowers() {
         powers.getChildren().setAll(
                 teamPowers("Héroes", Color.WHITE),
@@ -301,7 +308,6 @@ public final class SidePanel implements IGameListener {
         }
     }
 
-    /** Una sola línea con las cajas sin abrir y cuándo salen más; null si la partida no tiene cajas. */
     private String boxesNote() {
         int boxes = game.mysteryBoxes().size();
         int turns = game.turnsUntilNewBoxes();
@@ -511,8 +517,8 @@ public final class SidePanel implements IGameListener {
 
     private static HBox capturedRow(Image teamArtwork, String accessibleText, HBox pieces) {
         ImageView teamIcon = new ImageView(teamArtwork);
-        teamIcon.setFitWidth(30);
-        teamIcon.setFitHeight(30);
+        teamIcon.setFitWidth(32);
+        teamIcon.setFitHeight(32);
         teamIcon.setPreserveRatio(true);
         teamIcon.setAccessibleText(accessibleText);
         Region divider = new Region();
@@ -520,7 +526,10 @@ public final class SidePanel implements IGameListener {
         divider.setMinWidth(2);
         divider.setPrefWidth(2);
         divider.setMaxWidth(2);
-        HBox row = new HBox(8, teamIcon, divider, pieces);
+        HBox row = new HBox(10, teamIcon, divider, pieces);
+        row.setMinHeight(34);
+        row.setPrefHeight(34);
+        row.setMaxHeight(34);
         row.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(divider, Priority.NEVER);
         HBox.setHgrow(pieces, Priority.ALWAYS);
@@ -546,12 +555,23 @@ public final class SidePanel implements IGameListener {
                 image.setPreserveRatio(true);
                 image.setAccessibleText(symbols.symbolFor(entry.movingPiece()));
             }
+            Label moveNumber = new Label(String.format("%02d", getIndex() + 1));
+            moveNumber.getStyleClass().add("move-number");
             Label notation = new Label(entry.notation());
             notation.getStyleClass().add("move-notation");
-            HBox row = new HBox(8, image == null
-                    ? new Label(symbols.symbolFor(entry.movingPiece()))
-                    : image, notation);
-            row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            Label side = new Label(entry.movingPiece().color() == Color.WHITE ? "HÉROES" : "VILLANOS");
+            side.getStyleClass().add("move-side");
+            VBox text = new VBox(1, notation, side);
+            text.setAlignment(Pos.CENTER_LEFT);
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            HBox row = new HBox(10,
+                    moveNumber,
+                    image == null ? new Label(symbols.symbolFor(entry.movingPiece())) : image,
+                    text,
+                    spacer);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.getStyleClass().add("move-row");
             setText(null);
             setGraphic(row);
         }
