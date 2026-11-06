@@ -355,26 +355,8 @@ Para compilar sin ejecutar pruebas:
 mvn -DskipTests package
 ```
 
-## 14. Guion breve para la presentación
 
-La presentación puede dividirse en dos partes:
-
-### Persona 1: juego y experiencia
-
-1. Presentar Super Chess Bros. como un ajedrez completo ambientado en Mario.
-2. Explicar las cajas misteriosas y los cuatro poderes.
-3. Mostrar que los poderes no vuelven injusto el juego porque las cajas aparecen en espejo.
-4. Mostrar la interfaz, el tablero, las piezas, los indicadores de poderes y el panel lateral.
-
-### Persona 2: implementación
-
-1. Explicar la arquitectura hexagonal.
-2. Mostrar que el dominio no depende de JavaFX ni SQLite.
-3. Explicar Strategy, Command, Memento, State, Observer y Factory.
-4. Relacionar las decisiones con SOLID y GRASP.
-5. Destacar las pruebas automáticas, la reproducibilidad de la aleatoriedad y la posibilidad de deshacer poderes.
-
-## 15. Objetivo académico
+## 14. Objetivo académico
 
 El objetivo del trabajo no es solamente implementar un ajedrez funcional. También busca demostrar que un sistema puede evolucionar mediante diseño modular:
 
